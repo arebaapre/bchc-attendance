@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1c3f8f">
+<title>BCHC Attendance</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Mukta:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  /* ====== PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BETWEEN THE QUOTES ====== */
+  window.BCHC_API_URL = 'https://script.google.com/macros/s/AKfycbyS0sLhLEn-xRNgnhNxy9gvDZVrMrhfwdUfZKtL8Evn-4q-X7TF5wJT_KCIZN114p7nMQ/exec';
+  /* ========================================================================= */
+</script>
+<style>
+/* Layout: one narrow column for teachers on phones; a wide working surface for the admin. */
+:root{
+  --bg:#f3f5fb; --surface:#ffffff; --surface-2:#e9edf8; --line:#d5dbeb;
+  --ink:#141b2e; --ink-2:#4b5672; --ink-3:#7a849e;
+  --brand:#1c3f8f; --brand-ink:#ffffff; --brand-soft:#dfe7fb;
+  --marigold:#f0a500; --marigold-soft:#fff2cf;
+  --ok:#137a4b; --ok-soft:#dcf3e7; --warn:#a86200; --warn-soft:#fdebc8; --bad:#b42a2a; --bad-soft:#fbe0e0;
+  --display:'Baloo 2', 'Mukta', system-ui, sans-serif;
+  --body:'Mukta', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --radius:14px; --shadow:0 1px 2px rgba(20,27,46,.06), 0 6px 24px rgba(20,27,46,.06);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0d1222; --surface:#161d33; --surface-2:#1f2843; --line:#2c3757;
+  --ink:#eef1fa; --ink-2:#b4bdd6; --ink-3:#8590ad;
+  --brand:#7ea2ff; --brand-ink:#0d1222; --brand-soft:#22305a;
+  --marigold:#ffc23d; --marigold-soft:#3a2e10;
+  --ok:#5fd39a; --ok-soft:#173a2b; --warn:#ffb54a; --warn-soft:#3b2b10; --bad:#ff8080; --bad-soft:#3d1a1d;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 24px rgba(0,0,0,.25); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0d1222; --surface:#161d33; --surface-2:#1f2843; --line:#2c3757;
+  --ink:#eef1fa; --ink-2:#b4bdd6; --ink-3:#8590ad;
+  --brand:#7ea2ff; --brand-ink:#0d1222; --brand-soft:#22305a;
+  --marigold:#ffc23d; --marigold-soft:#3a2e10;
+  --ok:#5fd39a; --ok-soft:#173a2b; --warn:#ffb54a; --warn-soft:#3b2b10; --bad:#ff8080; --bad-soft:#3d1a1d;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 24px rgba(0,0,0,.25); color-scheme:dark }
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+[hidden]{display:none!important}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance}
+button,input,select{font:inherit;color:inherit}
+.num{font-variant-numeric:tabular-nums}
+:focus-visible{outline:3px solid var(--marigold);outline-offset:2px}
+
+.topbar{background:var(--brand);color:var(--brand-ink)}
+.topbar-in{display:flex;align-items:center;gap:12px;max-width:1180px;margin:0 auto;
+  padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.mark{width:38px;height:38px;flex:none}
+.brandname{display:flex;flex-direction:column;line-height:1.1;min-width:0}
+.brandname b{font-family:var(--display);font-size:1.15rem;letter-spacing:.01em}
+.brandname span{font-size:.8rem;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar .spacer{flex:1}
+.linkbtn{background:none;border:0;color:inherit;opacity:.9;cursor:pointer;padding:6px 8px;border-radius:8px;font-weight:600;font-size:.9rem}
+.linkbtn:hover{background:rgba(255,255,255,.12)}
+
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.narrow{max-width:480px;margin:0 auto}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--ink-2)} .faint{color:var(--ink-3);font-size:.88rem}
+label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:.92rem;color:var(--ink-2)}
+input.in,select.in{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);font-size:1rem}
+input.in:focus,select.in:focus{border-color:var(--brand);outline:none}
+.pinin{letter-spacing:.4em;font-size:1.3rem!important;text-align:center}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;cursor:pointer;
+  padding:12px 18px;font-weight:700;font-size:1rem;background:var(--surface-2);color:var(--ink);transition:transform .08s, filter .15s}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.primary{background:var(--brand);color:var(--brand-ink)}
+.btn.gold{background:var(--marigold);color:#1d1400}
+.btn.ghost{background:transparent;border:1.5px solid var(--line)}
+.btn.small{padding:7px 12px;font-size:.88rem;border-radius:9px}
+.btn.block{width:100%}
+a.btn{text-decoration:none}
+.btn.huge{padding:22px;font-size:1.35rem;border-radius:18px;font-family:var(--display);letter-spacing:.01em}
+
+.pill{display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:999px;font-size:.8rem;font-weight:700;white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.info{background:var(--brand-soft);color:var(--brand)}
+.pill.none{background:var(--surface-2);color:var(--ink-3)}
+.msg{padding:12px 14px;border-radius:10px;font-weight:600}
+.msg.err{background:var(--bad-soft);color:var(--bad)} .msg.good{background:var(--ok-soft);color:var(--ok)} .msg.note{background:var(--marigold-soft);color:var(--warn)}
+
+/* teacher home */
+.hello h1{font-size:1.7rem}
+.daystrip{display:grid;grid-template-columns:1fr 1fr 1fr;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.daystrip div{padding:12px;text-align:center;background:var(--surface)}
+.daystrip div+div{border-left:1px solid var(--line)}
+.daystrip small{display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.daystrip b{font-family:var(--display);font-size:1.45rem}
+.clock{font-family:var(--display);font-size:2.6rem;font-weight:800;color:var(--brand);line-height:1}
+
+/* camera */
+.cam{position:relative;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:3/4;max-width:100%}
+.cam video,.cam img{width:100%;height:100%;object-fit:cover;display:block}
+.cam video{transform:scaleX(-1)}
+.cam .oval{position:absolute;inset:12% 18% 22%;border:3px dashed rgba(255,255,255,.7);border-radius:50%;pointer-events:none}
+.gps{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:12px;background:var(--surface-2)}
+.dot{width:12px;height:12px;border-radius:50%;margin-top:6px;flex:none;background:var(--ink-3)}
+.dot.ok{background:var(--ok)} .dot.warn{background:var(--marigold)} .dot.bad{background:var(--bad)}
+.dot.wait{animation:pulse 1s infinite alternate}
+@keyframes pulse{to{opacity:.3}}
+@media (prefers-reduced-motion: reduce){.dot.wait{animation:none}}
+.result{text-align:center}
+.result .big{font-family:var(--display);font-size:3rem;font-weight:800;line-height:1}
+
+/* admin */
+.tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);margin-bottom:18px;scrollbar-width:none}
+.tab{background:none;border:0;padding:10px 14px;font-weight:700;color:var(--ink-2);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--brand);border-bottom-color:var(--brand)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.kpi small{display:block;color:var(--ink-3);font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.07em}
+.kpi b{font-family:var(--display);font-size:2rem;line-height:1.1}
+.kpi b em{font-style:normal;font-size:1rem;color:var(--ink-3)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px}
+.toolbar label.f{min-width:140px;flex:1 1 140px;max-width:220px}
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th{text-align:left;font-size:.76rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:700;padding:10px 12px;background:var(--surface-2);white-space:nowrap}
+td{padding:10px 12px;border-top:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+td.wrap-ok{white-space:normal;min-width:160px}
+tr.click{cursor:pointer} tr.click:hover td{background:var(--surface-2)}
+.thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--surface-2);display:inline-block;vertical-align:middle;border:1px solid var(--line)}
+.thumbbtn{border:0;padding:0;background:none;cursor:pointer;border-radius:8px}
+.thumbph{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;background:var(--surface-2);color:var(--ink-3);font-size:.7rem;font-weight:700;border:1px dashed var(--line)}
+.who{display:flex;flex-direction:column;line-height:1.2}
+.who small{color:var(--ink-3)}
+.empty{padding:28px;text-align:center;color:var(--ink-3)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(8,12,24,.6);display:flex;align-items:center;justify-content:center;z-index:50;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.modal .card{width:min(560px,100%);max-height:100%;overflow:auto}
+.photoBig{width:100%;border-radius:12px;background:var(--surface-2);min-height:200px;object-fit:contain}
+.spinner{width:22px;height:22px;border:3px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);
+  padding:10px 16px;border-radius:10px;font-weight:600;z-index:60;max-width:calc(100% - 32px)}
+@media (max-width:520px){ .hello h1{font-size:1.45rem} .clock{font-size:2.2rem} .kpi b{font-size:1.6rem} }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <svg class="mark" viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="24" r="23" fill="#f0a500"/>
+      <circle cx="24" cy="24" r="17" fill="none" stroke="#1c3f8f" stroke-width="2.5"/>
+      <g stroke="#1c3f8f" stroke-width="2" stroke-linecap="round">
+        <line x1="24" y1="9" x2="24" y2="14"/><line x1="24" y1="34" x2="24" y2="39"/>
+        <line x1="9" y1="24" x2="14" y2="24"/><line x1="34" y1="24" x2="39" y2="24"/>
+      </g>
+      <path d="M17 25.5l4.5 4.5L31 19.5" fill="none" stroke="#1c3f8f" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div class="brandname"><b>BCHC Attendance</b><span id="orgName">Bhim Children Happiness Center</span></div>
+    <div class="spacer"></div>
+    <button class="linkbtn" id="topAction" hidden></button>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+<div id="modalRoot"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
+<script>
+(function(){
+'use strict';
+
+/* ------------------------------------------------------------- basics */
+var API = (new URLSearchParams(location.search).get('api')) || window.BCHC_API_URL || '';
+var app = document.getElementById('app');
+var topAction = document.getElementById('topAction');
+var store = {
+  get: function(k){ try { return JSON.parse(localStorage.getItem('bchc_'+k)); } catch(e){ return null; } },
+  set: function(k,v){ try { localStorage.setItem('bchc_'+k, JSON.stringify(v)); } catch(e){} },
+  del: function(k){ try { localStorage.removeItem('bchc_'+k); } catch(e){} }
+};
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function $(sel, root){ return (root||document).querySelector(sel); }
+function toast(text){
+  var t=document.createElement('div'); t.className='toast'; t.textContent=text; document.body.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 2600);
+}
+function api(action, data){
+  if (!API) return Promise.reject(new Error('The app is not connected yet. Paste the Apps Script URL into index.html (see the setup guide).'));
+  var body = Object.assign({action:action}, data||{});
+  return fetch(API, {method:'POST', body: JSON.stringify(body)})
+    .then(function(r){ return r.json(); })
+    .catch(function(){ throw new Error('No internet or the server did not answer. Try again.'); })
+    .then(function(res){ if (!res || !res.ok) throw new Error((res && res.error) || 'Something went wrong.'); return res; });
+}
+function todayISO(){ var d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function pad(n){ return (n<10?'0':'')+n; }
+function hm(t){ return t ? String(t).slice(0,5) : '—'; }
+function fmt12(t){ if(!t) return '—'; var p=String(t).split(':'); var h=+p[0], m=p[1]; var ap=h>=12?'PM':'AM'; h=h%12||12; return h+':'+m+' '+ap; }
+function niceDate(iso){ if(!iso) return ''; var d=new Date(iso+'T00:00:00'); return d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'}); }
+function mins(t){ if(!t) return null; var p=String(t).split(':'); return (+p[0])*60+(+p[1])+((+p[2]||0)/60); }
+function durText(m){ if(m==null||m<0) return '—'; var h=Math.floor(m/60), mm=Math.round(m%60); if(mm===60){h++;mm=0;} return h+'h '+pad(mm)+'m'; }
+function haversine(a,b,c,d){ var R=6371000,r=Math.PI/180,x=(c-a)*r,y=(d-b)*r; var s=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*r)*Math.cos(c*r)*Math.sin(y/2)*Math.sin(y/2); return Math.round(2*R*Math.asin(Math.sqrt(s))); }
+function geoPill(g, dist){
+  if (g==='INSIDE') return '<span class="pill ok">At school'+(dist!==''&&dist!=null?' · '+dist+' m':'')+'</span>';
+  if (g==='OUTSIDE') return '<span class="pill bad">Outside · '+fmtDist(dist)+'</span>';
+  return '<span class="pill none">School location not set</span>';
+}
+function fmtDist(m){ if(m==null||m==='') return '—'; m=+m; return m>=1000 ? (m/1000).toFixed(1)+' km' : m+' m'; }
+
+/* ------------------------------------------------------------- router */
+function route(){
+  stopCamera();
+  if (location.hash === '#admin') return Admin.start();
+  return Teacher.start();
+}
+window.addEventListener('hashchange', route);
+
+/* ============================================================ TEACHER */
+var Teacher = (function(){
+  var session = null, info = null, clockTimer = null;
+
+  function start(){
+    topAction.hidden = false;
+    session = store.get('teacher');
+    if (!session) return loginView();
+    topAction.textContent = 'Sign out';
+    topAction.onclick = function(){ store.del('teacher'); session=null; info=null; loginView(); };
+    loadHome();
+  }
+
+  function loginView(msg){
+    topAction.textContent = 'Admin';
+    topAction.onclick = function(){ location.hash = '#admin'; };
+    app.innerHTML =
+      '<div class="narrow stack">'+
+        '<div class="hello"><h1>Good to see you</h1><p class="muted" style="margin:4px 0 0">Sign in once on your phone. After that, checking in takes one selfie.</p></div>'+
+        (API ? '' : '<div class="msg note">Setup not finished: the app is not connected to the Google Sheet yet.</div>')+
+        '<form class="card stack" id="loginForm" novalidate>'+
+          '<label class="f">Teacher ID<input class="in" id="tId" autocomplete="username" autocapitalize="characters" placeholder="e.g. T01" required></label>'+
+          '<label class="f">PIN<input class="in pinin num" id="tPin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="6" placeholder="••••" required></label>'+
+          '<div id="loginMsg">'+(msg?'<div class="msg err">'+esc(msg)+'</div>':'')+'</div>'+
+          '<button class="btn primary block" id="loginBtn" type="submit">Sign in</button>'+
+          '<p class="faint" style="margin:0">Your ID and PIN come from the BCHC admin.</p>'+
+        '</form>'+
+      '</div>';
+    $('#loginForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      var id=$('#tId').value.trim().toUpperCase(), pin=$('#tPin').value.trim();
+      if(!id||!pin){ $('#loginMsg').innerHTML='<div class="msg err">Enter your Teacher ID and PIN.</div>'; return; }
+      var b=$('#loginBtn'); b.disabled=true; b.innerHTML='<span class="spinner"></span> Signing in';
+      api('login',{teacherId:id,pin:pin}).then(function(res){
+        session={teacherId:id,pin:pin}; store.set('teacher',session); info=res; start();
+      }).catch(function(err){ b.disabled=false; b.textContent='Sign in'; $('#loginMsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
+    });
+  }
+
+  function loadHome(){
+    app.innerHTML='<div class="narrow card" style="text-align:center"><span class="spinner" style="color:var(--brand)"></span><p class="muted">Loading your day…</p></div>';
+    api('login', session).then(function(res){ info=res; homeView(); })
+      .catch(function(err){
+        if (/PIN|ID/.test(err.message)) { store.del('teacher'); return loginView(err.message); }
+        app.innerHTML='<div class="narrow stack"><div class="msg err">'+esc(err.message)+'</div><button class="btn primary" id="retry">Try again</button></div>';
+        $('#retry').onclick=loadHome;
+      });
+  }
+
+  function homeView(){
+    var t=info.teacher; document.getElementById('orgName').textContent=info.org||'Bhim Children Happiness Center';
+    var inR=info.today.filter(function(r){return r.type==='IN';})[0];
+    var outR=info.today.filter(function(r){return r.type==='OUT';})[0];
+    var worked = inR&&outR ? durText(mins(outR.time)-mins(inR.time)) : (inR ? 'In school' : '—');
+    var first = (t.name||'').split(' ')[0];
+    var action;
+    if(!inR) action='<button class="btn gold huge block" id="go" data-type="IN">Check in</button><p class="faint" style="text-align:center;margin:0">School starts at '+esc(fmt12(info.schoolStart))+'</p>';
+    else if(!outR) action='<button class="btn primary huge block" id="go" data-type="OUT">Check out</button><p class="faint" style="text-align:center;margin:0">Check out when you leave school.</p>';
+    else action='<div class="msg good" style="text-align:center">You are done for today. Thank you, '+esc(first)+'!</div>';
+
+    app.innerHTML=
+      '<div class="narrow stack">'+
+        '<div class="hello"><p class="muted" style="margin:0">'+esc(niceDate(info.serverDate))+'</p><h1>Namaste, '+esc(first)+'</h1></div>'+
+        '<div class="card stack">'+
+          '<div class="row" style="justify-content:space-between"><div class="clock num" id="clock">--:--</div>'+
+            '<span class="pill info">'+esc(t.school||'BCHC')+'</span></div>'+
+          '<div class="daystrip num">'+
+            '<div><small>In</small><b>'+(inR?esc(fmt12(inR.time)):'—')+'</b></div>'+
+            '<div><small>Out</small><b>'+(outR?esc(fmt12(outR.time)):'—')+'</b></div>'+
+            '<div><small>Worked</small><b style="font-size:1.1rem">'+esc(worked)+'</b></div>'+
+          '</div>'+
+          (inR ? '<div class="row">'+geoPill(inR.geofence,inR.distance)+(inR.late?'<span class="pill warn">Late</span>':'<span class="pill ok">On time</span>')+'</div>' : '')+
+          action+
+        '</div>'+
+        '<button class="btn ghost" id="hist">My last 30 days</button>'+
+        '<div id="histBox"></div>'+
+      '</div>';
+    tick(); clearInterval(clockTimer); clockTimer=setInterval(tick, 1000);
+    var go=$('#go'); if(go) go.onclick=function(){ punchView(go.getAttribute('data-type')); };
+    $('#hist').onclick=showHistory;
+  }
+  function tick(){ var c=document.getElementById('clock'); if(!c){ clearInterval(clockTimer); return; } var d=new Date(); var h=d.getHours(), ap=h>=12?'PM':'AM'; c.textContent=(h%12||12)+':'+pad(d.getMinutes())+' '+ap; }
+
+  function showHistory(){
+    var box=$('#histBox'); box.innerHTML='<p class="muted">Loading…</p>';
+    api('myHistory', session).then(function(res){
+      var days=groupDays(res.records).slice(-30).reverse();
+      if(!days.length){ box.innerHTML='<div class="card empty">No attendance yet.</div>'; return; }
+      box.innerHTML='<div class="tablebox"><table class="num"><thead><tr><th>Date</th><th>In</th><th>Out</th><th>Hours</th></tr></thead><tbody>'+
+        days.map(function(d){ return '<tr><td>'+esc(niceDate(d.date))+'</td><td>'+esc(fmt12(d.inR&&d.inR.time))+(d.inR&&d.inR.late?' <span class="pill warn">Late</span>':'')+'</td><td>'+esc(fmt12(d.outR&&d.outR.time))+'</td><td>'+esc(d.hours!=null?durText(d.hours):'—')+'</td></tr>'; }).join('')+
+        '</tbody></table></div>';
+    }).catch(function(err){ box.innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
+  }
+
+  /* ----- check-in / check-out with selfie + GPS */
+  function punchView(type){
+    var t=info.teacher, label= type==='IN'?'Check in':'Check out';
+    app.innerHTML=
+      '<div class="narrow stack">'+
+        '<div class="row" style="justify-content:space-between"><h2>'+label+'</h2><button class="btn small ghost" id="cancel">Cancel</button></div>'+
+        '<div class="cam" id="cam"><video id="vid" playsinline autoplay muted></video><div class="oval"></div><img id="shot" alt="Your selfie" hidden></div>'+
+        '<div class="gps" id="gps"><span class="dot wait" id="gdot"></span><div><b id="gtitle">Finding your location…</b><div class="faint" id="gsub">Stay outdoors or near a window for a better signal.</div></div></div>'+
+        '<div id="pmsg"></div>'+
+        '<input type="file" id="fileCap" accept="image/*" capture="user" hidden>'+
+        '<button class="btn gold huge block" id="snap" disabled>Take selfie</button>'+
+        '<div class="row" id="afterSnap" hidden><button class="btn ghost" id="retake" style="flex:1">Retake</button><button class="btn primary" id="submit" style="flex:2" disabled>Submit '+label.toLowerCase()+'</button></div>'+
+      '</div>';
+    var state={photo:null,pos:null,camOk:false};
+    $('#cancel').onclick=function(){ stopCamera(); homeView(); };
+
+    // Camera
+    startCamera($('#vid')).then(function(){ state.camOk=true; refresh(); })
+      .catch(function(){
+        // Fallback: the phone's own camera app (front camera) via file input.
+        $('#vid').hidden=true; $('.oval').hidden=true;
+        $('#cam').style.aspectRatio='auto'; $('#cam').style.minHeight='120px';
+        $('#pmsg').innerHTML='<div class="msg note">Live camera is blocked in this browser. Tap "Take selfie" to open your phone camera.</div>';
+        state.camOk='fallback'; refresh();
+      });
+
+    // GPS: keep the most accurate reading.
+    if(!navigator.geolocation){ gps('bad','Location not supported','Open this app in Chrome.'); }
+    else {
+      gpsWatch = navigator.geolocation.watchPosition(function(p){
+        if(!state.pos || p.coords.accuracy < state.pos.coords.accuracy || Date.now()-state.pos.timestamp>15000) state.pos=p;
+        var acc=Math.round(state.pos.coords.accuracy), dist=null;
+        if(t.lat!=null && t.lng!=null) dist=haversine(state.pos.coords.latitude,state.pos.coords.longitude,t.lat,t.lng);
+        var radius=t.radius||200;
+        var sub='GPS accuracy ±'+acc+' m';
+        if(dist==null) gps(acc<=150?'ok':'warn','Location found',sub+'. The admin has not set your school location yet.');
+        else if(dist<=radius) gps(acc<=150?'ok':'warn','You are at school · '+fmtDist(dist), sub);
+        else gps('bad','You are '+fmtDist(dist)+' from school', sub+'. You can still submit, but it will be marked "Outside".');
+        refresh();
+      }, function(err){
+        var m = err.code===1 ? 'Location permission is off' : 'Could not get location';
+        gps('bad', m, err.code===1 ? 'Allow location for this site in your browser settings, then reopen the app.' : 'Turn on GPS / Location on your phone and try again.');
+      }, {enableHighAccuracy:true, maximumAge:0, timeout:30000});
+    }
+
+    function gps(kind,title,sub){ var d=$('#gdot'); if(!d) return; d.className='dot '+kind; $('#gtitle').textContent=title; $('#gsub').textContent=sub; }
+    function refresh(){
+      var snap=$('#snap'), sub=$('#submit'); if(!snap) return;
+      snap.disabled = !state.camOk;
+      sub.disabled = !(state.photo && state.pos);
+      if(state.photo && !state.pos) sub.textContent='Waiting for GPS…'; else sub.textContent='Submit '+label.toLowerCase();
+    }
+
+    $('#snap').onclick=function(){
+      if(state.camOk==='fallback'){ $('#fileCap').click(); return; }
+      var v=$('#vid'); state.photo=capture(v, true, t.name); showShot();
+    };
+    $('#fileCap').onchange=function(e){
+      var f=e.target.files&&e.target.files[0]; if(!f) return;
+      var img=new Image(); img.onload=function(){ state.photo=capture(img,false,t.name); URL.revokeObjectURL(img.src); showShot(); };
+      img.src=URL.createObjectURL(f);
+    };
+    function showShot(){
+      var s=$('#shot'); s.src=state.photo; s.hidden=false; $('#vid').hidden=true; $('.oval').hidden=true;
+      $('#cam').style.aspectRatio='3/4';
+      $('#snap').hidden=true; $('#afterSnap').hidden=false; refresh();
+    }
+    $('#retake').onclick=function(){
+      state.photo=null; $('#shot').hidden=true;
+      if(state.camOk!=='fallback'){ $('#vid').hidden=false; $('.oval').hidden=false; } else { $('#fileCap').value=''; }
+      $('#snap').hidden=false; $('#afterSnap').hidden=true; refresh();
+    };
+    $('#submit').onclick=function(){
+      var b=$('#submit'); b.disabled=true; b.innerHTML='<span class="spinner"></span> Saving';
+      $('#retake').disabled=true;
+      api('punch', {teacherId:session.teacherId, pin:session.pin, type:type, photo:state.photo,
+        lat:state.pos.coords.latitude, lng:state.pos.coords.longitude, accuracy:state.pos.coords.accuracy,
+        device:navigator.userAgent})
+      .then(function(res){ stopCamera(); resultView(res.record); })
+      .catch(function(err){ b.disabled=false; $('#retake').disabled=false; refresh(); $('#pmsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
+    };
+  }
+
+  function resultView(r){
+    var isIn=r.type==='IN';
+    app.innerHTML=
+      '<div class="narrow card stack result">'+
+        '<p class="muted" style="margin:0">'+(isIn?'Checked in':'Checked out')+' · '+esc(niceDate(r.date))+'</p>'+
+        '<div class="big num">'+esc(fmt12(r.time))+'</div>'+
+        '<div class="row" style="justify-content:center">'+geoPill(r.geofence,r.distance)+
+          (isIn ? (r.late?'<span class="pill warn">Late</span>':'<span class="pill ok">On time</span>') : '')+'</div>'+
+        (r.note?'<div class="msg note">'+esc(r.note)+'</div>':'')+
+        '<p class="faint" style="margin:0">Time is recorded by the server, not your phone.</p>'+
+        '<button class="btn primary block" id="done">Done</button>'+
+      '</div>';
+    $('#done').onclick=loadHome;
+  }
+
+  return {start:start};
+})();
+
+/* ------------------------------------------------- camera + photo helpers */
+var camStream=null, gpsWatch=null;
+function startCamera(video){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia) return Promise.reject(new Error('no camera api'));
+  return navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:960},height:{ideal:1280}},audio:false})
+    .then(function(s){ camStream=s; video.srcObject=s; return video.play(); });
+}
+function stopCamera(){
+  if(camStream){ camStream.getTracks().forEach(function(t){t.stop();}); camStream=null; }
+  if(gpsWatch!=null && navigator.geolocation){ navigator.geolocation.clearWatch(gpsWatch); gpsWatch=null; }
+}
+// Crops to 3:4, shrinks to 600px wide JPEG and stamps name + phone time on the photo.
+function capture(src, mirror, name){
+  var sw=src.videoWidth||src.naturalWidth, sh=src.videoHeight||src.naturalHeight;
+  var target=3/4, cw=sw, ch=sh;
+  if(sw/sh>target){ cw=sh*target; } else { ch=sw/target; }
+  var sx=(sw-cw)/2, sy=(sh-ch)/2;
+  var W=600, H=800, c=document.createElement('canvas'); c.width=W; c.height=H;
+  var g=c.getContext('2d');
+  if(mirror){ g.translate(W,0); g.scale(-1,1); }
+  g.drawImage(src,sx,sy,cw,ch,0,0,W,H);
+  g.setTransform(1,0,0,1,0,0);
+  g.fillStyle='rgba(0,0,0,.55)'; g.fillRect(0,H-64,W,64);
+  g.fillStyle='#fff'; g.font='600 22px Mukta, sans-serif';
+  g.fillText('BCHC · '+(name||''),16,H-36);
+  g.font='18px Mukta, sans-serif';
+  g.fillText(new Date().toLocaleString('en-IN'),16,H-12);
+  return c.toDataURL('image/jpeg',0.72);
+}
+function groupDays(records){
+  var map={};
+  records.forEach(function(r){
+    var k=r.teacherId+'|'+r.date; var d=map[k]||(map[k]={teacherId:r.teacherId,name:r.name,date:r.date,inR:null,outR:null});
+    if(r.type==='IN') d.inR=r; else if(r.type==='OUT') d.outR=r;
+  });
+  return Object.keys(map).map(function(k){ var d=map[k]; d.hours = d.inR&&d.outR ? mins(d.outR.time)-mins(d.inR.time) : null; return d; })
+    .sort(function(a,b){ return a.date<b.date?-1:a.date>b.date?1:0; });
+}
+
+/* ============================================================== ADMIN */
+var Admin = (function(){
+  var pin=null, data=null, tab='today', photoCache={};
+  var range={from:todayISO(), to:todayISO(), teacher:''};
+  var month=todayISO().slice(0,7);
+
+  function start(){
+    topAction.hidden=false; topAction.textContent='Teacher app';
+    topAction.onclick=function(){ location.hash=''; };
+    try{ pin=sessionStorage.getItem('bchc_admin'); }catch(e){ pin=null; }
+    if(!pin) return loginView();
+    shell();
+  }
+
+  function loginView(msg){
+    app.innerHTML=
+      '<div class="narrow stack"><div class="hello"><h1>Admin dashboard</h1><p class="muted" style="margin:4px 0 0">See who checked in, from where, and export to Excel.</p></div>'+
+      '<form class="card stack" id="aForm" novalidate><label class="f">Admin PIN<input class="in pinin num" id="aPin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="8" placeholder="••••"></label>'+
+      '<div id="aMsg">'+(msg?'<div class="msg err">'+esc(msg)+'</div>':'')+'</div><button class="btn primary block" id="aBtn">Open dashboard</button></form></div>';
+    $('#aForm').addEventListener('submit',function(e){
+      e.preventDefault(); var p=$('#aPin').value.trim(); var b=$('#aBtn'); b.disabled=true; b.innerHTML='<span class="spinner"></span> Checking';
+      api('adminData',{pin:p,from:todayISO(),to:todayISO()}).then(function(){ pin=p; try{sessionStorage.setItem('bchc_admin',p);}catch(e){} shell(); })
+        .catch(function(err){ b.disabled=false; b.textContent='Open dashboard'; $('#aMsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
+    });
+  }
+
+  function shell(){
+    app.innerHTML=
+      '<div class="row" style="justify-content:space-between;margin-bottom:10px"><h1 style="font-size:1.8rem">Teacher attendance</h1>'+
+        '<div class="row"><a class="btn small ghost" id="sheetLink" target="_blank" rel="noopener" hidden>Open Google Sheet</a><button class="btn small ghost" id="refresh">Refresh</button><button class="btn small ghost" id="aOut">Lock</button></div></div>'+
+      '<nav class="tabs" role="tablist">'+
+        ['today:Today','records:Records','monthly:Monthly report','teachers:Teachers','settings:Settings'].map(function(x){ var p=x.split(':'); return '<button class="tab" role="tab" data-tab="'+p[0]+'" aria-selected="'+(tab===p[0])+'">'+p[1]+'</button>'; }).join('')+
+      '</nav><section id="pane"></section>';
+    app.querySelectorAll('.tab').forEach(function(b){ b.onclick=function(){ tab=b.getAttribute('data-tab'); app.querySelectorAll('.tab').forEach(function(x){x.setAttribute('aria-selected', x===b);}); load(); }; });
+    $('#refresh').onclick=load;
+    $('#aOut').onclick=function(){ try{sessionStorage.removeItem('bchc_admin');}catch(e){} pin=null; loginView(); };
+    load();
+  }
+
+  function load(){
+    var pane=$('#pane'); pane.innerHTML='<div class="card empty"><span class="spinner" style="color:var(--brand)"></span></div>';
+    var from, to;
+    if(tab==='today'){ from=to=todayISO(); }
+    else if(tab==='records'){ from=range.from; to=range.to; }
+    else if(tab==='monthly'){ from=month+'-01'; to=month+'-31'; }
+    else { from=to=todayISO(); }
+    api('adminData',{pin:pin,from:from,to:to}).then(function(res){
+      data=res;
+      var sl=$('#sheetLink'); if(sl&&res.sheetUrl){ sl.href=res.sheetUrl; sl.hidden=false; }
+      ({today:renderToday,records:renderRecords,monthly:renderMonthly,teachers:renderTeachers,settings:renderSettings})[tab]();
+    }).catch(function(err){
+      if(/Admin PIN/.test(err.message)){ try{sessionStorage.removeItem('bchc_admin');}catch(e){} return loginView(err.message); }
+      pane.innerHTML='<div class="msg err">'+esc(err.message)+'</div>';
+    });
+  }
+
+  function activeTeachers(){ return data.teachers.filter(function(t){return t.active;}); }
+  function thumb(id){
+    if(!id) return '<span class="thumbph">none</span>';
+    return '<button class="thumbbtn" data-photo="'+esc(id)+'" title="View selfie">'+
+      (photoCache[id]?'<img class="thumb" src="'+photoCache[id]+'" alt="Selfie">':'<span class="thumbph">View</span>')+'</button>';
+  }
+  function bindThumbs(root){
+    root.querySelectorAll('[data-photo]').forEach(function(b){ b.onclick=function(e){ e.stopPropagation(); openPhoto(b.getAttribute('data-photo')); }; });
+  }
+  function getPhoto(id){
+    if(photoCache[id]) return Promise.resolve(photoCache[id]);
+    return api('adminPhoto',{pin:pin,fileId:id}).then(function(r){ photoCache[id]=r.dataUrl;
+      document.querySelectorAll('[data-photo="'+id+'"]').forEach(function(b){ b.innerHTML='<img class="thumb" src="'+r.dataUrl+'" alt="Selfie">'; });
+      return r.dataUrl; });
+  }
+  function openPhoto(id, rec){
+    rec = rec || data.records.filter(function(r){return r.photoId===id;})[0];
+    var root=document.getElementById('modalRoot');
+    root.innerHTML='<div class="modal" id="m"><div class="card stack"><div class="row" style="justify-content:space-between"><h3>'+esc(rec?rec.name+' · '+(rec.type==='IN'?'Check in':'Check out'):'Selfie')+'</h3><button class="btn small ghost" id="mx">Close</button></div>'+
+      '<img class="photoBig" id="mp" alt="Selfie">'+
+      (rec?'<div class="grid2 num"><div><div class="faint">When</div><b>'+esc(niceDate(rec.date))+', '+esc(fmt12(rec.time))+'</b></div>'+
+        '<div><div class="faint">Where</div>'+geoPill(rec.geofence,rec.distance)+'</div>'+
+        '<div><div class="faint">GPS</div><b>'+esc(rec.lat)+', '+esc(rec.lng)+'</b><div class="faint">±'+esc(rec.accuracy)+' m</div></div>'+
+        '<div><div class="faint">Map</div><a href="https://www.google.com/maps?q='+esc(rec.lat)+','+esc(rec.lng)+'" target="_blank" rel="noopener">Open in Google Maps</a></div></div>'+
+        (rec.note?'<div class="msg note">'+esc(rec.note)+'</div>':'')+
+        '<div class="row"><button class="btn small ghost" id="setSchool">Use this spot as '+esc(rec.name.split(' ')[0])+'\'s school location</button></div>':'')+
+      '</div></div>';
+    $('#mx').onclick=close; $('#m').onclick=function(e){ if(e.target.id==='m') close(); };
+    document.addEventListener('keydown', escClose);
+    getPhoto(id).then(function(u){ var i=$('#mp'); if(i) i.src=u; }).catch(function(err){ toast(err.message); });
+    var ss=$('#setSchool'); if(ss) ss.onclick=function(){
+      var t=data.teachers.filter(function(x){return x.id===rec.teacherId;})[0]; if(!t) return;
+      var upd=Object.assign({},t,{lat:rec.lat,lng:rec.lng});
+      ss.disabled=true; api('saveTeacher',{pin:pin,teacher:upd}).then(function(){ toast('School location saved for '+t.name); close(); load(); }).catch(function(err){ ss.disabled=false; toast(err.message); });
+    };
+    function close(){ root.innerHTML=''; document.removeEventListener('keydown', escClose); }
+    function escClose(e){ if(e.key==='Escape') close(); }
+  }
+
+  /* ----- Today */
+  function renderToday(){
+    var pane=$('#pane'), day=data.serverDate||todayISO();
+    var byT={}; groupDays(data.records.filter(function(r){return r.date===day;})).forEach(function(d){ byT[d.teacherId]=d; });
+    var ts=activeTeachers();
+    var present=0, late=0, outside=0, noOut=0;
+    ts.forEach(function(t){ var d=byT[t.id]; if(d&&d.inR){ present++; if(d.inR.late) late++; if(d.inR.geofence==='OUTSIDE'||(d.outR&&d.outR.geofence==='OUTSIDE')) outside++; if(!d.outR) noOut++; } });
+    var rows=ts.map(function(t){
+      var d=byT[t.id]||{}; var st;
+      if(!d.inR) st='<span class="pill bad">Not checked in</span>';
+      else if(!d.outR) st='<span class="pill info">In school</span>';
+      else st='<span class="pill ok">Done</span>';
+      var hrs = d.inR&&d.outR ? durText(d.hours) : (d.inR ? 'so far '+durText(nowMins()-mins(d.inR.time)) : '—');
+      return '<tr><td><div class="who"><b>'+esc(t.name)+'</b><small>'+esc(t.id)+' · '+esc(t.school||'')+'</small></div></td><td>'+st+'</td>'+
+        '<td class="num">'+(d.inR?esc(fmt12(d.inR.time))+(d.inR.late?' <span class="pill warn">Late</span>':''):'—')+'</td>'+
+        '<td>'+(d.inR?geoPill(d.inR.geofence,d.inR.distance):'')+'</td><td>'+(d.inR?thumb(d.inR.photoId):'')+'</td>'+
+        '<td class="num">'+(d.outR?esc(fmt12(d.outR.time)):'—')+'</td><td>'+(d.outR?geoPill(d.outR.geofence,d.outR.distance):'')+'</td><td>'+(d.outR?thumb(d.outR.photoId):'')+'</td>'+
+        '<td class="num">'+esc(hrs)+'</td></tr>';
+    }).join('');
+    pane.innerHTML=
+      '<p class="muted" style="margin:0 0 12px">'+esc(niceDate(day))+'</p>'+
+      '<div class="kpis num">'+
+        kpi('Present', present+'<em> / '+ts.length+'</em>')+kpi('Absent', ts.length-present)+kpi('Late', late)+kpi('Outside school', outside)+kpi('Not checked out', noOut)+
+      '</div>'+
+      (ts.length? '<div class="tablebox"><table><thead><tr><th>Teacher</th><th>Status</th><th>In</th><th>In location</th><th>In selfie</th><th>Out</th><th>Out location</th><th>Out selfie</th><th>Hours</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
+        : '<div class="card empty">No teachers yet. Add them in the Teachers tab.</div>');
+    bindThumbs(pane);
+  }
+  function nowMins(){ var d=new Date(); return d.getHours()*60+d.getMinutes()+d.getSeconds()/60+0.01; }
+  function kpi(label,val){ return '<div class="kpi"><small>'+label+'</small><b>'+val+'</b></div>'; }
+
+  /* ----- Records */
+  function renderRecords(){
+    var pane=$('#pane');
+    var recs=data.records.filter(function(r){ return !range.teacher || r.teacherId===range.teacher; });
+    var days=groupDays(recs).reverse();
+    pane.innerHTML=
+      '<div class="toolbar">'+
+        '<label class="f">From<input class="in" type="date" id="rFrom" value="'+esc(range.from)+'"></label>'+
+        '<label class="f">To<input class="in" type="date" id="rTo" value="'+esc(range.to)+'"></label>'+
+        '<label class="f">Teacher<select class="in" id="rT"><option value="">All teachers</option>'+data.teachers.map(function(t){return '<option value="'+esc(t.id)+'"'+(range.teacher===t.id?' selected':'')+'>'+esc(t.name)+'</option>';}).join('')+'</select></label>'+
+        '<button class="btn primary" id="rGo">Show</button><button class="btn gold" id="rX">Export to Excel</button>'+
+        '<div class="row"><button class="btn small ghost" data-q="7">Last 7 days</button><button class="btn small ghost" data-q="30">Last 30 days</button></div>'+
+      '</div>'+
+      (days.length?'<div class="tablebox"><table><thead><tr><th>Date</th><th>Teacher</th><th>In</th><th>In location</th><th>In selfie</th><th>Out</th><th>Out location</th><th>Out selfie</th><th>Hours</th><th>Notes</th></tr></thead><tbody>'+
+        days.map(function(d){ var notes=[d.inR&&d.inR.note,d.outR&&d.outR.note].filter(Boolean).join('; ');
+          return '<tr><td class="num">'+esc(niceDate(d.date))+'</td><td><div class="who"><b>'+esc(d.name)+'</b><small>'+esc(d.teacherId)+'</small></div></td>'+
+          '<td class="num">'+(d.inR?esc(fmt12(d.inR.time))+(d.inR.late?' <span class="pill warn">Late</span>':''):'—')+'</td><td>'+(d.inR?geoPill(d.inR.geofence,d.inR.distance):'')+'</td><td>'+(d.inR?thumb(d.inR.photoId):'')+'</td>'+
+          '<td class="num">'+(d.outR?esc(fmt12(d.outR.time)):'<span class="pill warn">Missing</span>')+'</td><td>'+(d.outR?geoPill(d.outR.geofence,d.outR.distance):'')+'</td><td>'+(d.outR?thumb(d.outR.photoId):'')+'</td>'+
+          '<td class="num">'+esc(d.hours!=null?durText(d.hours):'—')+'</td><td class="wrap-ok faint">'+esc(notes)+'</td></tr>'; }).join('')+
+        '</tbody></table></div>':'<div class="card empty">No check-ins between these dates.</div>');
+    $('#rGo').onclick=function(){ range.from=$('#rFrom').value||todayISO(); range.to=$('#rTo').value||range.from; range.teacher=$('#rT').value; load(); };
+    $('#rT').onchange=function(){ range.teacher=$('#rT').value; renderRecords(); };
+    pane.querySelectorAll('[data-q]').forEach(function(b){ b.onclick=function(){ var n=+b.getAttribute('data-q'); var d=new Date(); d.setDate(d.getDate()-(n-1)); range.from=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); range.to=todayISO(); load(); }; });
+    $('#rX').onclick=function(){ exportExcel(days, 'BCHC_Attendance_'+range.from+'_to_'+range.to); };
+    bindThumbs(pane);
+  }
+
+  /* ----- Monthly */
+  function monthStats(){
+    var days=groupDays(data.records);
+    return data.teachers.map(function(t){
+      var mine=days.filter(function(d){return d.teacherId===t.id && d.inR;});
+      var total=mine.reduce(function(s,d){return s+(d.hours||0);},0), withH=mine.filter(function(d){return d.hours!=null;}).length;
+      return {t:t, present:mine.length, late:mine.filter(function(d){return d.inR.late;}).length,
+        outside:mine.filter(function(d){return d.inR.geofence==='OUTSIDE'||(d.outR&&d.outR.geofence==='OUTSIDE');}).length,
+        noOut:mine.filter(function(d){return !d.outR;}).length, total:total, avg: withH? total/withH : null};
+    });
+  }
+  function renderMonthly(){
+    var pane=$('#pane'), stats=monthStats();
+    var workDays=countWorkDays(month);
+    pane.innerHTML=
+      '<div class="toolbar"><label class="f">Month<input class="in" type="month" id="mm" value="'+esc(month)+'"></label>'+
+        '<button class="btn primary" id="mGo">Show</button><button class="btn gold" id="mX">Export to Excel</button></div>'+
+      '<p class="faint" style="margin:0 0 10px">Working days so far (Mon–Sat): '+workDays+'</p>'+
+      '<div class="tablebox"><table class="num"><thead><tr><th>Teacher</th><th>Days present</th><th>Attendance</th><th>Late days</th><th>Outside school</th><th>No check-out</th><th>Total hours</th><th>Avg hours / day</th></tr></thead><tbody>'+
+      stats.map(function(s){ var pct=workDays? Math.round(s.present/workDays*100):0;
+        return '<tr><td><div class="who"><b>'+esc(s.t.name)+'</b><small>'+esc(s.t.id)+'</small></div></td><td>'+s.present+'</td>'+
+          '<td><span class="pill '+(pct>=90?'ok':pct>=75?'warn':'bad')+'">'+pct+'%</span></td><td>'+s.late+'</td><td>'+s.outside+'</td><td>'+s.noOut+'</td>'+
+          '<td>'+durText(s.total)+'</td><td>'+(s.avg!=null?durText(s.avg):'—')+'</td></tr>'; }).join('')+
+      '</tbody></table></div>';
+    $('#mGo').onclick=function(){ month=$('#mm').value||month; load(); };
+    $('#mX').onclick=function(){ exportExcel(groupDays(data.records), 'BCHC_Attendance_'+month, stats, workDays); };
+  }
+  function countWorkDays(ym){
+    var y=+ym.slice(0,4), m=+ym.slice(5,7)-1, d=new Date(y,m,1), today=new Date(), n=0;
+    while(d.getMonth()===m && d<=today){ if(d.getDay()!==0) n++; d.setDate(d.getDate()+1); }
+    return n;
+  }
+
+  /* ----- Excel export */
+  function exportExcel(days, filename, stats, workDays){
+    if(!window.XLSX){ toast('Excel tool is still loading. Try again in a moment.'); return; }
+    var daily=days.map(function(d){ return {
+      'Date':d.date,'Teacher ID':d.teacherId,'Teacher':d.name,
+      'Check-in time':d.inR?d.inR.time:'','Late':d.inR?(d.inR.late?'Yes':'No'):'',
+      'Check-in location':d.inR?d.inR.geofence:'','Check-in distance (m)':d.inR?d.inR.distance:'',
+      'Check-in GPS':d.inR?d.inR.lat+','+d.inR.lng:'','Check-in map':d.inR?'https://www.google.com/maps?q='+d.inR.lat+','+d.inR.lng:'',
+      'Check-out time':d.outR?d.outR.time:'','Check-out location':d.outR?d.outR.geofence:'','Check-out distance (m)':d.outR?d.outR.distance:'',
+      'Check-out GPS':d.outR?d.outR.lat+','+d.outR.lng:'',
+      'Hours worked':d.hours!=null?+(d.hours/60).toFixed(2):'',
+      'Notes':[d.inR&&d.inR.note,d.outR&&d.outR.note].filter(Boolean).join('; ')
+    }; });
+    var raw=data.records.map(function(r){ return {'Record ID':r.id,'Date':r.date,'Time':r.time,'Teacher ID':r.teacherId,'Teacher':r.name,'Type':r.type,
+      'Latitude':r.lat,'Longitude':r.lng,'GPS accuracy (m)':r.accuracy,'Distance from school (m)':r.distance,'Geofence':r.geofence,'Late':r.late?'Yes':'No','Selfie file ID':r.photoId,'Note':r.note}; });
+    var wb=XLSX.utils.book_new();
+    if(stats){
+      var sum=stats.map(function(s){ return {'Teacher ID':s.t.id,'Teacher':s.t.name,'School':s.t.school,'Working days':workDays,'Days present':s.present,
+        'Attendance %':workDays?Math.round(s.present/workDays*100):'','Late days':s.late,'Outside-school days':s.outside,'Missing check-outs':s.noOut,
+        'Total hours':+(s.total/60).toFixed(2),'Average hours / day':s.avg!=null?+(s.avg/60).toFixed(2):''}; });
+      addSheet(wb, sum, 'Monthly summary');
+    }
+    addSheet(wb, daily, 'Daily attendance');
+    addSheet(wb, raw, 'All check-ins');
+    XLSX.writeFile(wb, filename+'.xlsx');
+    toast('Excel file downloaded');
+  }
+  function addSheet(wb, rows, name){
+    var ws=XLSX.utils.json_to_sheet(rows.length?rows:[{'Info':'No data for this period'}]);
+    var keys=Object.keys(rows[0]||{'Info':1});
+    ws['!cols']=keys.map(function(k){ var w=k.length; rows.forEach(function(r){ w=Math.max(w,String(r[k]==null?'':r[k]).length); }); return {wch:Math.min(w+2,45)}; });
+    XLSX.utils.book_append_sheet(wb, ws, name);
+  }
+
+  /* ----- Teachers */
+  function renderTeachers(){
+    var pane=$('#pane');
+    pane.innerHTML=
+      '<div class="row" style="justify-content:space-between;margin-bottom:12px"><p class="muted" style="margin:0">'+data.teachers.length+' teachers. Each one signs in with their ID and PIN.</p><button class="btn primary" id="addT">Add teacher</button></div>'+
+      '<div class="tablebox"><table><thead><tr><th>Teacher</th><th>PIN</th><th>Phone</th><th>School</th><th>School location</th><th>Radius</th><th>Status</th><th></th></tr></thead><tbody>'+
+      data.teachers.map(function(t,i){ return '<tr><td><div class="who"><b>'+esc(t.name)+'</b><small>'+esc(t.id)+'</small></div></td><td class="num">'+esc(t.pin)+'</td><td class="num">'+esc(t.phone)+'</td><td>'+esc(t.school)+'</td>'+
+        '<td class="num">'+(t.lat!=null?'<a href="https://www.google.com/maps?q='+t.lat+','+t.lng+'" target="_blank" rel="noopener">'+t.lat.toFixed(5)+', '+t.lng.toFixed(5)+'</a>':'<span class="pill warn">Not set</span>')+'</td>'+
+        '<td class="num">'+(t.radius||((data.settings.DEFAULT_RADIUS_M||200)+' (default)'))+' m</td><td>'+(t.active?'<span class="pill ok">Active</span>':'<span class="pill none">Off</span>')+'</td>'+
+        '<td><button class="btn small ghost" data-edit="'+i+'">Edit</button></td></tr>'; }).join('')+
+      '</tbody></table></div>'+
+      '<p class="faint">Tip: if you do not know a school\'s coordinates, let the teacher check in once at school. Then open that selfie and choose "Use this spot as school location".</p>';
+    $('#addT').onclick=function(){ teacherForm(null); };
+    pane.querySelectorAll('[data-edit]').forEach(function(b){ b.onclick=function(){ teacherForm(data.teachers[+b.getAttribute('data-edit')]); }; });
+  }
+  function teacherForm(t){
+    var isNew=!t; t=t||{id:nextId(),name:'',pin:String(Math.floor(1000+Math.random()*9000)),phone:'',school:'',lat:null,lng:null,radius:null,active:true};
+    var root=document.getElementById('modalRoot');
+    root.innerHTML='<div class="modal" id="m"><form class="card stack" id="tf" novalidate><div class="row" style="justify-content:space-between"><h3>'+(isNew?'Add teacher':'Edit '+esc(t.name))+'</h3><button type="button" class="btn small ghost" id="mx">Close</button></div>'+
+      '<div class="grid2">'+
+        '<label class="f">Teacher ID<input class="in" id="fId" value="'+esc(t.id)+'" '+(isNew?'':'readonly')+'></label>'+
+        '<label class="f">PIN (4–6 digits)<input class="in num" id="fPin" inputmode="numeric" value="'+esc(t.pin)+'"></label>'+
+        '<label class="f">Full name<input class="in" id="fName" value="'+esc(t.name)+'"></label>'+
+        '<label class="f">Phone<input class="in num" id="fPhone" inputmode="tel" value="'+esc(t.phone)+'"></label>'+
+        '<label class="f">School / centre<input class="in" id="fSchool" value="'+esc(t.school)+'"></label>'+
+        '<label class="f">Geofence radius (m)<input class="in num" id="fRad" inputmode="numeric" placeholder="'+esc(data.settings.DEFAULT_RADIUS_M||200)+'" value="'+esc(t.radius||'')+'"></label>'+
+        '<label class="f">School latitude<input class="in num" id="fLat" inputmode="decimal" value="'+esc(t.lat==null?'':t.lat)+'" placeholder="12.97160"></label>'+
+        '<label class="f">School longitude<input class="in num" id="fLng" inputmode="decimal" value="'+esc(t.lng==null?'':t.lng)+'" placeholder="77.59460"></label>'+
+      '</div>'+
+      '<div class="row"><button type="button" class="btn small ghost" id="here">Use my current location</button><label class="row" style="gap:6px;font-weight:600"><input type="checkbox" id="fAct" '+(t.active?'checked':'')+'> Active</label></div>'+
+      '<p class="faint" style="margin:0">Paste coordinates from Google Maps: long-press the school on the map and copy the numbers shown.</p>'+
+      '<div id="fMsg"></div><button class="btn primary block" id="fSave">Save teacher</button></form></div>';
+    $('#mx').onclick=close;
+    $('#here').onclick=function(){
+      var b=$('#here'); b.disabled=true; b.textContent='Finding location…';
+      navigator.geolocation.getCurrentPosition(function(p){ $('#fLat').value=p.coords.latitude.toFixed(6); $('#fLng').value=p.coords.longitude.toFixed(6); b.disabled=false; b.textContent='Location filled (±'+Math.round(p.coords.accuracy)+' m)'; },
+        function(){ b.disabled=false; b.textContent='Use my current location'; $('#fMsg').innerHTML='<div class="msg err">Could not read your location. Allow location access or type the coordinates.</div>'; },
+        {enableHighAccuracy:true,timeout:20000,maximumAge:0});
+    };
+    $('#tf').addEventListener('submit',function(e){
+      e.preventDefault();
+      var lat=$('#fLat').value.trim(), lng=$('#fLng').value.trim();
+      // Accept "12.97, 77.59" pasted into the latitude box.
+      if(lat.indexOf(',')>0 && !lng){ var p=lat.split(','); lat=p[0].trim(); lng=(p[1]||'').trim(); }
+      var t2={id:$('#fId').value.trim().toUpperCase(),pin:$('#fPin').value.trim(),name:$('#fName').value.trim(),phone:$('#fPhone').value.trim(),school:$('#fSchool').value.trim(),
+        radius:$('#fRad').value.trim()||null,lat:lat===''?null:+lat,lng:lng===''?null:+lng,active:$('#fAct').checked};
+      if((t2.lat==null)!==(t2.lng==null) || (t2.lat!=null && (isNaN(t2.lat)||isNaN(t2.lng)||Math.abs(t2.lat)>90||Math.abs(t2.lng)>180))){ $('#fMsg').innerHTML='<div class="msg err">Enter both latitude and longitude as numbers, or leave both empty.</div>'; return; }
+      var b=$('#fSave'); b.disabled=true; b.innerHTML='<span class="spinner"></span> Saving';
+      api('saveTeacher',{pin:pin,teacher:t2}).then(function(){ close(); toast('Saved '+t2.name); load(); })
+        .catch(function(err){ b.disabled=false; b.textContent='Save teacher'; $('#fMsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
+    });
+    function close(){ root.innerHTML=''; }
+  }
+  function nextId(){ var n=0; data.teachers.forEach(function(t){ var m=/^T(\d+)$/.exec(t.id); if(m) n=Math.max(n,+m[1]); }); return 'T'+pad(n+1); }
+
+  /* ----- Settings */
+  function renderSettings(){
+    var s=data.settings, pane=$('#pane');
+    pane.innerHTML='<form class="card stack" id="sf" style="max-width:620px" novalidate>'+
+      '<div class="grid2">'+
+        '<label class="f">Organisation name<input class="in" id="sOrg" value="'+esc(s.ORG_NAME)+'"></label>'+
+        '<label class="f">School start time<input class="in" type="time" id="sStart" value="'+esc(s.SCHOOL_START)+'"></label>'+
+        '<label class="f">Late after (minutes of grace)<input class="in num" id="sGrace" inputmode="numeric" value="'+esc(s.LATE_GRACE_MIN)+'"></label>'+
+        '<label class="f">Default geofence radius (m)<input class="in num" id="sRad" inputmode="numeric" value="'+esc(s.DEFAULT_RADIUS_M)+'"></label>'+
+        '<label class="f">Flag GPS weaker than (m)<input class="in num" id="sAcc" inputmode="numeric" value="'+esc(s.MAX_ACCURACY_M)+'"></label>'+
+        '<label class="f">New admin PIN (optional)<input class="in num" id="sPin" inputmode="numeric" type="password" placeholder="Leave empty to keep"></label>'+
+      '</div><div id="sMsg"></div><button class="btn primary" id="sSave">Save settings</button></form>';
+    $('#sf').addEventListener('submit',function(e){
+      e.preventDefault();
+      var upd={ORG_NAME:$('#sOrg').value.trim(),SCHOOL_START:$('#sStart').value,LATE_GRACE_MIN:$('#sGrace').value.trim(),DEFAULT_RADIUS_M:$('#sRad').value.trim(),MAX_ACCURACY_M:$('#sAcc').value.trim()};
+      var np=$('#sPin').value.trim(); if(np) upd.ADMIN_PIN=np;
+      var b=$('#sSave'); b.disabled=true;
+      api('saveSettings',{pin:pin,settings:upd}).then(function(){ if(np){ pin=np; try{sessionStorage.setItem('bchc_admin',np);}catch(e){} } toast('Settings saved'); load(); })
+        .catch(function(err){ b.disabled=false; $('#sMsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
+    });
+  }
+
+  return {start:start};
+})();
+
+route();
+})();
+</script>
+</body>
+</html>
