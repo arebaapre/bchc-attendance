@@ -3,140 +3,188 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1c3f8f">
-<title>BCHC Attendance</title>
+<meta name="theme-color" content="#121212">
+<title>BCHC Teacher Connect</title>
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon.svg">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Mukta:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script>
-  /* ====== PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BETWEEN THE QUOTES ====== */
+  /* Google Apps Script web app URL (the backend). */
   window.BCHC_API_URL = 'https://script.google.com/macros/s/AKfycbyS0sLhLEn-xRNgnhNxy9gvDZVrMrhfwdUfZKtL8Evn-4q-X7TF5wJT_KCIZN114p7nMQ/exec';
-  /* ========================================================================= */
 </script>
 <style>
-/* Layout: one narrow column for teachers on phones; a wide working surface for the admin. */
+/* Layout: phone-first single column with a bottom tab bar for teachers; a wide tabbed workspace for the admin.
+   Brand: BCHC yellow, black, green, white. */
 :root{
-  --bg:#f3f5fb; --surface:#ffffff; --surface-2:#e9edf8; --line:#d5dbeb;
-  --ink:#141b2e; --ink-2:#4b5672; --ink-3:#7a849e;
-  --brand:#1c3f8f; --brand-ink:#ffffff; --brand-soft:#dfe7fb;
-  --marigold:#f0a500; --marigold-soft:#fff2cf;
-  --ok:#137a4b; --ok-soft:#dcf3e7; --warn:#a86200; --warn-soft:#fdebc8; --bad:#b42a2a; --bad-soft:#fbe0e0;
+  --bg:#f6f6f1; --surface:#ffffff; --surface-2:#efefe7; --line:#e2e2d8;
+  --ink:#121212; --ink-2:#4a4a44; --ink-3:#7c7c73;
+  --yellow:#ffd200; --yellow-ink:#121212; --yellow-soft:#fff3b8;
+  --green:#138a43; --green-ink:#ffffff; --green-soft:#daf2e2;
+  --black:#121212; --black-ink:#ffffff;
+  --red:#c62828; --red-soft:#fde3e1; --amber:#9a5b00; --amber-soft:#ffecc7;
   --display:'Baloo 2', 'Mukta', system-ui, sans-serif;
   --body:'Mukta', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --radius:14px; --shadow:0 1px 2px rgba(20,27,46,.06), 0 6px 24px rgba(20,27,46,.06);
+  --radius:16px; --shadow:0 1px 2px rgba(18,18,18,.06), 0 8px 24px rgba(18,18,18,.06);
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#0d1222; --surface:#161d33; --surface-2:#1f2843; --line:#2c3757;
-  --ink:#eef1fa; --ink-2:#b4bdd6; --ink-3:#8590ad;
-  --brand:#7ea2ff; --brand-ink:#0d1222; --brand-soft:#22305a;
-  --marigold:#ffc23d; --marigold-soft:#3a2e10;
-  --ok:#5fd39a; --ok-soft:#173a2b; --warn:#ffb54a; --warn-soft:#3b2b10; --bad:#ff8080; --bad-soft:#3d1a1d;
-  --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 24px rgba(0,0,0,.25); color-scheme:dark }}
+  --bg:#0c0c0c; --surface:#181818; --surface-2:#222220; --line:#2e2e2b;
+  --ink:#f4f4ef; --ink-2:#c3c3b9; --ink-3:#8f8f86;
+  --yellow-soft:#3a3209; --green:#35c06b; --green-ink:#08210f; --green-soft:#14301f;
+  --black:#f4f4ef; --black-ink:#121212;
+  --red:#ff7a72; --red-soft:#3a1716; --amber:#ffbf55; --amber-soft:#3a2a0c;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3); color-scheme:dark }}
 :root[data-theme="dark"]{
-  --bg:#0d1222; --surface:#161d33; --surface-2:#1f2843; --line:#2c3757;
-  --ink:#eef1fa; --ink-2:#b4bdd6; --ink-3:#8590ad;
-  --brand:#7ea2ff; --brand-ink:#0d1222; --brand-soft:#22305a;
-  --marigold:#ffc23d; --marigold-soft:#3a2e10;
-  --ok:#5fd39a; --ok-soft:#173a2b; --warn:#ffb54a; --warn-soft:#3b2b10; --bad:#ff8080; --bad-soft:#3d1a1d;
-  --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 24px rgba(0,0,0,.25); color-scheme:dark }
+  --bg:#0c0c0c; --surface:#181818; --surface-2:#222220; --line:#2e2e2b;
+  --ink:#f4f4ef; --ink-2:#c3c3b9; --ink-3:#8f8f86;
+  --yellow-soft:#3a3209; --green:#35c06b; --green-ink:#08210f; --green-soft:#14301f;
+  --black:#f4f4ef; --black-ink:#121212;
+  --red:#ff7a72; --red-soft:#3a1716; --amber:#ffbf55; --amber-soft:#3a2a0c;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3); color-scheme:dark }
 
 *{box-sizing:border-box}
 html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
-  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  padding-bottom:env(safe-area-inset-bottom,0px)}
+body.has-nav{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 img{max-width:100%}
 [hidden]{display:none!important}
 h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance}
-button,input,select{font:inherit;color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
 .num{font-variant-numeric:tabular-nums}
-:focus-visible{outline:3px solid var(--marigold);outline-offset:2px}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+a{color:var(--green)}
 
-.topbar{background:var(--brand);color:var(--brand-ink)}
-.topbar-in{display:flex;align-items:center;gap:12px;max-width:1180px;margin:0 auto;
-  padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.mark{width:38px;height:38px;flex:none}
-.brandname{display:flex;flex-direction:column;line-height:1.1;min-width:0}
-.brandname b{font-family:var(--display);font-size:1.15rem;letter-spacing:.01em}
-.brandname span{font-size:.8rem;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.topbar .spacer{flex:1}
-.linkbtn{background:none;border:0;color:inherit;opacity:.9;cursor:pointer;padding:6px 8px;border-radius:8px;font-weight:600;font-size:.9rem}
-.linkbtn:hover{background:rgba(255,255,255,.12)}
-
-.wrap{max-width:1180px;margin:0 auto;padding-block:20px 48px;
+/* header */
+.topbar{background:#121212;color:#fff;padding-top:env(safe-area-inset-top,0px)}
+.topbar-in{display:flex;align-items:center;gap:12px;max-width:1180px;margin:0 auto;padding-block:10px;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.narrow{max-width:480px;margin:0 auto}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+.logo{width:46px;height:46px;flex:none;display:block}
+.brand{display:flex;flex-direction:column;line-height:1.05;min-width:0}
+.brand b{font-family:var(--display);font-size:1.25rem;letter-spacing:.01em}
+.brand span{font-size:.78rem;color:#ffd200;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar .spacer{flex:1}
+.topbtn{background:transparent;border:1.5px solid rgba(255,255,255,.28);color:#fff;cursor:pointer;padding:6px 12px;border-radius:999px;font-weight:600;font-size:.88rem;white-space:nowrap}
+.topbtn:hover{border-color:#ffd200;color:#ffd200}
+
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 40px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.narrow{max-width:500px;margin:0 auto}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
 .stack{display:flex;flex-direction:column;gap:14px}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.between{justify-content:space-between}
 .muted{color:var(--ink-2)} .faint{color:var(--ink-3);font-size:.88rem}
-label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:.92rem;color:var(--ink-2)}
-input.in,select.in{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);font-size:1rem}
-input.in:focus,select.in:focus{border-color:var(--brand);outline:none}
+.eyebrow{font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3)}
+label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:.9rem;color:var(--ink-2)}
+.in{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);font-size:1rem}
+.in:focus{border-color:var(--ink);outline:none}
+textarea.in{min-height:76px;resize:vertical}
 .pinin{letter-spacing:.4em;font-size:1.3rem!important;text-align:center}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;cursor:pointer;
-  padding:12px 18px;font-weight:700;font-size:1rem;background:var(--surface-2);color:var(--ink);transition:transform .08s, filter .15s}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;cursor:pointer;text-decoration:none;
+  padding:12px 18px;font-weight:700;font-size:1rem;background:var(--surface-2);color:var(--ink);transition:transform .08s}
 .btn:active{transform:scale(.98)}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-.btn.primary{background:var(--brand);color:var(--brand-ink)}
-.btn.gold{background:var(--marigold);color:#1d1400}
+.btn.yellow{background:var(--yellow);color:var(--yellow-ink)}
+.btn.green{background:var(--green);color:var(--green-ink)}
+.btn.black{background:var(--black);color:var(--black-ink)}
 .btn.ghost{background:transparent;border:1.5px solid var(--line)}
-.btn.small{padding:7px 12px;font-size:.88rem;border-radius:9px}
+.btn.danger{background:var(--red-soft);color:var(--red)}
+.btn.small{padding:7px 12px;font-size:.88rem;border-radius:10px}
 .btn.block{width:100%}
-a.btn{text-decoration:none}
-.btn.huge{padding:22px;font-size:1.35rem;border-radius:18px;font-family:var(--display);letter-spacing:.01em}
+.btn.huge{padding:20px;font-size:1.35rem;border-radius:18px;font-family:var(--display)}
 
 .pill{display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:999px;font-size:.8rem;font-weight:700;white-space:nowrap}
-.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.warn{background:var(--warn-soft);color:var(--warn)}
-.pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.info{background:var(--brand-soft);color:var(--brand)}
+.pill.ok{background:var(--green-soft);color:var(--green)} .pill.warn{background:var(--amber-soft);color:var(--amber)}
+.pill.bad{background:var(--red-soft);color:var(--red)} .pill.info{background:var(--yellow-soft);color:var(--ink)}
 .pill.none{background:var(--surface-2);color:var(--ink-3)}
-.msg{padding:12px 14px;border-radius:10px;font-weight:600}
-.msg.err{background:var(--bad-soft);color:var(--bad)} .msg.good{background:var(--ok-soft);color:var(--ok)} .msg.note{background:var(--marigold-soft);color:var(--warn)}
+.msg{padding:12px 14px;border-radius:12px;font-weight:600}
+.msg.err{background:var(--red-soft);color:var(--red)} .msg.good{background:var(--green-soft);color:var(--green)} .msg.note{background:var(--yellow-soft);color:var(--ink)}
+.badge{display:inline-flex;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--red);color:#fff;font-size:.72rem;font-weight:700;align-items:center;justify-content:center;margin-left:6px}
 
 /* teacher home */
 .hello h1{font-size:1.7rem}
-.daystrip{display:grid;grid-template-columns:1fr 1fr 1fr;border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.daystrip div{padding:12px;text-align:center;background:var(--surface)}
+.daystrip{display:grid;grid-template-columns:1fr 1fr 1fr;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.daystrip div{padding:10px;text-align:center}
 .daystrip div+div{border-left:1px solid var(--line)}
-.daystrip small{display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
-.daystrip b{font-family:var(--display);font-size:1.45rem}
-.clock{font-family:var(--display);font-size:2.6rem;font-weight:800;color:var(--brand);line-height:1}
+.daystrip small{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.daystrip b{font-family:var(--display);font-size:1.2rem;white-space:nowrap}
+.clock{font-family:var(--display);font-size:2.5rem;font-weight:800;line-height:1}
+.meet{background:#121212;color:#fff;border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+.meet::after{content:"";position:absolute;right:-40px;top:-40px;width:130px;height:130px;border-radius:50%;background:#ffd200;opacity:.95}
+.meet > *{position:relative;z-index:1}
+.meet .eyebrow{color:#ffd200}
+.meet h3{font-size:1.3rem;max-width:75%}
+.meet .when{color:#d9d9d0}
+.meet .live{display:inline-flex;align-items:center;gap:6px;background:#35c06b;color:#08210f;font-weight:800;font-size:.8rem;padding:2px 10px;border-radius:999px}
+.meet .live::before{content:"";width:8px;height:8px;border-radius:50%;background:#08210f;animation:pulse 1s infinite alternate}
+
+/* calendar */
+.cal-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cal-head h2{font-size:1.35rem}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal .dow{font-size:.72rem;font-weight:700;color:var(--ink-3);text-align:center;text-transform:uppercase;letter-spacing:.06em;padding:4px 0}
+.day{position:relative;aspect-ratio:1/1;min-width:0;border-radius:10px;border:1px solid transparent;background:var(--surface);cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;font-weight:600;font-size:.95rem}
+.day.blank{background:transparent;cursor:default}
+.day.class{background:var(--green-soft);color:var(--green)}
+.day.holiday{background:var(--red-soft);color:var(--red)}
+.day.off{color:var(--ink-3)}
+.day.today{border-color:var(--ink);border-width:2px}
+.day.sel{outline:3px solid var(--yellow);outline-offset:1px}
+.day .marks{display:flex;gap:3px;height:8px;margin-top:2px}
+.day .mk{width:7px;height:7px;border-radius:50%}
+.mk.mt{background:#d9a900} .mk.done{background:var(--green)} .mk.miss{background:var(--red)} .mk.note{background:var(--ink-3)}
+.day .cnt{font-size:.66rem;font-weight:700;color:var(--ink-2);line-height:1}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.82rem;color:var(--ink-2)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:4px;vertical-align:-1px;margin-right:5px}
+.daydetail{border-top:1px solid var(--line);padding-top:12px}
+
+/* bottom nav */
+.nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);z-index:40;
+  padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+.nav-in{max-width:500px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr)}
+.nav button{background:none;border:0;padding:10px 4px 12px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.78rem;font-weight:700;color:var(--ink-3);cursor:pointer}
+.nav button svg{width:24px;height:24px}
+.nav button[aria-current="page"]{color:var(--ink)}
+.nav button[aria-current="page"] .ic{background:var(--yellow);color:#121212}
+.nav .ic{display:flex;align-items:center;justify-content:center;width:52px;height:30px;border-radius:999px}
 
 /* camera */
 .cam{position:relative;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:3/4;max-width:100%}
 .cam video,.cam img{width:100%;height:100%;object-fit:cover;display:block}
 .cam video{transform:scaleX(-1)}
-.cam .oval{position:absolute;inset:12% 18% 22%;border:3px dashed rgba(255,255,255,.7);border-radius:50%;pointer-events:none}
+.cam .oval{position:absolute;inset:12% 18% 22%;border:3px dashed rgba(255,210,0,.85);border-radius:50%;pointer-events:none}
 .gps{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:12px;background:var(--surface-2)}
 .dot{width:12px;height:12px;border-radius:50%;margin-top:6px;flex:none;background:var(--ink-3)}
-.dot.ok{background:var(--ok)} .dot.warn{background:var(--marigold)} .dot.bad{background:var(--bad)}
+.dot.ok{background:var(--green)} .dot.warn{background:var(--yellow)} .dot.bad{background:var(--red)}
 .dot.wait{animation:pulse 1s infinite alternate}
 @keyframes pulse{to{opacity:.3}}
-@media (prefers-reduced-motion: reduce){.dot.wait{animation:none}}
 .result{text-align:center}
 .result .big{font-family:var(--display);font-size:3rem;font-weight:800;line-height:1}
 
 /* admin */
 .tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);margin-bottom:18px;scrollbar-width:none}
-.tab{background:none;border:0;padding:10px 14px;font-weight:700;color:var(--ink-2);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
-.tab[aria-selected="true"]{color:var(--brand);border-bottom-color:var(--brand)}
+.tab{background:none;border:0;padding:10px 14px;font-weight:700;color:var(--ink-2);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;display:flex;align-items:center}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--yellow)}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
-.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-.kpi small{display:block;color:var(--ink-3);font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.07em}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.kpi small{display:block;color:var(--ink-3);font-weight:700;font-size:.76rem;text-transform:uppercase;letter-spacing:.07em}
 .kpi b{font-family:var(--display);font-size:2rem;line-height:1.1}
 .kpi b em{font-style:normal;font-size:1rem;color:var(--ink-3)}
+.kpi.hl{background:var(--yellow);border-color:var(--yellow);color:#121212}
+.kpi.hl small{color:#3d3a20}
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px}
 .toolbar label.f{min-width:140px;flex:1 1 140px;max-width:220px}
-.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
 table{border-collapse:collapse;width:100%;font-size:.93rem}
-th{text-align:left;font-size:.76rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:700;padding:10px 12px;background:var(--surface-2);white-space:nowrap}
+th{text-align:left;font-size:.74rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:700;padding:10px 12px;background:var(--surface-2);white-space:nowrap}
 td{padding:10px 12px;border-top:1px solid var(--line);vertical-align:middle;white-space:nowrap}
 td.wrap-ok{white-space:normal;min-width:160px}
-tr.click{cursor:pointer} tr.click:hover td{background:var(--surface-2)}
 .thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--surface-2);display:inline-block;vertical-align:middle;border:1px solid var(--line)}
 .thumbbtn{border:0;padding:0;background:none;cursor:pointer;border-radius:8px}
 .thumbph{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;background:var(--surface-2);color:var(--ink-3);font-size:.7rem;font-weight:700;border:1px dashed var(--line)}
@@ -144,39 +192,46 @@ tr.click{cursor:pointer} tr.click:hover td{background:var(--surface-2)}
 .who small{color:var(--ink-3)}
 .empty{padding:28px;text-align:center;color:var(--ink-3)}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.reqcard{display:flex;flex-direction:column;gap:8px;border-left:5px solid var(--yellow)}
+.reqcard.APPROVED{border-left-color:var(--green)} .reqcard.REJECTED,.reqcard.CANCELLED{border-left-color:var(--line)}
+.split{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){ .split{grid-template-columns:1fr} }
+.chk{display:flex;flex-wrap:wrap;gap:8px}
+.chk label{display:flex;align-items:center;gap:6px;padding:6px 12px;border:1.5px solid var(--line);border-radius:999px;font-weight:600;cursor:pointer}
+.chk input{accent-color:var(--green)}
 
-/* modal */
-.modal{position:fixed;inset:0;background:rgba(8,12,24,.6);display:flex;align-items:center;justify-content:center;z-index:50;
+/* modal + toast */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:50;
   padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .modal .card{width:min(560px,100%);max-height:100%;overflow:auto}
 .photoBig{width:100%;border-radius:12px;background:var(--surface-2);min-height:200px;object-fit:contain}
 .spinner{width:22px;height:22px;border:3px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite;display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);
-  padding:10px 16px;border-radius:10px;font-weight:600;z-index:60;max-width:calc(100% - 32px)}
-@media (max-width:520px){ .hello h1{font-size:1.45rem} .clock{font-size:2.2rem} .kpi b{font-size:1.6rem} }
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(90px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);
+  padding:10px 16px;border-radius:12px;font-weight:600;z-index:60;max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important} }
+@media (max-width:520px){ .hello h1{font-size:1.45rem} .clock{font-size:2.1rem} .kpi b{font-size:1.6rem} .brand b{font-size:1.1rem} .day{font-size:.85rem} }
 </style>
 </head>
 <body>
 
 <header class="topbar">
   <div class="topbar-in">
-    <svg class="mark" viewBox="0 0 48 48" aria-hidden="true">
-      <circle cx="24" cy="24" r="23" fill="#f0a500"/>
-      <circle cx="24" cy="24" r="17" fill="none" stroke="#1c3f8f" stroke-width="2.5"/>
-      <g stroke="#1c3f8f" stroke-width="2" stroke-linecap="round">
-        <line x1="24" y1="9" x2="24" y2="14"/><line x1="24" y1="34" x2="24" y2="39"/>
-        <line x1="9" y1="24" x2="14" y2="24"/><line x1="34" y1="24" x2="39" y2="24"/>
-      </g>
-      <path d="M17 25.5l4.5 4.5L31 19.5" fill="none" stroke="#1c3f8f" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    <div class="brandname"><b>BCHC Attendance</b><span id="orgName">Bhim Children Happiness Center</span></div>
+    <img class="logo" src="logo.png" alt="BCHC logo" width="46" height="46">
+    <div class="brand"><b>BCHC Teacher Connect</b><span id="orgName">Bhim Children Happiness Center</span></div>
     <div class="spacer"></div>
-    <button class="linkbtn" id="topAction" hidden></button>
+    <button class="topbtn" id="topAction" hidden></button>
   </div>
 </header>
 
 <main class="wrap" id="app"></main>
+<nav class="nav" id="nav" hidden aria-label="Main">
+  <div class="nav-in">
+    <button data-view="home" aria-current="page"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></span>Home</button>
+    <button data-view="calendar"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>Calendar</button>
+    <button data-view="requests"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5l3 2"/><circle cx="12" cy="12" r="9"/></svg></span><span>Fix missed<span id="navBadge"></span></span></button>
+  </div>
+</nav>
 <div id="modalRoot"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
@@ -184,10 +239,14 @@ tr.click{cursor:pointer} tr.click:hover td{background:var(--surface-2)}
 (function(){
 'use strict';
 
-/* ------------------------------------------------------------- basics */
+/* ============================================================ basics */
 var API = (new URLSearchParams(location.search).get('api')) || window.BCHC_API_URL || '';
 var app = document.getElementById('app');
 var topAction = document.getElementById('topAction');
+var nav = document.getElementById('nav');
+var DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+var DOW_LONG = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 var store = {
   get: function(k){ try { return JSON.parse(localStorage.getItem('bchc_'+k)); } catch(e){ return null; } },
   set: function(k,v){ try { localStorage.setItem('bchc_'+k, JSON.stringify(v)); } catch(e){} },
@@ -196,33 +255,113 @@ var store = {
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
 function $(sel, root){ return (root||document).querySelector(sel); }
 function toast(text){
-  var t=document.createElement('div'); t.className='toast'; t.textContent=text; document.body.appendChild(t);
-  setTimeout(function(){ t.remove(); }, 2600);
+  var t=document.createElement('div'); t.className='toast'; t.setAttribute('role','status'); t.textContent=text; document.body.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 2800);
 }
 function api(action, data){
-  if (!API) return Promise.reject(new Error('The app is not connected yet. Paste the Apps Script URL into index.html (see the setup guide).'));
+  if (!API) return Promise.reject(new Error('The app is not connected to the Google Sheet yet.'));
   var body = Object.assign({action:action}, data||{});
   return fetch(API, {method:'POST', body: JSON.stringify(body)})
     .then(function(r){ return r.json(); })
     .catch(function(){ throw new Error('No internet or the server did not answer. Try again.'); })
     .then(function(res){ if (!res || !res.ok) throw new Error((res && res.error) || 'Something went wrong.'); return res; });
 }
-function todayISO(){ var d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
 function pad(n){ return (n<10?'0':'')+n; }
-function hm(t){ return t ? String(t).slice(0,5) : '—'; }
+function iso(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function todayISO(){ return iso(new Date()); }
+function parseISO(s){ var p=s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+function addDays(s,n){ var d=parseISO(s); d.setDate(d.getDate()+n); return iso(d); }
 function fmt12(t){ if(!t) return '—'; var p=String(t).split(':'); var h=+p[0], m=p[1]; var ap=h>=12?'PM':'AM'; h=h%12||12; return h+':'+m+' '+ap; }
-function niceDate(iso){ if(!iso) return ''; var d=new Date(iso+'T00:00:00'); return d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'}); }
+function fmtShort(t){ if(!t) return ''; var p=String(t).split(':'); var h=+p[0], m=p[1]; var ap=h>=12?'pm':'am'; h=h%12||12; return h+(m==='00'?'':':'+m)+ap; }
+function niceDate(s){ if(!s) return ''; return parseISO(s).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'}); }
+function niceDay(s){ return parseISO(s).toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'}); }
 function mins(t){ if(!t) return null; var p=String(t).split(':'); return (+p[0])*60+(+p[1])+((+p[2]||0)/60); }
+function nowMins(){ var d=new Date(); return d.getHours()*60+d.getMinutes()+d.getSeconds()/60+0.01; }
 function durText(m){ if(m==null||m<0) return '—'; var h=Math.floor(m/60), mm=Math.round(m%60); if(mm===60){h++;mm=0;} return h+'h '+pad(mm)+'m'; }
 function haversine(a,b,c,d){ var R=6371000,r=Math.PI/180,x=(c-a)*r,y=(d-b)*r; var s=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*r)*Math.cos(c*r)*Math.sin(y/2)*Math.sin(y/2); return Math.round(2*R*Math.asin(Math.sqrt(s))); }
+function fmtDist(m){ if(m==null||m==='') return '—'; m=+m; return m>=1000 ? (m/1000).toFixed(1)+' km' : m+' m'; }
 function geoPill(g, dist){
   if (g==='INSIDE') return '<span class="pill ok">At school'+(dist!==''&&dist!=null?' · '+dist+' m':'')+'</span>';
   if (g==='OUTSIDE') return '<span class="pill bad">Outside · '+fmtDist(dist)+'</span>';
+  if (g==='REGULARIZED') return '<span class="pill info">Fixed by request</span>';
   return '<span class="pill none">School location not set</span>';
 }
-function fmtDist(m){ if(m==null||m==='') return '—'; m=+m; return m>=1000 ? (m/1000).toFixed(1)+' km' : m+' m'; }
+function statusPill(s){
+  return {PENDING:'<span class="pill warn">Waiting</span>',APPROVED:'<span class="pill ok">Approved</span>',REJECTED:'<span class="pill bad">Rejected</span>',CANCELLED:'<span class="pill none">Cancelled</span>'}[s]||esc(s);
+}
+function groupDays(records){
+  var map={};
+  records.forEach(function(r){
+    var k=r.teacherId+'|'+r.date; var d=map[k]||(map[k]={teacherId:r.teacherId,name:r.name,date:r.date,inR:null,outR:null});
+    if(r.type==='IN') d.inR=r; else if(r.type==='OUT') d.outR=r;
+  });
+  return Object.keys(map).map(function(k){ var d=map[k]; d.hours = d.inR&&d.outR ? mins(d.outR.time)-mins(d.inR.time) : null; return d; })
+    .sort(function(a,b){ return a.date<b.date?-1:a.date>b.date?1:0; });
+}
 
-/* ------------------------------------------------------------- router */
+/* ------------------------------------------- calendar rules (shared) */
+function calMapOf(list){ var m={}; (list||[]).forEach(function(c){ m[c.date]=c; }); return m; }
+function dayInfo(dateStr, s, calMap){
+  var wd=parseISO(dateStr).getDay(), o=calMap[dateStr]||{};
+  var classDays=String(s.CLASS_DAYS||'0,6').split(',').map(function(x){return +x;});
+  var type=o.dayType || (classDays.indexOf(wd)>=0 ? 'CLASS' : 'OFF');
+  var meeting = o.meeting ? o.meeting==='YES' : (wd===+(s.MEETING_DAY||6) && type!=='HOLIDAY');
+  return {date:dateStr, wd:wd, type:type, isClass:type==='CLASS', holiday:type==='HOLIDAY', meeting:meeting, note:o.note||'', custom:!!(o.dayType||o.meeting||o.note), raw:o};
+}
+function dayLabel(info){
+  if(info.holiday) return 'Holiday'+(info.note?': '+info.note:'');
+  return (info.isClass?'Class day':'No class')+(info.note?' · '+info.note:'');
+}
+function nextMeeting(s, calMap){
+  var t=todayISO(), now=nowMins();
+  for(var i=0;i<70;i++){
+    var d=addDays(t,i), info=dayInfo(d,s,calMap);
+    if(!info.meeting) continue;
+    if(i===0 && now>mins(s.MEETING_END||'18:00')) continue;
+    var live = i===0 && now>=mins(s.MEETING_START||'17:00')-10 && now<=mins(s.MEETING_END||'18:00');
+    return {date:d, inDays:i, live:live};
+  }
+  return null;
+}
+function meetingCard(s, calMap){
+  var m=nextMeeting(s, calMap), link=s.MEETING_LINK||'';
+  var time=fmtShort(s.MEETING_START||'17:00')+' – '+fmtShort(s.MEETING_END||'18:00');
+  var when = !m ? 'No meeting planned in the next weeks' :
+    (m.live ? 'Happening now · '+time : (m.inDays===0?'Today':m.inDays===1?'Tomorrow':niceDay(m.date))+' · '+time);
+  var btn = link ? '<a class="btn '+(m&&m.live?'green':'yellow')+' block" href="'+esc(link)+'" target="_blank" rel="noopener">'+(m&&m.live?'Join meeting now':'Open meeting link')+'</a>'
+                 : '<div class="msg note" style="background:#2a2a28;color:#ffd200">The admin will add the meeting link soon.</div>';
+  return '<section class="meet" aria-label="Weekly meeting"><div class="eyebrow">Every '+esc(DOW_LONG[+(s.MEETING_DAY||6)])+'</div>'+
+    '<h3>'+esc(s.MEETING_TITLE||'Weekly team meeting')+'</h3>'+
+    '<div class="row">'+(m&&m.live?'<span class="live">LIVE</span>':'')+'<span class="when num">'+esc(when)+'</span></div>'+btn+'</section>';
+}
+
+/* Month grid. opts: {month:'YYYY-MM', s, calMap, selected, marks:function(info)->{html,cnt}, onPick} */
+function renderMonth(el, opts){
+  var y=+opts.month.slice(0,4), m=+opts.month.slice(5,7)-1;
+  var first=new Date(y,m,1), days=new Date(y,m+1,0).getDate(), t=todayISO();
+  var h='<div class="cal" role="grid">'+DOW.map(function(d){return '<div class="dow">'+d.slice(0,2)+'</div>';}).join('');
+  for(var i=0;i<first.getDay();i++) h+='<div class="day blank" aria-hidden="true"></div>';
+  for(var d=1; d<=days; d++){
+    var ds=y+'-'+pad(m+1)+'-'+pad(d), info=dayInfo(ds, opts.s, opts.calMap);
+    var cls='day '+(info.holiday?'holiday':info.isClass?'class':'off')+(ds===t?' today':'')+(ds===opts.selected?' sel':'');
+    var mk=opts.marks?opts.marks(info):{html:'',cnt:''};
+    var dots=(info.meeting?'<span class="mk mt"></span>':'')+(mk.html||'')+(info.note&&!info.holiday?'<span class="mk note"></span>':'');
+    h+='<button class="'+cls+'" data-date="'+ds+'" aria-label="'+esc(niceDay(ds)+', '+dayLabel(info)+(info.meeting?', meeting':''))+'"><span class="num">'+d+'</span>'+
+      (mk.cnt?'<span class="cnt num">'+mk.cnt+'</span>':'')+'<span class="marks">'+dots+'</span></button>';
+  }
+  h+='</div>';
+  el.innerHTML=h;
+  el.querySelectorAll('[data-date]').forEach(function(b){ b.onclick=function(){ opts.onPick(b.getAttribute('data-date')); }; });
+}
+function legendHtml(extra){
+  return '<div class="legend"><span><i style="background:var(--green-soft);border:1px solid var(--green)"></i>Class day</span>'+
+    '<span><i style="background:var(--red-soft);border:1px solid var(--red)"></i>Holiday</span>'+
+    '<span><i style="background:#d9a900;border-radius:50%"></i>Meeting</span>'+(extra||'')+'</div>';
+}
+function shiftMonth(ym, n){ var y=+ym.slice(0,4), m=+ym.slice(5,7)-1+n; var d=new Date(y,m,1); return d.getFullYear()+'-'+pad(d.getMonth()+1); }
+function monthTitle(ym){ return MONTHS[+ym.slice(5,7)-1]+' '+ym.slice(0,4); }
+
+/* ============================================================ router */
 function route(){
   stopCamera();
   if (location.hash === '#admin') return Admin.start();
@@ -232,29 +371,38 @@ window.addEventListener('hashchange', route);
 
 /* ============================================================ TEACHER */
 var Teacher = (function(){
-  var session = null, info = null, clockTimer = null;
+  var session=null, info=null, hist=null, clockTimer=null, view='home', calMonth=todayISO().slice(0,7), calSel=todayISO(), prefill=null;
 
   function start(){
-    topAction.hidden = false;
-    session = store.get('teacher');
-    if (!session) return loginView();
-    topAction.textContent = 'Sign out';
-    topAction.onclick = function(){ store.del('teacher'); session=null; info=null; loginView(); };
+    topAction.hidden=false;
+    session=store.get('teacher');
+    if(!session) return loginView();
+    topAction.textContent='Sign out';
+    topAction.onclick=function(){ store.del('teacher'); session=null; info=null; hist=null; loginView(); };
+    nav.querySelectorAll('button').forEach(function(b){ b.onclick=function(){ go(b.getAttribute('data-view')); }; });
     loadHome();
   }
+  function showNav(on){ nav.hidden=!on; document.body.classList.toggle('has-nav',on); }
+  function go(v){
+    view=v; stopCamera();
+    nav.querySelectorAll('button').forEach(function(b){ if(b.getAttribute('data-view')===v) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
+    window.scrollTo(0,0);
+    if(v==='home') homeView(); else if(v==='calendar') calendarView(); else requestsView();
+  }
+  function setBadge(){ var n=info&&info.pendingRequests||0; document.getElementById('navBadge').innerHTML=n?'<span class="badge">'+n+'</span>':''; }
 
   function loginView(msg){
-    topAction.textContent = 'Admin';
-    topAction.onclick = function(){ location.hash = '#admin'; };
-    app.innerHTML =
+    showNav(false);
+    topAction.textContent='Admin';
+    topAction.onclick=function(){ location.hash='#admin'; };
+    app.innerHTML=
       '<div class="narrow stack">'+
-        '<div class="hello"><h1>Good to see you</h1><p class="muted" style="margin:4px 0 0">Sign in once on your phone. After that, checking in takes one selfie.</p></div>'+
-        (API ? '' : '<div class="msg note">Setup not finished: the app is not connected to the Google Sheet yet.</div>')+
+        '<div class="hello"><h1>Welcome to BCHC Teacher Connect</h1><p class="muted" style="margin:4px 0 0">Sign in once on your phone. After that, checking in takes one selfie.</p></div>'+
         '<form class="card stack" id="loginForm" novalidate>'+
           '<label class="f">Teacher ID<input class="in" id="tId" autocomplete="username" autocapitalize="characters" placeholder="e.g. T01" required></label>'+
           '<label class="f">PIN<input class="in pinin num" id="tPin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="6" placeholder="••••" required></label>'+
-          '<div id="loginMsg">'+(msg?'<div class="msg err">'+esc(msg)+'</div>':'')+'</div>'+
-          '<button class="btn primary block" id="loginBtn" type="submit">Sign in</button>'+
+          '<div id="loginMsg" aria-live="polite">'+(msg?'<div class="msg err">'+esc(msg)+'</div>':'')+'</div>'+
+          '<button class="btn yellow block" id="loginBtn" type="submit">Sign in</button>'+
           '<p class="faint" style="margin:0">Your ID and PIN come from the BCHC admin.</p>'+
         '</form>'+
       '</div>';
@@ -263,101 +411,171 @@ var Teacher = (function(){
       var id=$('#tId').value.trim().toUpperCase(), pin=$('#tPin').value.trim();
       if(!id||!pin){ $('#loginMsg').innerHTML='<div class="msg err">Enter your Teacher ID and PIN.</div>'; return; }
       var b=$('#loginBtn'); b.disabled=true; b.innerHTML='<span class="spinner"></span> Signing in';
-      api('login',{teacherId:id,pin:pin}).then(function(res){
-        session={teacherId:id,pin:pin}; store.set('teacher',session); info=res; start();
+      api('login',{teacherId:id,pin:pin}).then(function(){
+        session={teacherId:id,pin:pin}; store.set('teacher',session); start();
       }).catch(function(err){ b.disabled=false; b.textContent='Sign in'; $('#loginMsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
     });
   }
 
   function loadHome(){
-    app.innerHTML='<div class="narrow card" style="text-align:center"><span class="spinner" style="color:var(--brand)"></span><p class="muted">Loading your day…</p></div>';
-    api('login', session).then(function(res){ info=res; homeView(); })
+    showNav(false);
+    app.innerHTML='<div class="narrow card" style="text-align:center"><span class="spinner"></span><p class="muted">Loading your day…</p></div>';
+    api('login', session).then(function(res){ info=res; document.getElementById('orgName').textContent=res.org||'Bhim Children Happiness Center'; showNav(true); setBadge(); go(view); })
       .catch(function(err){
-        if (/PIN|ID/.test(err.message)) { store.del('teacher'); return loginView(err.message); }
-        app.innerHTML='<div class="narrow stack"><div class="msg err">'+esc(err.message)+'</div><button class="btn primary" id="retry">Try again</button></div>';
+        if (/PIN|ID|switched off/.test(err.message)) { store.del('teacher'); return loginView(err.message); }
+        app.innerHTML='<div class="narrow stack"><div class="msg err">'+esc(err.message)+'</div><button class="btn yellow" id="retry">Try again</button></div>';
         $('#retry').onclick=loadHome;
       });
   }
+  function loadHist(){ return api('myHistory', session).then(function(r){ hist=r; info.pendingRequests=r.requests.filter(function(q){return q.status==='PENDING';}).length; setBadge(); return r; }); }
 
+  /* ----- Home */
   function homeView(){
-    var t=info.teacher; document.getElementById('orgName').textContent=info.org||'Bhim Children Happiness Center';
+    var t=info.teacher, s=info.settings, calMap=calMapOf(info.calendar);
+    var dInfo=dayInfo(info.serverDate, s, calMap);
     var inR=info.today.filter(function(r){return r.type==='IN';})[0];
     var outR=info.today.filter(function(r){return r.type==='OUT';})[0];
-    var worked = inR&&outR ? durText(mins(outR.time)-mins(inR.time)) : (inR ? 'In school' : '—');
-    var first = (t.name||'').split(' ')[0];
+    var worked = inR&&outR ? durText(mins(outR.time)-mins(inR.time)) : (inR ? 'In class' : '—');
+    var first=(t.name||'').split(' ')[0];
     var action;
-    if(!inR) action='<button class="btn gold huge block" id="go" data-type="IN">Check in</button><p class="faint" style="text-align:center;margin:0">School starts at '+esc(fmt12(info.schoolStart))+'</p>';
-    else if(!outR) action='<button class="btn primary huge block" id="go" data-type="OUT">Check out</button><p class="faint" style="text-align:center;margin:0">Check out when you leave school.</p>';
+    if(!inR) action='<button class="btn yellow huge block" id="go" data-type="IN">Check in</button><p class="faint" style="text-align:center;margin:0">Class starts at '+esc(fmt12(s.SCHOOL_START))+'</p>';
+    else if(!outR) action='<button class="btn green huge block" id="go" data-type="OUT">Check out</button><p class="faint" style="text-align:center;margin:0">Check out when you leave.</p>';
     else action='<div class="msg good" style="text-align:center">You are done for today. Thank you, '+esc(first)+'!</div>';
+    var dayPill = dInfo.holiday ? '<span class="pill bad">'+esc(dayLabel(dInfo))+'</span>' : dInfo.isClass ? '<span class="pill ok">'+esc(dayLabel(dInfo))+'</span>' : '<span class="pill none">'+esc(dayLabel(dInfo))+'</span>';
 
     app.innerHTML=
       '<div class="narrow stack">'+
         '<div class="hello"><p class="muted" style="margin:0">'+esc(niceDate(info.serverDate))+'</p><h1>Namaste, '+esc(first)+'</h1></div>'+
-        '<div class="card stack">'+
-          '<div class="row" style="justify-content:space-between"><div class="clock num" id="clock">--:--</div>'+
-            '<span class="pill info">'+esc(t.school||'BCHC')+'</span></div>'+
+        '<section class="card stack" aria-label="Today">'+
+          '<div class="row between"><div class="clock num" id="clock">--:--</div>'+dayPill+'</div>'+
           '<div class="daystrip num">'+
             '<div><small>In</small><b>'+(inR?esc(fmt12(inR.time)):'—')+'</b></div>'+
             '<div><small>Out</small><b>'+(outR?esc(fmt12(outR.time)):'—')+'</b></div>'+
-            '<div><small>Worked</small><b style="font-size:1.1rem">'+esc(worked)+'</b></div>'+
+            '<div><small>Worked</small><b style="font-size:1.05rem">'+esc(worked)+'</b></div>'+
           '</div>'+
           (inR ? '<div class="row">'+geoPill(inR.geofence,inR.distance)+(inR.late?'<span class="pill warn">Late</span>':'<span class="pill ok">On time</span>')+'</div>' : '')+
           action+
-        '</div>'+
-        '<button class="btn ghost" id="hist">My last 30 days</button>'+
-        '<div id="histBox"></div>'+
+        '</section>'+
+        meetingCard(s, calMap)+
+        '<button class="btn ghost block" id="forgot">Forgot to check in or out? Ask for a fix</button>'+
       '</div>';
     tick(); clearInterval(clockTimer); clockTimer=setInterval(tick, 1000);
-    var go=$('#go'); if(go) go.onclick=function(){ punchView(go.getAttribute('data-type')); };
-    $('#hist').onclick=showHistory;
+    var g=$('#go'); if(g) g.onclick=function(){ punchView(g.getAttribute('data-type')); };
+    $('#forgot').onclick=function(){ prefill=null; go('requests'); };
   }
   function tick(){ var c=document.getElementById('clock'); if(!c){ clearInterval(clockTimer); return; } var d=new Date(); var h=d.getHours(), ap=h>=12?'PM':'AM'; c.textContent=(h%12||12)+':'+pad(d.getMinutes())+' '+ap; }
 
-  function showHistory(){
-    var box=$('#histBox'); box.innerHTML='<p class="muted">Loading…</p>';
-    api('myHistory', session).then(function(res){
-      var days=groupDays(res.records).slice(-30).reverse();
-      if(!days.length){ box.innerHTML='<div class="card empty">No attendance yet.</div>'; return; }
-      box.innerHTML='<div class="tablebox"><table class="num"><thead><tr><th>Date</th><th>In</th><th>Out</th><th>Hours</th></tr></thead><tbody>'+
-        days.map(function(d){ return '<tr><td>'+esc(niceDate(d.date))+'</td><td>'+esc(fmt12(d.inR&&d.inR.time))+(d.inR&&d.inR.late?' <span class="pill warn">Late</span>':'')+'</td><td>'+esc(fmt12(d.outR&&d.outR.time))+'</td><td>'+esc(d.hours!=null?durText(d.hours):'—')+'</td></tr>'; }).join('')+
-        '</tbody></table></div>';
-    }).catch(function(err){ box.innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
+  /* ----- Calendar */
+  function calendarView(){
+    var s=info.settings, calMap=calMapOf(info.calendar);
+    app.innerHTML='<div class="narrow stack"><section class="card stack">'+
+      '<div class="cal-head"><button class="btn small ghost" id="prev" aria-label="Previous month">‹</button><h2 id="mt">'+esc(monthTitle(calMonth))+'</h2><button class="btn small ghost" id="next" aria-label="Next month">›</button></div>'+
+      '<div id="grid"></div>'+legendHtml('<span><i style="background:var(--green);border-radius:50%"></i>I came</span><span><i style="background:var(--red);border-radius:50%"></i>Missed</span>')+
+      '<div class="daydetail" id="detail"></div></section>'+
+      '<p class="faint" style="text-align:center;margin:0">Normal class days: '+esc(String(s.CLASS_DAYS||'').split(',').map(function(x){return DOW_LONG[+x];}).join(' & '))+'</p></div>';
+    $('#prev').onclick=function(){ calMonth=shiftMonth(calMonth,-1); draw(); };
+    $('#next').onclick=function(){ calMonth=shiftMonth(calMonth,1); draw(); };
+    function byDate(){ var m={}; if(hist) groupDays(hist.records).forEach(function(d){ m[d.date]=d; }); return m; }
+    function draw(){
+      $('#mt').textContent=monthTitle(calMonth);
+      var mine=byDate(), t=todayISO();
+      renderMonth($('#grid'), {month:calMonth, s:s, calMap:calMap, selected:calSel,
+        marks:function(di){ var d=mine[di.date]; if(d&&d.inR) return {html:'<span class="mk done"></span>'}; if(hist && di.isClass && di.date<t) return {html:'<span class="mk miss"></span>'}; return {}; },
+        onPick:function(ds){ calSel=ds; draw(); }});
+      detail(mine[calSel]);
+    }
+    function detail(d){
+      var di=dayInfo(calSel, s, calMap), t=todayISO();
+      var h='<div class="stack" style="gap:8px"><div class="row between"><b>'+esc(niceDay(calSel))+'</b>'+(di.holiday?'<span class="pill bad">Holiday</span>':di.isClass?'<span class="pill ok">Class day</span>':'<span class="pill none">No class</span>')+'</div>';
+      if(di.note) h+='<div class="muted">'+esc(di.note)+'</div>';
+      if(di.meeting) h+='<div class="row"><span class="pill info">Meeting '+esc(fmtShort(s.MEETING_START)+'–'+fmtShort(s.MEETING_END))+'</span>'+(s.MEETING_LINK&&calSel>=t?'<a href="'+esc(s.MEETING_LINK)+'" target="_blank" rel="noopener">Meeting link</a>':'')+'</div>';
+      if(d) h+='<div class="num">In: <b>'+esc(fmt12(d.inR&&d.inR.time))+'</b> · Out: <b>'+esc(fmt12(d.outR&&d.outR.time))+'</b>'+(d.hours!=null?' · '+esc(durText(d.hours)):'')+'</div>';
+      var missIn=!(d&&d.inR), missOut=!(d&&d.outR);
+      if(calSel<=t && (missIn||missOut) && (di.isClass||d)) h+='<button class="btn small yellow" id="fixDay">Ask to fix '+(missIn?'check-in':'check-out')+' for this day</button>';
+      if(!hist) h+='<p class="faint" style="margin:0">Loading your attendance…</p>';
+      h+='</div>';
+      $('#detail').innerHTML=h;
+      var fb=$('#fixDay'); if(fb) fb.onclick=function(){ prefill={date:calSel,type:missIn?'IN':'OUT'}; go('requests'); };
+    }
+    draw();
+    if(!hist) loadHist().then(function(){ if(view==='calendar') draw(); }).catch(function(err){ toast(err.message); });
+  }
+
+  /* ----- Requests (regularization) */
+  function requestsView(){
+    var s=info.settings, t=todayISO(), p=prefill||{}; prefill=null;
+    var minD=addDays(t, -(+s.FIX_DAYS_BACK||31));
+    app.innerHTML='<div class="narrow stack">'+
+      '<div class="hello"><h1>Fix a missed check-in</h1><p class="muted" style="margin:4px 0 0">Forgot to check in or out? Send the correct time. The admin approves it and it is added to your attendance.</p></div>'+
+      '<form class="card stack" id="rf" novalidate>'+
+        '<div class="grid2">'+
+          '<label class="f">Date<input class="in" type="date" id="rDate" min="'+minD+'" max="'+t+'" value="'+esc(p.date||t)+'"></label>'+
+          '<label class="f">What did you miss?<select class="in" id="rType"><option value="IN"'+(p.type==='OUT'?'':' selected')+'>Check-in</option><option value="OUT"'+(p.type==='OUT'?' selected':'')+'>Check-out</option></select></label>'+
+          '<label class="f">Correct time<input class="in" type="time" id="rTime" value="'+esc(p.type==='OUT'?'':(s.SCHOOL_START||''))+'"></label>'+
+        '</div>'+
+        '<label class="f">Reason<textarea class="in" id="rReason" maxlength="300" placeholder="e.g. Phone battery was dead"></textarea></label>'+
+        '<div id="rMsg" aria-live="polite"></div>'+
+        '<button class="btn yellow block" id="rSend">Send request</button>'+
+      '</form>'+
+      '<section class="stack"><h2 style="font-size:1.25rem">My requests</h2><div id="rList" class="stack"><p class="muted">Loading…</p></div></section>'+
+    '</div>';
+    $('#rf').addEventListener('submit',function(e){
+      e.preventDefault();
+      var b=$('#rSend'); b.disabled=true; b.innerHTML='<span class="spinner"></span> Sending';
+      api('requestFix',{teacherId:session.teacherId,pin:session.pin,date:$('#rDate').value,type:$('#rType').value,time:$('#rTime').value,reason:$('#rReason').value})
+        .then(function(){ toast('Request sent to the admin'); $('#rReason').value=''; $('#rMsg').innerHTML='<div class="msg good">Sent. You will see the answer below.</div>'; b.disabled=false; b.textContent='Send request'; return loadHist().then(list); })
+        .catch(function(err){ b.disabled=false; b.textContent='Send request'; $('#rMsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
+    });
+    function list(){
+      var box=$('#rList'); if(!box) return;
+      var rs=hist.requests;
+      if(!rs.length){ box.innerHTML='<div class="card empty">No requests yet.</div>'; return; }
+      box.innerHTML=rs.map(function(r){
+        return '<div class="card reqcard '+esc(r.status)+'"><div class="row between"><b>'+esc(niceDate(r.date))+'</b>'+statusPill(r.status)+'</div>'+
+          '<div class="num">'+(r.type==='IN'?'Check-in':'Check-out')+' at <b>'+esc(fmt12(r.time))+'</b></div><div class="muted">'+esc(r.reason)+'</div>'+
+          (r.adminNote?'<div class="faint">Admin: '+esc(r.adminNote)+'</div>':'')+
+          (r.status==='PENDING'?'<div><button class="btn small ghost" data-cancel="'+esc(r.id)+'">Cancel request</button></div>':'')+'</div>';
+      }).join('');
+      box.querySelectorAll('[data-cancel]').forEach(function(b){ b.onclick=function(){
+        b.disabled=true; api('cancelRequest',{teacherId:session.teacherId,pin:session.pin,requestId:b.getAttribute('data-cancel')})
+          .then(function(){ toast('Request cancelled'); return loadHist().then(list); }).catch(function(err){ b.disabled=false; toast(err.message); });
+      }; });
+    }
+    (hist?Promise.resolve(hist):loadHist()).then(list).catch(function(err){ var x=$('#rList'); if(x) x.innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
   }
 
   /* ----- check-in / check-out with selfie + GPS */
   function punchView(type){
+    showNav(false);
     var t=info.teacher, label= type==='IN'?'Check in':'Check out';
     app.innerHTML=
       '<div class="narrow stack">'+
-        '<div class="row" style="justify-content:space-between"><h2>'+label+'</h2><button class="btn small ghost" id="cancel">Cancel</button></div>'+
+        '<div class="row between"><h2>'+label+'</h2><button class="btn small ghost" id="cancel">Cancel</button></div>'+
         '<div class="cam" id="cam"><video id="vid" playsinline autoplay muted></video><div class="oval"></div><img id="shot" alt="Your selfie" hidden></div>'+
         '<div class="gps" id="gps"><span class="dot wait" id="gdot"></span><div><b id="gtitle">Finding your location…</b><div class="faint" id="gsub">Stay outdoors or near a window for a better signal.</div></div></div>'+
-        '<div id="pmsg"></div>'+
+        '<div id="pmsg" aria-live="polite"></div>'+
         '<input type="file" id="fileCap" accept="image/*" capture="user" hidden>'+
-        '<button class="btn gold huge block" id="snap" disabled>Take selfie</button>'+
-        '<div class="row" id="afterSnap" hidden><button class="btn ghost" id="retake" style="flex:1">Retake</button><button class="btn primary" id="submit" style="flex:2" disabled>Submit '+label.toLowerCase()+'</button></div>'+
+        '<button class="btn yellow huge block" id="snap" disabled>Take selfie</button>'+
+        '<div class="row" id="afterSnap" hidden><button class="btn ghost" id="retake" style="flex:1">Retake</button><button class="btn green" id="submit" style="flex:2" disabled>Submit '+label.toLowerCase()+'</button></div>'+
       '</div>';
     var state={photo:null,pos:null,camOk:false};
-    $('#cancel').onclick=function(){ stopCamera(); homeView(); };
+    $('#cancel').onclick=function(){ stopCamera(); showNav(true); homeView(); };
 
-    // Camera
     startCamera($('#vid')).then(function(){ state.camOk=true; refresh(); })
       .catch(function(){
-        // Fallback: the phone's own camera app (front camera) via file input.
         $('#vid').hidden=true; $('.oval').hidden=true;
         $('#cam').style.aspectRatio='auto'; $('#cam').style.minHeight='120px';
         $('#pmsg').innerHTML='<div class="msg note">Live camera is blocked in this browser. Tap "Take selfie" to open your phone camera.</div>';
         state.camOk='fallback'; refresh();
       });
 
-    // GPS: keep the most accurate reading.
     if(!navigator.geolocation){ gps('bad','Location not supported','Open this app in Chrome.'); }
     else {
       gpsWatch = navigator.geolocation.watchPosition(function(p){
         if(!state.pos || p.coords.accuracy < state.pos.coords.accuracy || Date.now()-state.pos.timestamp>15000) state.pos=p;
         var acc=Math.round(state.pos.coords.accuracy), dist=null;
         if(t.lat!=null && t.lng!=null) dist=haversine(state.pos.coords.latitude,state.pos.coords.longitude,t.lat,t.lng);
-        var radius=t.radius||200;
+        var radius=t.radius||+info.settings.DEFAULT_RADIUS_M||200;
         var sub='GPS accuracy ±'+acc+' m';
         if(dist==null) gps(acc<=150?'ok':'warn','Location found',sub+'. The admin has not set your school location yet.');
         else if(dist<=radius) gps(acc<=150?'ok':'warn','You are at school · '+fmtDist(dist), sub);
@@ -376,10 +594,9 @@ var Teacher = (function(){
       sub.disabled = !(state.photo && state.pos);
       if(state.photo && !state.pos) sub.textContent='Waiting for GPS…'; else sub.textContent='Submit '+label.toLowerCase();
     }
-
     $('#snap').onclick=function(){
       if(state.camOk==='fallback'){ $('#fileCap').click(); return; }
-      var v=$('#vid'); state.photo=capture(v, true, t.name); showShot();
+      state.photo=capture($('#vid'), true, t.name); showShot();
     };
     $('#fileCap').onchange=function(e){
       var f=e.target.files&&e.target.files[0]; if(!f) return;
@@ -400,9 +617,8 @@ var Teacher = (function(){
       var b=$('#submit'); b.disabled=true; b.innerHTML='<span class="spinner"></span> Saving';
       $('#retake').disabled=true;
       api('punch', {teacherId:session.teacherId, pin:session.pin, type:type, photo:state.photo,
-        lat:state.pos.coords.latitude, lng:state.pos.coords.longitude, accuracy:state.pos.coords.accuracy,
-        device:navigator.userAgent})
-      .then(function(res){ stopCamera(); resultView(res.record); })
+        lat:state.pos.coords.latitude, lng:state.pos.coords.longitude, accuracy:state.pos.coords.accuracy, device:navigator.userAgent})
+      .then(function(res){ stopCamera(); hist=null; resultView(res.record); })
       .catch(function(err){ b.disabled=false; $('#retake').disabled=false; refresh(); $('#pmsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
     };
   }
@@ -417,9 +633,9 @@ var Teacher = (function(){
           (isIn ? (r.late?'<span class="pill warn">Late</span>':'<span class="pill ok">On time</span>') : '')+'</div>'+
         (r.note?'<div class="msg note">'+esc(r.note)+'</div>':'')+
         '<p class="faint" style="margin:0">Time is recorded by the server, not your phone.</p>'+
-        '<button class="btn primary block" id="done">Done</button>'+
+        '<button class="btn yellow block" id="done">Done</button>'+
       '</div>';
-    $('#done').onclick=loadHome;
+    $('#done').onclick=function(){ view='home'; loadHome(); };
   }
 
   return {start:start};
@@ -436,7 +652,7 @@ function stopCamera(){
   if(camStream){ camStream.getTracks().forEach(function(t){t.stop();}); camStream=null; }
   if(gpsWatch!=null && navigator.geolocation){ navigator.geolocation.clearWatch(gpsWatch); gpsWatch=null; }
 }
-// Crops to 3:4, shrinks to 600px wide JPEG and stamps name + phone time on the photo.
+// Crops to 3:4, shrinks to 600x800 JPEG and stamps name + phone time on the photo.
 function capture(src, mirror, name){
   var sw=src.videoWidth||src.naturalWidth, sh=src.videoHeight||src.naturalHeight;
   var target=3/4, cw=sw, ch=sh;
@@ -447,31 +663,24 @@ function capture(src, mirror, name){
   if(mirror){ g.translate(W,0); g.scale(-1,1); }
   g.drawImage(src,sx,sy,cw,ch,0,0,W,H);
   g.setTransform(1,0,0,1,0,0);
-  g.fillStyle='rgba(0,0,0,.55)'; g.fillRect(0,H-64,W,64);
+  g.fillStyle='rgba(18,18,18,.7)'; g.fillRect(0,H-64,W,64);
+  g.fillStyle='#ffd200'; g.fillRect(0,H-64,8,64);
   g.fillStyle='#fff'; g.font='600 22px Mukta, sans-serif';
-  g.fillText('BCHC · '+(name||''),16,H-36);
+  g.fillText('BCHC · '+(name||''),20,H-36);
   g.font='18px Mukta, sans-serif';
-  g.fillText(new Date().toLocaleString('en-IN'),16,H-12);
+  g.fillText(new Date().toLocaleString('en-IN'),20,H-12);
   return c.toDataURL('image/jpeg',0.72);
-}
-function groupDays(records){
-  var map={};
-  records.forEach(function(r){
-    var k=r.teacherId+'|'+r.date; var d=map[k]||(map[k]={teacherId:r.teacherId,name:r.name,date:r.date,inR:null,outR:null});
-    if(r.type==='IN') d.inR=r; else if(r.type==='OUT') d.outR=r;
-  });
-  return Object.keys(map).map(function(k){ var d=map[k]; d.hours = d.inR&&d.outR ? mins(d.outR.time)-mins(d.inR.time) : null; return d; })
-    .sort(function(a,b){ return a.date<b.date?-1:a.date>b.date?1:0; });
 }
 
 /* ============================================================== ADMIN */
 var Admin = (function(){
   var pin=null, data=null, tab='today', photoCache={};
   var range={from:todayISO(), to:todayISO(), teacher:''};
-  var month=todayISO().slice(0,7);
+  var month=todayISO().slice(0,7), calMonth=todayISO().slice(0,7);
 
   function start(){
-    topAction.hidden=false; topAction.textContent='Teacher app';
+    nav.hidden=true; document.body.classList.remove('has-nav');
+    topAction.hidden=false; topAction.textContent='Open teacher app';
     topAction.onclick=function(){ location.hash=''; };
     try{ pin=sessionStorage.getItem('bchc_admin'); }catch(e){ pin=null; }
     if(!pin) return loginView();
@@ -480,9 +689,9 @@ var Admin = (function(){
 
   function loginView(msg){
     app.innerHTML=
-      '<div class="narrow stack"><div class="hello"><h1>Admin dashboard</h1><p class="muted" style="margin:4px 0 0">See who checked in, from where, and export to Excel.</p></div>'+
+      '<div class="narrow stack"><div class="hello"><h1>Admin dashboard</h1><p class="muted" style="margin:4px 0 0">Attendance, calendar, meetings and fix requests in one place.</p></div>'+
       '<form class="card stack" id="aForm" novalidate><label class="f">Admin PIN<input class="in pinin num" id="aPin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="8" placeholder="••••"></label>'+
-      '<div id="aMsg">'+(msg?'<div class="msg err">'+esc(msg)+'</div>':'')+'</div><button class="btn primary block" id="aBtn">Open dashboard</button></form></div>';
+      '<div id="aMsg" aria-live="polite">'+(msg?'<div class="msg err">'+esc(msg)+'</div>':'')+'</div><button class="btn yellow block" id="aBtn">Open dashboard</button></form></div>';
     $('#aForm').addEventListener('submit',function(e){
       e.preventDefault(); var p=$('#aPin').value.trim(); var b=$('#aBtn'); b.disabled=true; b.innerHTML='<span class="spinner"></span> Checking';
       api('adminData',{pin:p,from:todayISO(),to:todayISO()}).then(function(){ pin=p; try{sessionStorage.setItem('bchc_admin',p);}catch(e){} shell(); })
@@ -490,12 +699,12 @@ var Admin = (function(){
     });
   }
 
+  var TABS=[['today','Today'],['records','Records'],['monthly','Monthly report'],['calendar','Calendar'],['requests','Fix requests'],['teachers','Teachers'],['settings','Settings']];
   function shell(){
     app.innerHTML=
-      '<div class="row" style="justify-content:space-between;margin-bottom:10px"><h1 style="font-size:1.8rem">Teacher attendance</h1>'+
+      '<div class="row between" style="margin-bottom:10px"><h1 style="font-size:1.8rem">Admin dashboard</h1>'+
         '<div class="row"><a class="btn small ghost" id="sheetLink" target="_blank" rel="noopener" hidden>Open Google Sheet</a><button class="btn small ghost" id="refresh">Refresh</button><button class="btn small ghost" id="aOut">Lock</button></div></div>'+
-      '<nav class="tabs" role="tablist">'+
-        ['today:Today','records:Records','monthly:Monthly report','teachers:Teachers','settings:Settings'].map(function(x){ var p=x.split(':'); return '<button class="tab" role="tab" data-tab="'+p[0]+'" aria-selected="'+(tab===p[0])+'">'+p[1]+'</button>'; }).join('')+
+      '<nav class="tabs" role="tablist">'+TABS.map(function(p){ return '<button class="tab" role="tab" data-tab="'+p[0]+'" aria-selected="'+(tab===p[0])+'">'+p[1]+(p[0]==='requests'?'<span id="reqBadge"></span>':'')+'</button>'; }).join('')+
       '</nav><section id="pane"></section>';
     app.querySelectorAll('.tab').forEach(function(b){ b.onclick=function(){ tab=b.getAttribute('data-tab'); app.querySelectorAll('.tab').forEach(function(x){x.setAttribute('aria-selected', x===b);}); load(); }; });
     $('#refresh').onclick=load;
@@ -504,16 +713,18 @@ var Admin = (function(){
   }
 
   function load(){
-    var pane=$('#pane'); pane.innerHTML='<div class="card empty"><span class="spinner" style="color:var(--brand)"></span></div>';
+    var pane=$('#pane'); pane.innerHTML='<div class="card empty"><span class="spinner"></span></div>';
     var from, to;
-    if(tab==='today'){ from=to=todayISO(); }
-    else if(tab==='records'){ from=range.from; to=range.to; }
+    if(tab==='records'){ from=range.from; to=range.to; }
     else if(tab==='monthly'){ from=month+'-01'; to=month+'-31'; }
+    else if(tab==='calendar'){ from=calMonth+'-01'; to=calMonth+'-31'; }
     else { from=to=todayISO(); }
     api('adminData',{pin:pin,from:from,to:to}).then(function(res){
-      data=res;
+      data=res; data.calMap=calMapOf(res.calendar);
       var sl=$('#sheetLink'); if(sl&&res.sheetUrl){ sl.href=res.sheetUrl; sl.hidden=false; }
-      ({today:renderToday,records:renderRecords,monthly:renderMonthly,teachers:renderTeachers,settings:renderSettings})[tab]();
+      var pend=res.requests.filter(function(r){return r.status==='PENDING';}).length;
+      var rb=$('#reqBadge'); if(rb) rb.innerHTML=pend?'<span class="badge">'+pend+'</span>':'';
+      ({today:renderToday,records:renderRecords,monthly:renderMonthly,calendar:renderCalendar,requests:renderRequests,teachers:renderTeachers,settings:renderSettings})[tab]();
     }).catch(function(err){
       if(/Admin PIN/.test(err.message)){ try{sessionStorage.removeItem('bchc_admin');}catch(e){} return loginView(err.message); }
       pane.innerHTML='<div class="msg err">'+esc(err.message)+'</div>';
@@ -522,7 +733,7 @@ var Admin = (function(){
 
   function activeTeachers(){ return data.teachers.filter(function(t){return t.active;}); }
   function thumb(id){
-    if(!id) return '<span class="thumbph">none</span>';
+    if(!id) return '<span class="thumbph">—</span>';
     return '<button class="thumbbtn" data-photo="'+esc(id)+'" title="View selfie">'+
       (photoCache[id]?'<img class="thumb" src="'+photoCache[id]+'" alt="Selfie">':'<span class="thumbph">View</span>')+'</button>';
   }
@@ -535,10 +746,19 @@ var Admin = (function(){
       document.querySelectorAll('[data-photo="'+id+'"]').forEach(function(b){ b.innerHTML='<img class="thumb" src="'+r.dataUrl+'" alt="Selfie">'; });
       return r.dataUrl; });
   }
-  function openPhoto(id, rec){
-    rec = rec || data.records.filter(function(r){return r.photoId===id;})[0];
+  function modal(html){
     var root=document.getElementById('modalRoot');
-    root.innerHTML='<div class="modal" id="m"><div class="card stack"><div class="row" style="justify-content:space-between"><h3>'+esc(rec?rec.name+' · '+(rec.type==='IN'?'Check in':'Check out'):'Selfie')+'</h3><button class="btn small ghost" id="mx">Close</button></div>'+
+    root.innerHTML='<div class="modal" id="m" role="dialog" aria-modal="true">'+html+'</div>';
+    function close(){ root.innerHTML=''; document.removeEventListener('keydown', escClose); }
+    function escClose(e){ if(e.key==='Escape') close(); }
+    document.addEventListener('keydown', escClose);
+    $('#m').onclick=function(e){ if(e.target.id==='m') close(); };
+    var x=$('#mx'); if(x) x.onclick=close;
+    return close;
+  }
+  function openPhoto(id){
+    var rec=data.records.filter(function(r){return r.photoId===id;})[0];
+    var close=modal('<div class="card stack"><div class="row between"><h3>'+esc(rec?rec.name+' · '+(rec.type==='IN'?'Check in':'Check out'):'Selfie')+'</h3><button class="btn small ghost" id="mx">Close</button></div>'+
       '<img class="photoBig" id="mp" alt="Selfie">'+
       (rec?'<div class="grid2 num"><div><div class="faint">When</div><b>'+esc(niceDate(rec.date))+', '+esc(fmt12(rec.time))+'</b></div>'+
         '<div><div class="faint">Where</div>'+geoPill(rec.geofence,rec.distance)+'</div>'+
@@ -546,30 +766,27 @@ var Admin = (function(){
         '<div><div class="faint">Map</div><a href="https://www.google.com/maps?q='+esc(rec.lat)+','+esc(rec.lng)+'" target="_blank" rel="noopener">Open in Google Maps</a></div></div>'+
         (rec.note?'<div class="msg note">'+esc(rec.note)+'</div>':'')+
         '<div class="row"><button class="btn small ghost" id="setSchool">Use this spot as '+esc(rec.name.split(' ')[0])+'\'s school location</button></div>':'')+
-      '</div></div>';
-    $('#mx').onclick=close; $('#m').onclick=function(e){ if(e.target.id==='m') close(); };
-    document.addEventListener('keydown', escClose);
+      '</div>');
     getPhoto(id).then(function(u){ var i=$('#mp'); if(i) i.src=u; }).catch(function(err){ toast(err.message); });
     var ss=$('#setSchool'); if(ss) ss.onclick=function(){
       var t=data.teachers.filter(function(x){return x.id===rec.teacherId;})[0]; if(!t) return;
-      var upd=Object.assign({},t,{lat:rec.lat,lng:rec.lng});
-      ss.disabled=true; api('saveTeacher',{pin:pin,teacher:upd}).then(function(){ toast('School location saved for '+t.name); close(); load(); }).catch(function(err){ ss.disabled=false; toast(err.message); });
+      ss.disabled=true; api('saveTeacher',{pin:pin,teacher:Object.assign({},t,{lat:rec.lat,lng:rec.lng})}).then(function(){ toast('School location saved for '+t.name); close(); load(); }).catch(function(err){ ss.disabled=false; toast(err.message); });
     };
-    function close(){ root.innerHTML=''; document.removeEventListener('keydown', escClose); }
-    function escClose(e){ if(e.key==='Escape') close(); }
   }
+  function kpi(label,val,hl){ return '<div class="kpi'+(hl?' hl':'')+'"><small>'+label+'</small><b>'+val+'</b></div>'; }
 
   /* ----- Today */
   function renderToday(){
-    var pane=$('#pane'), day=data.serverDate||todayISO();
+    var pane=$('#pane'), day=data.serverDate||todayISO(), s=data.settings, di=dayInfo(day,s,data.calMap);
     var byT={}; groupDays(data.records.filter(function(r){return r.date===day;})).forEach(function(d){ byT[d.teacherId]=d; });
     var ts=activeTeachers();
     var present=0, late=0, outside=0, noOut=0;
     ts.forEach(function(t){ var d=byT[t.id]; if(d&&d.inR){ present++; if(d.inR.late) late++; if(d.inR.geofence==='OUTSIDE'||(d.outR&&d.outR.geofence==='OUTSIDE')) outside++; if(!d.outR) noOut++; } });
+    var pend=data.requests.filter(function(r){return r.status==='PENDING';}).length;
     var rows=ts.map(function(t){
       var d=byT[t.id]||{}; var st;
       if(!d.inR) st='<span class="pill bad">Not checked in</span>';
-      else if(!d.outR) st='<span class="pill info">In school</span>';
+      else if(!d.outR) st='<span class="pill info">In class</span>';
       else st='<span class="pill ok">Done</span>';
       var hrs = d.inR&&d.outR ? durText(d.hours) : (d.inR ? 'so far '+durText(nowMins()-mins(d.inR.time)) : '—');
       return '<tr><td><div class="who"><b>'+esc(t.name)+'</b><small>'+esc(t.id)+' · '+esc(t.school||'')+'</small></div></td><td>'+st+'</td>'+
@@ -579,16 +796,16 @@ var Admin = (function(){
         '<td class="num">'+esc(hrs)+'</td></tr>';
     }).join('');
     pane.innerHTML=
-      '<p class="muted" style="margin:0 0 12px">'+esc(niceDate(day))+'</p>'+
+      '<div class="row" style="margin:0 0 12px"><span class="muted">'+esc(niceDate(day))+'</span>'+(di.holiday?'<span class="pill bad">'+esc(dayLabel(di))+'</span>':di.isClass?'<span class="pill ok">'+esc(dayLabel(di))+'</span>':'<span class="pill none">'+esc(dayLabel(di))+'</span>')+(di.meeting?'<span class="pill info">Meeting '+esc(fmtShort(s.MEETING_START)+'–'+fmtShort(s.MEETING_END))+'</span>':'')+'</div>'+
+      (pend?'<div class="msg note" style="margin-bottom:14px">'+pend+' fix request'+(pend>1?'s are':' is')+' waiting for you. <button class="btn small black" id="goReq" style="margin-left:8px">Review</button></div>':'')+
       '<div class="kpis num">'+
-        kpi('Present', present+'<em> / '+ts.length+'</em>')+kpi('Absent', ts.length-present)+kpi('Late', late)+kpi('Outside school', outside)+kpi('Not checked out', noOut)+
+        kpi('Present', present+'<em> / '+ts.length+'</em>', true)+kpi('Absent', ts.length-present)+kpi('Late', late)+kpi('Outside school', outside)+kpi('Not checked out', noOut)+
       '</div>'+
       (ts.length? '<div class="tablebox"><table><thead><tr><th>Teacher</th><th>Status</th><th>In</th><th>In location</th><th>In selfie</th><th>Out</th><th>Out location</th><th>Out selfie</th><th>Hours</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
         : '<div class="card empty">No teachers yet. Add them in the Teachers tab.</div>');
     bindThumbs(pane);
+    var gr=$('#goReq'); if(gr) gr.onclick=function(){ app.querySelector('[data-tab=requests]').click(); };
   }
-  function nowMins(){ var d=new Date(); return d.getHours()*60+d.getMinutes()+d.getSeconds()/60+0.01; }
-  function kpi(label,val){ return '<div class="kpi"><small>'+label+'</small><b>'+val+'</b></div>'; }
 
   /* ----- Records */
   function renderRecords(){
@@ -600,54 +817,135 @@ var Admin = (function(){
         '<label class="f">From<input class="in" type="date" id="rFrom" value="'+esc(range.from)+'"></label>'+
         '<label class="f">To<input class="in" type="date" id="rTo" value="'+esc(range.to)+'"></label>'+
         '<label class="f">Teacher<select class="in" id="rT"><option value="">All teachers</option>'+data.teachers.map(function(t){return '<option value="'+esc(t.id)+'"'+(range.teacher===t.id?' selected':'')+'>'+esc(t.name)+'</option>';}).join('')+'</select></label>'+
-        '<button class="btn primary" id="rGo">Show</button><button class="btn gold" id="rX">Export to Excel</button>'+
+        '<button class="btn black" id="rGo">Show</button><button class="btn yellow" id="rX">Export to Excel</button><button class="btn ghost" id="rAdd">Add missed entry</button>'+
         '<div class="row"><button class="btn small ghost" data-q="7">Last 7 days</button><button class="btn small ghost" data-q="30">Last 30 days</button></div>'+
       '</div>'+
       (days.length?'<div class="tablebox"><table><thead><tr><th>Date</th><th>Teacher</th><th>In</th><th>In location</th><th>In selfie</th><th>Out</th><th>Out location</th><th>Out selfie</th><th>Hours</th><th>Notes</th></tr></thead><tbody>'+
         days.map(function(d){ var notes=[d.inR&&d.inR.note,d.outR&&d.outR.note].filter(Boolean).join('; ');
           return '<tr><td class="num">'+esc(niceDate(d.date))+'</td><td><div class="who"><b>'+esc(d.name)+'</b><small>'+esc(d.teacherId)+'</small></div></td>'+
-          '<td class="num">'+(d.inR?esc(fmt12(d.inR.time))+(d.inR.late?' <span class="pill warn">Late</span>':''):'—')+'</td><td>'+(d.inR?geoPill(d.inR.geofence,d.inR.distance):'')+'</td><td>'+(d.inR?thumb(d.inR.photoId):'')+'</td>'+
+          '<td class="num">'+(d.inR?esc(fmt12(d.inR.time))+(d.inR.late?' <span class="pill warn">Late</span>':''):'<span class="pill warn">Missing</span>')+'</td><td>'+(d.inR?geoPill(d.inR.geofence,d.inR.distance):'')+'</td><td>'+(d.inR?thumb(d.inR.photoId):'')+'</td>'+
           '<td class="num">'+(d.outR?esc(fmt12(d.outR.time)):'<span class="pill warn">Missing</span>')+'</td><td>'+(d.outR?geoPill(d.outR.geofence,d.outR.distance):'')+'</td><td>'+(d.outR?thumb(d.outR.photoId):'')+'</td>'+
           '<td class="num">'+esc(d.hours!=null?durText(d.hours):'—')+'</td><td class="wrap-ok faint">'+esc(notes)+'</td></tr>'; }).join('')+
         '</tbody></table></div>':'<div class="card empty">No check-ins between these dates.</div>');
     $('#rGo').onclick=function(){ range.from=$('#rFrom').value||todayISO(); range.to=$('#rTo').value||range.from; range.teacher=$('#rT').value; load(); };
     $('#rT').onchange=function(){ range.teacher=$('#rT').value; renderRecords(); };
-    pane.querySelectorAll('[data-q]').forEach(function(b){ b.onclick=function(){ var n=+b.getAttribute('data-q'); var d=new Date(); d.setDate(d.getDate()-(n-1)); range.from=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); range.to=todayISO(); load(); }; });
+    pane.querySelectorAll('[data-q]').forEach(function(b){ b.onclick=function(){ range.from=addDays(todayISO(), -(+b.getAttribute('data-q')-1)); range.to=todayISO(); load(); }; });
     $('#rX').onclick=function(){ exportExcel(days, 'BCHC_Attendance_'+range.from+'_to_'+range.to); };
+    $('#rAdd').onclick=function(){ addEntryForm(); };
     bindThumbs(pane);
+  }
+  function addEntryForm(pre){
+    pre=pre||{};
+    var close=modal('<form class="card stack" id="ae" novalidate><div class="row between"><h3>Add a missed check-in or check-out</h3><button type="button" class="btn small ghost" id="mx">Close</button></div>'+
+      '<div class="grid2">'+
+        '<label class="f">Teacher<select class="in" id="aT">'+activeTeachers().map(function(t){return '<option value="'+esc(t.id)+'"'+(pre.teacherId===t.id?' selected':'')+'>'+esc(t.name)+'</option>';}).join('')+'</select></label>'+
+        '<label class="f">Date<input class="in" type="date" id="aD" max="'+todayISO()+'" value="'+esc(pre.date||todayISO())+'"></label>'+
+        '<label class="f">Type<select class="in" id="aY"><option value="IN">Check-in</option><option value="OUT">Check-out</option></select></label>'+
+        '<label class="f">Time<input class="in" type="time" id="aTm" value="'+esc(data.settings.SCHOOL_START||'')+'"></label>'+
+      '</div><label class="f">Note (optional)<input class="in" id="aN" maxlength="200" placeholder="e.g. Called me, phone was broken"></label>'+
+      '<div id="aeMsg" aria-live="polite"></div><button class="btn yellow block" id="aeSave">Add entry</button></form>');
+    $('#ae').addEventListener('submit',function(e){
+      e.preventDefault(); var b=$('#aeSave'); b.disabled=true;
+      api('adminAddEntry',{pin:pin,teacherId:$('#aT').value,date:$('#aD').value,type:$('#aY').value,time:$('#aTm').value,note:$('#aN').value})
+        .then(function(){ close(); toast('Entry added'); load(); })
+        .catch(function(err){ b.disabled=false; $('#aeMsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
+    });
   }
 
   /* ----- Monthly */
+  function classDaysSoFar(ym){
+    var y=+ym.slice(0,4), m=+ym.slice(5,7)-1, d=new Date(y,m,1), t=todayISO(), n=0;
+    while(d.getMonth()===m && iso(d)<=t){ if(dayInfo(iso(d), data.settings, data.calMap).isClass) n++; d.setDate(d.getDate()+1); }
+    return n;
+  }
   function monthStats(){
     var days=groupDays(data.records);
-    return data.teachers.map(function(t){
-      var mine=days.filter(function(d){return d.teacherId===t.id && d.inR;});
+    return data.teachers.filter(function(t){return t.active;}).map(function(t){
+      var mine=days.filter(function(d){return d.teacherId===t.id && (d.inR||d.outR);});
       var total=mine.reduce(function(s,d){return s+(d.hours||0);},0), withH=mine.filter(function(d){return d.hours!=null;}).length;
-      return {t:t, present:mine.length, late:mine.filter(function(d){return d.inR.late;}).length,
-        outside:mine.filter(function(d){return d.inR.geofence==='OUTSIDE'||(d.outR&&d.outR.geofence==='OUTSIDE');}).length,
+      return {t:t, present:mine.length, late:mine.filter(function(d){return d.inR&&d.inR.late;}).length,
+        outside:mine.filter(function(d){return (d.inR&&d.inR.geofence==='OUTSIDE')||(d.outR&&d.outR.geofence==='OUTSIDE');}).length,
+        fixed:mine.filter(function(d){return (d.inR&&d.inR.geofence==='REGULARIZED')||(d.outR&&d.outR.geofence==='REGULARIZED');}).length,
         noOut:mine.filter(function(d){return !d.outR;}).length, total:total, avg: withH? total/withH : null};
     });
   }
   function renderMonthly(){
-    var pane=$('#pane'), stats=monthStats();
-    var workDays=countWorkDays(month);
+    var pane=$('#pane'), stats=monthStats(), workDays=classDaysSoFar(month);
     pane.innerHTML=
       '<div class="toolbar"><label class="f">Month<input class="in" type="month" id="mm" value="'+esc(month)+'"></label>'+
-        '<button class="btn primary" id="mGo">Show</button><button class="btn gold" id="mX">Export to Excel</button></div>'+
-      '<p class="faint" style="margin:0 0 10px">Working days so far (Mon–Sat): '+workDays+'</p>'+
-      '<div class="tablebox"><table class="num"><thead><tr><th>Teacher</th><th>Days present</th><th>Attendance</th><th>Late days</th><th>Outside school</th><th>No check-out</th><th>Total hours</th><th>Avg hours / day</th></tr></thead><tbody>'+
-      stats.map(function(s){ var pct=workDays? Math.round(s.present/workDays*100):0;
-        return '<tr><td><div class="who"><b>'+esc(s.t.name)+'</b><small>'+esc(s.t.id)+'</small></div></td><td>'+s.present+'</td>'+
-          '<td><span class="pill '+(pct>=90?'ok':pct>=75?'warn':'bad')+'">'+pct+'%</span></td><td>'+s.late+'</td><td>'+s.outside+'</td><td>'+s.noOut+'</td>'+
+        '<button class="btn black" id="mGo">Show</button><button class="btn yellow" id="mX">Export to Excel</button></div>'+
+      '<p class="faint" style="margin:0 0 10px">Class days so far this month (from the calendar): <b>'+workDays+'</b></p>'+
+      '<div class="tablebox"><table class="num"><thead><tr><th>Teacher</th><th>Days present</th><th>Attendance</th><th>Late days</th><th>Outside school</th><th>Fixed by request</th><th>No check-out</th><th>Total hours</th><th>Avg hours / day</th></tr></thead><tbody>'+
+      stats.map(function(s){ var pct=workDays? Math.min(100,Math.round(s.present/workDays*100)):0;
+        return '<tr><td><div class="who"><b>'+esc(s.t.name)+'</b><small>'+esc(s.t.id)+'</small></div></td><td>'+s.present+' / '+workDays+'</td>'+
+          '<td><span class="pill '+(pct>=90?'ok':pct>=75?'warn':'bad')+'">'+pct+'%</span></td><td>'+s.late+'</td><td>'+s.outside+'</td><td>'+s.fixed+'</td><td>'+s.noOut+'</td>'+
           '<td>'+durText(s.total)+'</td><td>'+(s.avg!=null?durText(s.avg):'—')+'</td></tr>'; }).join('')+
       '</tbody></table></div>';
     $('#mGo').onclick=function(){ month=$('#mm').value||month; load(); };
     $('#mX').onclick=function(){ exportExcel(groupDays(data.records), 'BCHC_Attendance_'+month, stats, workDays); };
   }
-  function countWorkDays(ym){
-    var y=+ym.slice(0,4), m=+ym.slice(5,7)-1, d=new Date(y,m,1), today=new Date(), n=0;
-    while(d.getMonth()===m && d<=today){ if(d.getDay()!==0) n++; d.setDate(d.getDate()+1); }
-    return n;
+
+  /* ----- Calendar */
+  function renderCalendar(){
+    var pane=$('#pane'), s=data.settings, sel=null;
+    var byDay={}; groupDays(data.records).forEach(function(d){ if(d.inR) byDay[d.date]=(byDay[d.date]||0)+1; });
+    var n=activeTeachers().length;
+    pane.innerHTML='<div class="split"><section class="card stack">'+
+      '<div class="cal-head"><button class="btn small ghost" id="prev" aria-label="Previous month">‹</button><h2>'+esc(monthTitle(calMonth))+'</h2><button class="btn small ghost" id="next" aria-label="Next month">›</button></div>'+
+      '<div id="grid"></div>'+legendHtml('<span><b class="num" style="font-size:.75rem">6/9</b> teachers came</span>')+'</section>'+
+      '<section class="card stack" id="ed"><h3>Change a day</h3><p class="muted" style="margin:0">Tap a day in the calendar to mark it as a holiday, an extra class day, or to add or cancel a meeting.</p>'+
+      '<p class="faint" style="margin:0">Normal week: class on '+esc(String(s.CLASS_DAYS||'').split(',').map(function(x){return DOW_LONG[+x];}).join(' & '))+'; meeting every '+esc(DOW_LONG[+(s.MEETING_DAY||6)])+' '+esc(fmtShort(s.MEETING_START)+'–'+fmtShort(s.MEETING_END))+'. Change this in Settings.</p></section></div>';
+    $('#prev').onclick=function(){ calMonth=shiftMonth(calMonth,-1); load(); };
+    $('#next').onclick=function(){ calMonth=shiftMonth(calMonth,1); load(); };
+    function draw(){
+      renderMonth($('#grid'), {month:calMonth, s:s, calMap:data.calMap, selected:sel,
+        marks:function(di){ return {cnt: byDay[di.date] ? byDay[di.date]+'/'+n : ''}; },
+        onPick:function(ds){ sel=ds; draw(); editor(ds); }});
+    }
+    function editor(ds){
+      var di=dayInfo(ds,s,data.calMap), o=di.raw;
+      $('#ed').innerHTML='<h3>'+esc(niceDay(ds))+'</h3>'+
+        '<div class="muted">Now: <b>'+esc(dayLabel(di))+'</b>'+(di.meeting?' · meeting '+esc(fmtShort(s.MEETING_START)+'–'+fmtShort(s.MEETING_END)):'')+'</div>'+
+        '<label class="f">This day is<select class="in" id="eT">'+
+          [['','Normal week ('+(String(s.CLASS_DAYS).split(',').indexOf(String(di.wd))>=0?'class day':'no class')+')'],['CLASS','Class day (extra)'],['OFF','No class'],['HOLIDAY','Holiday']].map(function(p){ return '<option value="'+p[0]+'"'+((o.dayType||'')===p[0]?' selected':'')+'>'+p[1]+'</option>'; }).join('')+'</select></label>'+
+        '<label class="f">Weekly meeting<select class="in" id="eM">'+
+          [['','Normal week ('+(di.wd===+s.MEETING_DAY?'meeting':'no meeting')+')'],['YES','Meeting on this day'],['NO','No meeting this day']].map(function(p){ return '<option value="'+p[0]+'"'+((o.meeting||'')===p[0]?' selected':'')+'>'+p[1]+'</option>'; }).join('')+'</select></label>'+
+        '<label class="f">Note teachers will see<input class="in" id="eN" maxlength="120" value="'+esc(o.note||'')+'" placeholder="e.g. Diwali, Annual day, Parents meeting"></label>'+
+        '<div id="eMsg" aria-live="polite"></div><div class="row"><button class="btn yellow" id="eSave">Save day</button>'+(di.custom?'<button class="btn ghost" id="eReset">Back to normal</button>':'')+'</div>';
+      $('#eSave').onclick=function(){ save($('#eT').value,$('#eM').value,$('#eN').value); };
+      var r=$('#eReset'); if(r) r.onclick=function(){ save('','',''); };
+      function save(t,m,nt){
+        var b=$('#eSave'); b.disabled=true;
+        api('saveCalendarDay',{pin:pin,date:ds,dayType:t,meeting:m,note:nt}).then(function(){
+          var rest=data.calendar.filter(function(c){return c.date!==ds;});
+          if(t||m||nt) rest.push({date:ds,dayType:t,meeting:m,note:nt});
+          data.calendar=rest; data.calMap=calMapOf(rest); toast('Saved '+niceDay(ds)); draw(); editor(ds);
+        }).catch(function(err){ b.disabled=false; $('#eMsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
+      }
+    }
+    draw();
+  }
+
+  /* ----- Fix requests */
+  function renderRequests(){
+    var pane=$('#pane'), pend=data.requests.filter(function(r){return r.status==='PENDING';}), done=data.requests.filter(function(r){return r.status!=='PENDING';});
+    function card(r){
+      return '<div class="card reqcard '+esc(r.status)+'"><div class="row between"><div class="who"><b>'+esc(r.name)+'</b><small>'+esc(r.teacherId)+'</small></div>'+statusPill(r.status)+'</div>'+
+        '<div class="num">Missed <b>'+(r.type==='IN'?'check-in':'check-out')+'</b> on <b>'+esc(niceDate(r.date))+'</b> · asks for <b>'+esc(fmt12(r.time))+'</b></div>'+
+        '<div class="muted">"'+esc(r.reason)+'"</div>'+
+        (r.adminNote?'<div class="faint">Your note: '+esc(r.adminNote)+'</div>':'')+
+        (r.status==='PENDING'?'<input class="in" data-note="'+esc(r.id)+'" placeholder="Note to teacher (optional)" maxlength="200"><div class="row"><button class="btn green small" data-ok="'+esc(r.id)+'">Approve</button><button class="btn danger small" data-no="'+esc(r.id)+'">Reject</button></div>':'')+'</div>';
+    }
+    pane.innerHTML='<div class="split"><section class="stack"><h2 style="font-size:1.3rem">Waiting for you ('+pend.length+')</h2>'+
+      (pend.length?pend.map(card).join(''):'<div class="card empty">No requests waiting. When a teacher forgets to check in or out, their request shows up here.</div>')+'</section>'+
+      '<section class="stack"><h2 style="font-size:1.3rem">Decided</h2>'+(done.length?done.slice(0,30).map(card).join(''):'<div class="card empty">Nothing yet.</div>')+'</section></div>';
+    pane.querySelectorAll('[data-ok],[data-no]').forEach(function(b){ b.onclick=function(){
+      var id=b.getAttribute('data-ok')||b.getAttribute('data-no'), ok=!!b.getAttribute('data-ok');
+      var note=pane.querySelector('[data-note="'+id+'"]').value;
+      b.disabled=true; api('decideRequest',{pin:pin,requestId:id,decision:ok?'APPROVED':'REJECTED',adminNote:note})
+        .then(function(){ toast(ok?'Approved and added to attendance':'Request rejected'); load(); })
+        .catch(function(err){ b.disabled=false; toast(err.message); });
+    }; });
   }
 
   /* ----- Excel export */
@@ -657,20 +955,19 @@ var Admin = (function(){
       'Date':d.date,'Teacher ID':d.teacherId,'Teacher':d.name,
       'Check-in time':d.inR?d.inR.time:'','Late':d.inR?(d.inR.late?'Yes':'No'):'',
       'Check-in location':d.inR?d.inR.geofence:'','Check-in distance (m)':d.inR?d.inR.distance:'',
-      'Check-in GPS':d.inR?d.inR.lat+','+d.inR.lng:'','Check-in map':d.inR?'https://www.google.com/maps?q='+d.inR.lat+','+d.inR.lng:'',
+      'Check-in GPS':d.inR&&d.inR.lat!=null?d.inR.lat+','+d.inR.lng:'',
       'Check-out time':d.outR?d.outR.time:'','Check-out location':d.outR?d.outR.geofence:'','Check-out distance (m)':d.outR?d.outR.distance:'',
-      'Check-out GPS':d.outR?d.outR.lat+','+d.outR.lng:'',
+      'Check-out GPS':d.outR&&d.outR.lat!=null?d.outR.lat+','+d.outR.lng:'',
       'Hours worked':d.hours!=null?+(d.hours/60).toFixed(2):'',
       'Notes':[d.inR&&d.inR.note,d.outR&&d.outR.note].filter(Boolean).join('; ')
     }; });
     var raw=data.records.map(function(r){ return {'Record ID':r.id,'Date':r.date,'Time':r.time,'Teacher ID':r.teacherId,'Teacher':r.name,'Type':r.type,
-      'Latitude':r.lat,'Longitude':r.lng,'GPS accuracy (m)':r.accuracy,'Distance from school (m)':r.distance,'Geofence':r.geofence,'Late':r.late?'Yes':'No','Selfie file ID':r.photoId,'Note':r.note}; });
+      'Latitude':r.lat,'Longitude':r.lng,'GPS accuracy (m)':r.accuracy,'Distance from school (m)':r.distance,'Location':r.geofence,'Late':r.late?'Yes':'No','Selfie file ID':r.photoId,'Note':r.note}; });
     var wb=XLSX.utils.book_new();
     if(stats){
-      var sum=stats.map(function(s){ return {'Teacher ID':s.t.id,'Teacher':s.t.name,'School':s.t.school,'Working days':workDays,'Days present':s.present,
-        'Attendance %':workDays?Math.round(s.present/workDays*100):'','Late days':s.late,'Outside-school days':s.outside,'Missing check-outs':s.noOut,
-        'Total hours':+(s.total/60).toFixed(2),'Average hours / day':s.avg!=null?+(s.avg/60).toFixed(2):''}; });
-      addSheet(wb, sum, 'Monthly summary');
+      addSheet(wb, stats.map(function(s){ return {'Teacher ID':s.t.id,'Teacher':s.t.name,'School':s.t.school,'Class days':workDays,'Days present':s.present,
+        'Attendance %':workDays?Math.min(100,Math.round(s.present/workDays*100)):'','Late days':s.late,'Outside-school days':s.outside,'Fixed by request':s.fixed,'Missing check-outs':s.noOut,
+        'Total hours':+(s.total/60).toFixed(2),'Average hours / day':s.avg!=null?+(s.avg/60).toFixed(2):''}; }), 'Monthly summary');
     }
     addSheet(wb, daily, 'Daily attendance');
     addSheet(wb, raw, 'All check-ins');
@@ -688,7 +985,7 @@ var Admin = (function(){
   function renderTeachers(){
     var pane=$('#pane');
     pane.innerHTML=
-      '<div class="row" style="justify-content:space-between;margin-bottom:12px"><p class="muted" style="margin:0">'+data.teachers.length+' teachers. Each one signs in with their ID and PIN.</p><button class="btn primary" id="addT">Add teacher</button></div>'+
+      '<div class="row between" style="margin-bottom:12px"><p class="muted" style="margin:0">'+data.teachers.length+' teachers. Each one signs in with their ID and PIN.</p><button class="btn yellow" id="addT">Add teacher</button></div>'+
       '<div class="tablebox"><table><thead><tr><th>Teacher</th><th>PIN</th><th>Phone</th><th>School</th><th>School location</th><th>Radius</th><th>Status</th><th></th></tr></thead><tbody>'+
       data.teachers.map(function(t,i){ return '<tr><td><div class="who"><b>'+esc(t.name)+'</b><small>'+esc(t.id)+'</small></div></td><td class="num">'+esc(t.pin)+'</td><td class="num">'+esc(t.phone)+'</td><td>'+esc(t.school)+'</td>'+
         '<td class="num">'+(t.lat!=null?'<a href="https://www.google.com/maps?q='+t.lat+','+t.lng+'" target="_blank" rel="noopener">'+t.lat.toFixed(5)+', '+t.lng.toFixed(5)+'</a>':'<span class="pill warn">Not set</span>')+'</td>'+
@@ -701,8 +998,7 @@ var Admin = (function(){
   }
   function teacherForm(t){
     var isNew=!t; t=t||{id:nextId(),name:'',pin:String(Math.floor(1000+Math.random()*9000)),phone:'',school:'',lat:null,lng:null,radius:null,active:true};
-    var root=document.getElementById('modalRoot');
-    root.innerHTML='<div class="modal" id="m"><form class="card stack" id="tf" novalidate><div class="row" style="justify-content:space-between"><h3>'+(isNew?'Add teacher':'Edit '+esc(t.name))+'</h3><button type="button" class="btn small ghost" id="mx">Close</button></div>'+
+    var close=modal('<form class="card stack" id="tf" novalidate><div class="row between"><h3>'+(isNew?'Add teacher':'Edit '+esc(t.name))+'</h3><button type="button" class="btn small ghost" id="mx">Close</button></div>'+
       '<div class="grid2">'+
         '<label class="f">Teacher ID<input class="in" id="fId" value="'+esc(t.id)+'" '+(isNew?'':'readonly')+'></label>'+
         '<label class="f">PIN (4–6 digits)<input class="in num" id="fPin" inputmode="numeric" value="'+esc(t.pin)+'"></label>'+
@@ -715,8 +1011,7 @@ var Admin = (function(){
       '</div>'+
       '<div class="row"><button type="button" class="btn small ghost" id="here">Use my current location</button><label class="row" style="gap:6px;font-weight:600"><input type="checkbox" id="fAct" '+(t.active?'checked':'')+'> Active</label></div>'+
       '<p class="faint" style="margin:0">Paste coordinates from Google Maps: long-press the school on the map and copy the numbers shown.</p>'+
-      '<div id="fMsg"></div><button class="btn primary block" id="fSave">Save teacher</button></form></div>';
-    $('#mx').onclick=close;
+      '<div id="fMsg" aria-live="polite"></div><button class="btn yellow block" id="fSave">Save teacher</button></form>');
     $('#here').onclick=function(){
       var b=$('#here'); b.disabled=true; b.textContent='Finding location…';
       navigator.geolocation.getCurrentPosition(function(p){ $('#fLat').value=p.coords.latitude.toFixed(6); $('#fLng').value=p.coords.longitude.toFixed(6); b.disabled=false; b.textContent='Location filled (±'+Math.round(p.coords.accuracy)+' m)'; },
@@ -726,7 +1021,6 @@ var Admin = (function(){
     $('#tf').addEventListener('submit',function(e){
       e.preventDefault();
       var lat=$('#fLat').value.trim(), lng=$('#fLng').value.trim();
-      // Accept "12.97, 77.59" pasted into the latitude box.
       if(lat.indexOf(',')>0 && !lng){ var p=lat.split(','); lat=p[0].trim(); lng=(p[1]||'').trim(); }
       var t2={id:$('#fId').value.trim().toUpperCase(),pin:$('#fPin').value.trim(),name:$('#fName').value.trim(),phone:$('#fPhone').value.trim(),school:$('#fSchool').value.trim(),
         radius:$('#fRad').value.trim()||null,lat:lat===''?null:+lat,lng:lng===''?null:+lng,active:$('#fAct').checked};
@@ -735,25 +1029,36 @@ var Admin = (function(){
       api('saveTeacher',{pin:pin,teacher:t2}).then(function(){ close(); toast('Saved '+t2.name); load(); })
         .catch(function(err){ b.disabled=false; b.textContent='Save teacher'; $('#fMsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
     });
-    function close(){ root.innerHTML=''; }
   }
   function nextId(){ var n=0; data.teachers.forEach(function(t){ var m=/^T(\d+)$/.exec(t.id); if(m) n=Math.max(n,+m[1]); }); return 'T'+pad(n+1); }
 
   /* ----- Settings */
   function renderSettings(){
-    var s=data.settings, pane=$('#pane');
-    pane.innerHTML='<form class="card stack" id="sf" style="max-width:620px" novalidate>'+
-      '<div class="grid2">'+
-        '<label class="f">Organisation name<input class="in" id="sOrg" value="'+esc(s.ORG_NAME)+'"></label>'+
-        '<label class="f">School start time<input class="in" type="time" id="sStart" value="'+esc(s.SCHOOL_START)+'"></label>'+
+    var s=data.settings, pane=$('#pane'), cd=String(s.CLASS_DAYS||'').split(',');
+    pane.innerHTML='<form class="stack" id="sf" style="max-width:720px" novalidate>'+
+      '<section class="card stack"><h3>Weekly meeting</h3><div class="grid2">'+
+        '<label class="f">Meeting name<input class="in" id="sMT" value="'+esc(s.MEETING_TITLE)+'"></label>'+
+        '<label class="f">Day<select class="in" id="sMD">'+DOW_LONG.map(function(d,i){return '<option value="'+i+'"'+(String(i)===String(s.MEETING_DAY)?' selected':'')+'>'+d+'</option>';}).join('')+'</select></label>'+
+        '<label class="f">Starts<input class="in" type="time" id="sMS" value="'+esc(s.MEETING_START)+'"></label>'+
+        '<label class="f">Ends<input class="in" type="time" id="sME" value="'+esc(s.MEETING_END)+'"></label>'+
+      '</div><label class="f">Meeting link (Google Meet or Zoom)<input class="in" id="sML" inputmode="url" value="'+esc(s.MEETING_LINK)+'" placeholder="https://meet.google.com/abc-defg-hij"></label></section>'+
+      '<section class="card stack"><h3>Class days and timing</h3><div><div class="faint" style="margin-bottom:6px">Normal class days every week</div><div class="chk">'+
+        DOW_LONG.map(function(d,i){ return '<label><input type="checkbox" name="cd" value="'+i+'"'+(cd.indexOf(String(i))>=0?' checked':'')+'>'+d.slice(0,3)+'</label>'; }).join('')+'</div></div>'+
+        '<div class="grid2"><label class="f">Class start time<input class="in" type="time" id="sStart" value="'+esc(s.SCHOOL_START)+'"></label>'+
         '<label class="f">Late after (minutes of grace)<input class="in num" id="sGrace" inputmode="numeric" value="'+esc(s.LATE_GRACE_MIN)+'"></label>'+
+        '<label class="f">Teachers can ask to fix up to (days back)<input class="in num" id="sBack" inputmode="numeric" value="'+esc(s.FIX_DAYS_BACK)+'"></label></div></section>'+
+      '<section class="card stack"><h3>Location and security</h3><div class="grid2">'+
+        '<label class="f">Organisation name<input class="in" id="sOrg" value="'+esc(s.ORG_NAME)+'"></label>'+
         '<label class="f">Default geofence radius (m)<input class="in num" id="sRad" inputmode="numeric" value="'+esc(s.DEFAULT_RADIUS_M)+'"></label>'+
         '<label class="f">Flag GPS weaker than (m)<input class="in num" id="sAcc" inputmode="numeric" value="'+esc(s.MAX_ACCURACY_M)+'"></label>'+
         '<label class="f">New admin PIN (optional)<input class="in num" id="sPin" inputmode="numeric" type="password" placeholder="Leave empty to keep"></label>'+
-      '</div><div id="sMsg"></div><button class="btn primary" id="sSave">Save settings</button></form>';
+      '</div></section><div id="sMsg" aria-live="polite"></div><div><button class="btn yellow" id="sSave">Save settings</button></div></form>';
     $('#sf').addEventListener('submit',function(e){
       e.preventDefault();
-      var upd={ORG_NAME:$('#sOrg').value.trim(),SCHOOL_START:$('#sStart').value,LATE_GRACE_MIN:$('#sGrace').value.trim(),DEFAULT_RADIUS_M:$('#sRad').value.trim(),MAX_ACCURACY_M:$('#sAcc').value.trim()};
+      var days=[].slice.call(pane.querySelectorAll('input[name=cd]:checked')).map(function(x){return x.value;}).join(',');
+      var upd={MEETING_TITLE:$('#sMT').value.trim(),MEETING_DAY:$('#sMD').value,MEETING_START:$('#sMS').value,MEETING_END:$('#sME').value,MEETING_LINK:$('#sML').value.trim(),
+        CLASS_DAYS:days,SCHOOL_START:$('#sStart').value,LATE_GRACE_MIN:$('#sGrace').value.trim(),FIX_DAYS_BACK:$('#sBack').value.trim(),
+        ORG_NAME:$('#sOrg').value.trim(),DEFAULT_RADIUS_M:$('#sRad').value.trim(),MAX_ACCURACY_M:$('#sAcc').value.trim()};
       var np=$('#sPin').value.trim(); if(np) upd.ADMIN_PIN=np;
       var b=$('#sSave'); b.disabled=true;
       api('saveSettings',{pin:pin,settings:upd}).then(function(){ if(np){ pin=np; try{sessionStorage.setItem('bchc_admin',np);}catch(e){} } toast('Settings saved'); load(); })
