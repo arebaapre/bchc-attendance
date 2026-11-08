@@ -10,7 +10,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Telugu:wght@400;600;700&display=swap" rel="stylesheet">
 <script>
   /* Google Apps Script web app URL (the backend). */
   window.BCHC_API_URL = 'https://script.google.com/macros/s/AKfycbyS0sLhLEn-xRNgnhNxy9gvDZVrMrhfwdUfZKtL8Evn-4q-X7TF5wJT_KCIZN114p7nMQ/exec';
@@ -25,8 +25,8 @@
   --green:#138a43; --green-ink:#ffffff; --green-soft:#daf2e2;
   --black:#121212; --black-ink:#ffffff;
   --red:#c62828; --red-soft:#fde3e1; --amber:#9a5b00; --amber-soft:#ffecc7;
-  --display:'Instrument Serif', 'Iowan Old Style', Georgia, serif;
-  --body:'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --display:'Instrument Serif', 'Noto Sans Telugu', 'Iowan Old Style', Georgia, serif;
+  --body:'Manrope', 'Noto Sans Telugu', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --shade:radial-gradient(1100px 700px at -10% -10%, rgba(255,210,0,.20), transparent 60%), radial-gradient(900px 700px at 110% 110%, rgba(19,138,67,.12), transparent 60%), linear-gradient(180deg, #fbfbf7 0%, #f1f1ea 100%);
   --radius:16px; --shadow:0 1px 2px rgba(18,18,18,.06), 0 8px 24px rgba(18,18,18,.06);
   color-scheme:light;
@@ -48,6 +48,7 @@
 
 *{box-sizing:border-box}
 html,body{margin:0}
+html{background-color:var(--bg)}
 body{background-color:var(--bg);background-image:var(--shade);background-attachment:fixed;min-height:100vh;color:var(--ink);font-family:var(--body);font-size:15.5px;line-height:1.55;-webkit-font-smoothing:antialiased;
   padding-bottom:env(safe-area-inset-bottom,0px)}
 body.has-nav{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
@@ -139,7 +140,7 @@ textarea.in{min-height:76px;resize:vertical}
 .day.sel{outline:3px solid var(--yellow);outline-offset:1px}
 .day .marks{display:flex;gap:3px;height:8px;margin-top:2px}
 .day .mk{width:7px;height:7px;border-radius:50%}
-.mk.mt{background:#d9a900} .mk.done{background:var(--green)} .mk.miss{background:var(--red)} .mk.note{background:var(--ink-3)}
+.mk.mt{background:#d9a900} .mk.lv{background:#2f6fde} .mk.done{background:var(--green)} .mk.miss{background:var(--red)} .mk.note{background:var(--ink-3)}
 .day .cnt{font-size:.66rem;font-weight:700;color:var(--ink-2);line-height:1}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.82rem;color:var(--ink-2)}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:4px;vertical-align:-1px;margin-right:5px}
@@ -148,7 +149,8 @@ textarea.in{min-height:76px;resize:vertical}
 /* bottom nav */
 .nav{position:fixed;left:0;right:0;bottom:0;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);z-index:40;
   padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
-.nav-in{max-width:500px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.nav-in{max-width:520px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+.nav .lbl{position:relative}
 .nav button{background:none;border:0;padding:10px 4px 12px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.78rem;font-weight:700;color:var(--ink-3);cursor:pointer}
 .nav button svg{width:24px;height:24px}
 .nav button[aria-current="page"]{color:var(--ink)}
@@ -236,6 +238,32 @@ button.avbtn{border:0;padding:0;background:none;cursor:pointer;border-radius:50%
 .infolist dd{margin:0;font-weight:600}
 .namecell{display:flex;align-items:center;gap:10px}
 .quick{display:flex;gap:8px;flex-wrap:wrap}
+/* workspace */
+.seg{display:inline-flex;background:var(--surface-2);border-radius:999px;padding:4px;gap:4px}
+.seg button{border:0;background:none;padding:7px 16px;border-radius:999px;font-weight:700;color:var(--ink-2);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.note{white-space:pre-wrap;word-break:break-word;font-size:1rem;line-height:1.6}
+.ann{display:flex;flex-direction:column;gap:6px;border-left:5px solid transparent}
+.ann.unread{border-left-color:var(--yellow)}
+.ann .meta{font-size:.78rem;color:var(--ink-3);font-weight:600}
+.ann h3{font-size:1.45rem}
+.task{display:flex;gap:12px;align-items:flex-start}
+.task input[type=checkbox]{width:24px;height:24px;margin-top:3px;accent-color:var(--green);flex:none}
+.task.done .ttl{text-decoration:line-through;color:var(--ink-3)}
+.bal{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.balcard{border-radius:16px;padding:16px;background:var(--surface-2)}
+.balcard b{display:block;font-family:var(--display);font-weight:400;font-size:2.6rem;line-height:1}
+.balcard small{font-weight:700;color:var(--ink-2)}
+.balcard.sick{background:linear-gradient(135deg,var(--green-soft),transparent)}
+.balcard.casual{background:linear-gradient(135deg,var(--yellow-soft),transparent)}
+.menu{display:flex;flex-direction:column}
+.menu button{display:flex;align-items:center;justify-content:space-between;gap:10px;background:none;border:0;border-top:1px solid var(--line);padding:14px 2px;font-weight:700;font-size:1rem;cursor:pointer;text-align:left;color:var(--ink)}
+.menu button:first-child{border-top:0}
+.menu button span.sub{display:block;font-weight:500;font-size:.85rem;color:var(--ink-3)}
+.res{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.progress{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.progress i{display:block;height:100%;background:var(--green);border-radius:99px}
+.peek{display:flex;gap:12px;align-items:flex-start;cursor:pointer;border-left:5px solid var(--yellow)}
 .card,.kpi,.tablebox{background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .kpi.hl{background:linear-gradient(135deg,#ffe45c,#ffd200 55%,#f0b400)}
 @media (max-width:520px){ h1{font-size:1.8rem} .hero h1{font-size:2rem} .clock{font-size:2.5rem} .kpi b{font-size:1.9rem} .brand b{font-size:1.2rem} .day{font-size:.85rem} }
@@ -258,8 +286,9 @@ button.avbtn{border:0;padding:0;background:none;cursor:pointer;border-radius:50%
   <div class="nav-in">
     <button data-view="home" aria-current="page"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></span>Home</button>
     <button data-view="calendar"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>Calendar</button>
-    <button data-view="requests"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5l3 2"/><circle cx="12" cy="12" r="9"/></svg></span><span>Fix missed<span id="navBadge"></span></span></button>
-    <button data-view="profile"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></span>Profile</button>
+    <button data-view="updates"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></span><span class="lbl">Updates<span id="navBadge"></span></span></button>
+    <button data-view="leave"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20c4-1 6-5 6-9a8 8 0 0 1 10-3c-1 7-5 11-10 12"/><path d="M4 20l7-7"/></svg></span>Leave</button>
+    <button data-view="profile"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></span>Me</button>
   </div>
 </nav>
 <div id="modalRoot"></div>
@@ -330,6 +359,16 @@ function groupDays(records){
     .sort(function(a,b){ return a.date<b.date?-1:a.date>b.date?1:0; });
 }
 
+function leaveBalance(leaves, s, ym){
+  var out={};
+  ['SICK','CASUAL'].forEach(function(tp){
+    var limit=+(tp==='SICK'?s.SICK_PER_MONTH:s.CASUAL_PER_MONTH)||0;
+    var used=(leaves||[]).filter(function(l){ return l.type===tp && String(l.date).slice(0,7)===ym && (l.status==='APPROVED'||l.status==='PENDING'); }).length;
+    out[tp]={limit:limit, used:used, left:Math.max(0,limit-used)};
+  });
+  return out;
+}
+function linkify(text){ return esc(text).replace(/https:\/\/[^\s<]+/g, function(u){ return '<a href="'+u+'" target="_blank" rel="noopener">'+u+'</a>'; }); }
 function initials(name){ return String(name||'?').trim().split(/\s+/).slice(0,2).map(function(w){return w.charAt(0);}).join('').toUpperCase()||'?'; }
 function avatarHtml(t, size, extraCls){
   var st='width:'+size+'px;height:'+size+'px;font-size:'+Math.round(size*.38)+'px';
@@ -452,9 +491,13 @@ var Teacher = (function(){
     view=v; stopCamera();
     nav.querySelectorAll('button').forEach(function(b){ if(b.getAttribute('data-view')===v) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
     window.scrollTo(0,0);
-    if(v==='home') homeView(); else if(v==='calendar') calendarView(); else if(v==='profile') profileView(); else requestsView();
+    var navv={requests:'profile',resources:'profile'}[v]||v;
+    nav.querySelectorAll('button').forEach(function(b){ if(b.getAttribute('data-view')===navv) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
+    ({home:homeView,calendar:calendarView,profile:profileView,updates:updatesView,leave:leaveView,resources:resourcesView,requests:requestsView}[v]||homeView)();
   }
-  function setBadge(){ var n=info&&info.pendingRequests||0; document.getElementById('navBadge').innerHTML=n?'<span class="badge">'+n+'</span>':''; }
+  function unreadCount(){ return info ? info.announcements.filter(function(a){return !a.read;}).length : 0; }
+  function openTasks(){ return info ? info.tasks.filter(function(k){return !k.done;}).length : 0; }
+  function setBadge(){ var n=unreadCount()+openTasks(); document.getElementById('navBadge').innerHTML=n?'<span class="badge">'+n+'</span>':''; }
 
   function loginView(msg){
     showNav(false);
@@ -523,6 +566,7 @@ var Teacher = (function(){
           (inR ? '<div class="row">'+geoPill(inR.geofence,inR.distance)+(inR.late?'<span class="pill warn">Late</span>':'<span class="pill ok">On time</span>')+'</div>' : '')+
           action+
         '</section>'+
+        homeUpdates()+
         meetingCard(s, calMap)+
         '<button class="btn ghost block" id="forgot">Forgot to check in or out? Ask for a fix</button>'+
       '</div>';
@@ -530,6 +574,85 @@ var Teacher = (function(){
     var g=$('#go'); if(g) g.onclick=function(){ punchView(g.getAttribute('data-type')); };
     $('#forgot').onclick=function(){ prefill=null; go('requests'); };
     $('#toProfile').onclick=function(){ go('profile'); };
+    app.querySelectorAll('[data-go]').forEach(function(b){ b.onclick=function(){ go(b.getAttribute('data-go')); }; });
+  }
+  function homeUpdates(){
+    var un=info.announcements.filter(function(a){return !a.read;}), first=un[0]||info.announcements.filter(function(a){return a.pinned;})[0];
+    var bal=leaveBalance(info.leaves, info.settings, todayISO().slice(0,7)), ot=openTasks();
+    var h='';
+    if(first) h+='<section class="card peek" data-go="updates" role="button" tabindex="0"><div style="min-width:0;flex:1"><div class="eyebrow">'+(un.length?un.length+' new announcement'+(un.length>1?'s':''):'Pinned')+'</div>'+
+      '<b style="display:block;margin-top:2px">'+esc(first.title||'Announcement')+'</b><div class="muted note" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">'+esc(first.body)+'</div></div><span aria-hidden="true">›</span></section>';
+    h+='<div class="quick">'+
+      '<button class="btn small ghost" data-go="updates">Tasks: '+(ot?ot+' to do':'all done')+'</button>'+
+      '<button class="btn small ghost" data-go="leave">Leave left: sick '+bal.SICK.left+' · casual '+bal.CASUAL.left+'</button></div>';
+    return h;
+  }
+
+  /* ----- Updates: announcements + tasks */
+  var updTab='news';
+  function updatesView(){
+    app.innerHTML='<div class="narrow stack"><div class="row between"><h1>Updates</h1><div class="seg" role="group">'+
+      '<button data-u="news" aria-pressed="'+(updTab==='news')+'">Announcements'+(unreadCount()?' ('+unreadCount()+')':'')+'</button><button data-u="tasks" aria-pressed="'+(updTab==='tasks')+'">Tasks'+(openTasks()?' ('+openTasks()+')':'')+'</button></div></div><div id="ul" class="stack"></div></div>';
+    app.querySelectorAll('[data-u]').forEach(function(b){ b.onclick=function(){ updTab=b.getAttribute('data-u'); updatesView(); }; });
+    var box=$('#ul');
+    if(updTab==='news'){
+      var list=info.announcements.slice().sort(function(a,b){ return (b.pinned-a.pinned) || (a.createdAt<b.createdAt?1:-1); });
+      box.innerHTML=list.length?list.map(function(a){
+        return '<article class="card ann'+(a.read?'':' unread')+'"><div class="meta">'+(a.pinned?'📌 Pinned · ':'')+esc(niceDate(String(a.createdAt).slice(0,10)))+(a.read?'':' · <span style="color:var(--amber)">New</span>')+'</div>'+
+          (a.title?'<h3>'+esc(a.title)+'</h3>':'')+'<div class="note">'+linkify(a.body)+'</div></article>'; }).join('')
+        : '<div class="card empty">No announcements yet. News from the admin will appear here.</div>';
+      var ids=info.announcements.filter(function(a){return !a.read;}).map(function(a){return a.id;});
+      if(ids.length){ api('markRead',{teacherId:session.teacherId,pin:session.pin,ids:ids}).then(function(){ info.announcements.forEach(function(a){ a.read=true; }); setBadge(); }).catch(function(){}); }
+    } else {
+      var open=info.tasks.filter(function(k){return !k.done;}), done=info.tasks.filter(function(k){return k.done;});
+      function row(k){ var over=k.due&&!k.done&&k.due<todayISO();
+        return '<label class="card task'+(k.done?' done':'')+'"><input type="checkbox" data-task="'+esc(k.id)+'"'+(k.done?' checked':'')+'><div style="min-width:0"><b class="ttl">'+esc(k.title)+'</b>'+
+          (k.details?'<div class="muted note">'+linkify(k.details)+'</div>':'')+(k.due?'<div class="faint" style="margin-top:4px">'+(over?'<span class="pill bad">Overdue</span> ':'')+'Due '+esc(niceDate(k.due))+'</div>':'')+'</div></label>'; }
+      box.innerHTML=(open.length?open.map(row).join(''):'<div class="card empty">No tasks to do. Well done!</div>')+(done.length?'<h2 style="font-size:1.4rem;margin-top:6px">Done</h2>'+done.map(row).join(''):'');
+      box.querySelectorAll('[data-task]').forEach(function(c){ c.onchange=function(){
+        var k=info.tasks.filter(function(x){return x.id===c.getAttribute('data-task');})[0]; c.disabled=true;
+        api('setTaskDone',{teacherId:session.teacherId,pin:session.pin,id:k.id,done:c.checked}).then(function(){ k.done=c.checked; setBadge(); toast(c.checked?'Marked as done':'Marked as not done'); updatesView(); })
+          .catch(function(err){ c.disabled=false; c.checked=!c.checked; toast(err.message); });
+      }; });
+    }
+  }
+
+  /* ----- Leave */
+  function leaveView(){
+    var s=info.settings, ym=todayISO().slice(0,7), bal=leaveBalance(info.leaves, s, ym), t=todayISO();
+    app.innerHTML='<div class="narrow stack"><h1>Leave</h1>'+
+      '<section class="card stack"><div class="row between"><h2 style="font-size:1.5rem">'+esc(monthTitle(ym))+'</h2><span class="faint">Resets every month</span></div>'+
+        '<div class="bal num"><div class="balcard sick"><small>Sick leave left</small><b>'+bal.SICK.left+'<span style="font-size:1.1rem;color:var(--ink-3)"> / '+bal.SICK.limit+'</span></b><span class="faint">'+bal.SICK.used+' taken</span></div>'+
+        '<div class="balcard casual"><small>Casual leave left</small><b>'+bal.CASUAL.left+'<span style="font-size:1.1rem;color:var(--ink-3)"> / '+bal.CASUAL.limit+'</span></b><span class="faint">'+bal.CASUAL.used+' taken</span></div></div>'+
+        '<p class="faint" style="margin:0">Sundays are holidays. The weekly '+esc(DOW_LONG[+s.MEETING_DAY])+' meeting is compulsory. Every leave needs a reason and the admin\'s approval.</p></section>'+
+      '<form class="card stack" id="lf" novalidate><h2 style="font-size:1.5rem">Apply for leave</h2><div class="grid2">'+
+        '<label class="f">Date<input class="in" type="date" id="lDate" min="'+addDays(t,-(+s.FIX_DAYS_BACK||31))+'" value="'+t+'"></label>'+
+        '<label class="f">Type<select class="in" id="lType"><option value="SICK">Sick leave</option><option value="CASUAL">Casual leave</option></select></label></div>'+
+        '<label class="f">Reason<textarea class="in" id="lReason" maxlength="300" placeholder="e.g. Fever, going to the doctor"></textarea></label>'+
+        '<div id="lMsg" aria-live="polite"></div><button class="btn yellow block" id="lSend">Send for approval</button></form>'+
+      '<section class="stack"><h2 style="font-size:1.4rem">My leave</h2>'+(info.leaves.length?info.leaves.map(function(l){
+        return '<div class="card reqcard '+esc(l.status)+'"><div class="row between"><b>'+esc(niceDate(l.date))+'</b>'+statusPill(l.status)+'</div><div>'+(l.type==='SICK'?'Sick leave':'Casual leave')+'</div><div class="muted">'+esc(l.reason)+'</div>'+
+          (l.adminNote?'<div class="faint">Admin: '+esc(l.adminNote)+'</div>':'')+(l.status==='PENDING'?'<div><button class="btn small ghost" data-lc="'+esc(l.id)+'">Cancel</button></div>':'')+'</div>'; }).join(''):'<div class="card empty">No leave taken yet.</div>')+'</section></div>';
+    $('#lf').addEventListener('submit',function(e){
+      e.preventDefault(); var b=$('#lSend'); b.disabled=true; b.innerHTML='<span class="spinner"></span> Sending';
+      api('requestLeave',{teacherId:session.teacherId,pin:session.pin,date:$('#lDate').value,type:$('#lType').value,reason:$('#lReason').value})
+        .then(function(){ toast('Leave request sent to the admin'); return refreshInfo().then(leaveView); })
+        .catch(function(err){ b.disabled=false; b.textContent='Send for approval'; $('#lMsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
+    });
+    app.querySelectorAll('[data-lc]').forEach(function(b){ b.onclick=function(){ b.disabled=true;
+      api('cancelLeave',{teacherId:session.teacherId,pin:session.pin,leaveId:b.getAttribute('data-lc')}).then(function(){ toast('Leave request cancelled'); return refreshInfo().then(leaveView); }).catch(function(err){ b.disabled=false; toast(err.message); }); }; });
+  }
+  function refreshInfo(){ return api('login', session).then(function(r){ info=r; setBadge(); return r; }); }
+
+  /* ----- Resources */
+  function resourcesView(){
+    var groups={}; info.resources.forEach(function(r){ (groups[r.category||'General']=groups[r.category||'General']||[]).push(r); });
+    var keys=Object.keys(groups).sort();
+    app.innerHTML='<div class="narrow stack"><div class="row between"><h1>Resources</h1><button class="btn small ghost" data-go="profile">Back</button></div>'+
+      (keys.length?keys.map(function(k){ return '<section class="card stack"><div class="eyebrow">'+esc(k)+'</div>'+groups[k].map(function(r){
+        return '<div class="res"><div style="min-width:0"><b>'+esc(r.title)+'</b>'+(r.note?'<div class="faint">'+esc(r.note)+'</div>':'')+'</div><a class="btn small yellow" href="'+esc(r.link)+'" target="_blank" rel="noopener">Open</a></div>'; }).join('')+'</section>'; }).join('')
+      :'<div class="card empty">No resources yet. Worksheets and links shared by the admin will appear here.</div>')+'</div>';
+    app.querySelectorAll('[data-go]').forEach(function(b){ b.onclick=function(){ go(b.getAttribute('data-go')); }; });
   }
 
   /* ----- Profile */
@@ -544,6 +667,11 @@ var Teacher = (function(){
       '<section class="card stack"><h2 style="font-size:1.6rem">This month</h2><div class="stats num" id="pStats"><div class="stat"><b>…</b><small>Days</small></div><div class="stat"><b>…</b><small>Hours</small></div><div class="stat"><b>…</b><small>Late</small></div></div></section>'+
       '<section class="card"><dl class="infolist"><dt>Teacher ID</dt><dd>'+esc(t.id)+'</dd><dt>Centre</dt><dd>'+esc(t.school||'—')+'</dd><dt>Phone</dt><dd class="num">'+esc(t.phone||'—')+'</dd>'+
         '<dt>Class time</dt><dd>'+esc(fmt12(info.settings.SCHOOL_START))+'</dd></dl></section>'+
+      '<section class="card menu">'+
+        '<button data-go="requests"><span>Fix a missed check-in<span class="sub">Forgot to check in or out</span></span><span aria-hidden="true">›</span></button>'+
+        '<button data-go="resources"><span>Resources<span class="sub">Worksheets, documents and links</span></span><span aria-hidden="true">›</span></button>'+
+        '<button id="pAdmin"><span>Admin<span class="sub">For the BCHC admin only · needs the admin PIN</span></span><span aria-hidden="true">›</span></button>'+
+      '</section>'+
       '<button class="btn ghost block" id="pOut">Sign out of this phone</button></div>';
     $('#pChange').onclick=function(){ $('#pFile').click(); };
     $('#pFile').onchange=function(e){
@@ -555,6 +683,8 @@ var Teacher = (function(){
     };
     var rm=$('#pRemove'); if(rm) rm.onclick=function(){ rm.disabled=true; api('setAvatar',{teacherId:session.teacherId,pin:session.pin,avatar:''}).then(function(){ info.teacher.avatar=''; toast('Photo removed'); profileView(); }).catch(function(err){ rm.disabled=false; toast(err.message); }); };
     $('#pOut').onclick=function(){ topAction.click(); };
+    $('#pAdmin').onclick=function(){ location.hash='#admin'; };
+    app.querySelectorAll('[data-go]').forEach(function(b){ b.onclick=function(){ go(b.getAttribute('data-go')); }; });
     function stats(){
       var box=$('#pStats'); if(!box) return;
       var ym=todayISO().slice(0,7), days=groupDays(hist.records).filter(function(d){return d.date.slice(0,7)===ym && (d.inR||d.outR);});
@@ -567,10 +697,11 @@ var Teacher = (function(){
 
   /* ----- Calendar */
   function calendarView(){
-    var s=info.settings, calMap=calMapOf(info.calendar);
+    var s=info.settings, calMap=calMapOf(info.calendar), leaveOn={};
+    info.leaves.forEach(function(l){ if(l.status==='APPROVED') leaveOn[l.date]=l; });
     app.innerHTML='<div class="narrow stack"><section class="card stack">'+
       '<div class="cal-head"><button class="btn small ghost" id="prev" aria-label="Previous month">‹</button><h2 id="mt">'+esc(monthTitle(calMonth))+'</h2><button class="btn small ghost" id="next" aria-label="Next month">›</button></div>'+
-      '<div id="grid"></div>'+legendHtml('<span><i style="background:var(--green);border-radius:50%"></i>I came</span><span><i style="background:var(--red);border-radius:50%"></i>Missed</span>')+
+      '<div id="grid"></div>'+legendHtml('<span><i style="background:var(--green);border-radius:50%"></i>I came</span><span><i style="background:#2f6fde;border-radius:50%"></i>On leave</span><span><i style="background:var(--red);border-radius:50%"></i>Missed</span>')+
       '<div class="daydetail" id="detail"></div></section>'+
       '<p class="faint" style="text-align:center;margin:0">'+esc(weekText(s))+'</p></div>';
     $('#prev').onclick=function(){ calMonth=shiftMonth(calMonth,-1); draw(); };
@@ -580,7 +711,7 @@ var Teacher = (function(){
       $('#mt').textContent=monthTitle(calMonth);
       var mine=byDate(), t=todayISO();
       renderMonth($('#grid'), {month:calMonth, s:s, calMap:calMap, selected:calSel,
-        marks:function(di){ var d=mine[di.date]; if(d&&d.inR) return {html:'<span class="mk done"></span>'}; if(hist && di.isClass && di.date<t) return {html:'<span class="mk miss"></span>'}; return {}; },
+        marks:function(di){ var d=mine[di.date]; if(d&&d.inR) return {html:'<span class="mk done"></span>'}; if(leaveOn[di.date]) return {html:'<span class="mk lv"></span>'}; if(hist && di.isClass && di.date<t) return {html:'<span class="mk miss"></span>'}; return {}; },
         onPick:function(ds){ calSel=ds; draw(); }});
       detail(mine[calSel]);
     }
@@ -799,12 +930,12 @@ var Admin = (function(){
     });
   }
 
-  var TABS=[['today','Today'],['records','Records'],['monthly','Monthly report'],['calendar','Calendar'],['requests','Fix requests'],['teachers','Teachers'],['settings','Settings']];
+  var TABS=[['today','Today'],['news','Announcements'],['leave','Leave'],['requests','Fix requests'],['tasks','Tasks'],['records','Records'],['monthly','Monthly report'],['calendar','Calendar'],['resources','Resources'],['teachers','Teachers'],['settings','Settings']];
   function shell(){
     app.innerHTML=
       '<div class="row between" style="margin-bottom:10px"><h1 style="font-size:2.4rem">Admin dashboard</h1>'+
         '<div class="row"><a class="btn small ghost" id="sheetLink" target="_blank" rel="noopener" hidden>Open Google Sheet</a><button class="btn small ghost" id="refresh">Refresh</button><button class="btn small ghost" id="aOut">Lock</button></div></div>'+
-      '<nav class="tabs" role="tablist">'+TABS.map(function(p){ return '<button class="tab" role="tab" data-tab="'+p[0]+'" aria-selected="'+(tab===p[0])+'">'+p[1]+(p[0]==='requests'?'<span id="reqBadge"></span>':'')+'</button>'; }).join('')+
+      '<nav class="tabs" role="tablist">'+TABS.map(function(p){ return '<button class="tab" role="tab" data-tab="'+p[0]+'" aria-selected="'+(tab===p[0])+'">'+p[1]+(p[0]==='requests'?'<span id="reqBadge"></span>':'')+(p[0]==='leave'?'<span id="leaveBadge"></span>':'')+'</button>'; }).join('')+
       '</nav><section id="pane"></section>';
     app.querySelectorAll('.tab').forEach(function(b){ b.onclick=function(){ tab=b.getAttribute('data-tab'); app.querySelectorAll('.tab').forEach(function(x){x.setAttribute('aria-selected', x===b);}); load(); }; });
     $('#refresh').onclick=load;
@@ -824,7 +955,9 @@ var Admin = (function(){
       var sl=$('#sheetLink'); if(sl&&res.sheetUrl){ sl.href=res.sheetUrl; sl.hidden=false; }
       var pend=res.requests.filter(function(r){return r.status==='PENDING';}).length;
       var rb=$('#reqBadge'); if(rb) rb.innerHTML=pend?'<span class="badge">'+pend+'</span>':'';
-      ({today:renderToday,records:renderRecords,monthly:renderMonthly,calendar:renderCalendar,requests:renderRequests,teachers:renderTeachers,settings:renderSettings})[tab]();
+      var lp=res.leaves.filter(function(l){return l.status==='PENDING';}).length, lb=$('#leaveBadge'); if(lb) lb.innerHTML=lp?'<span class="badge">'+lp+'</span>':'';
+      ({today:renderToday,records:renderRecords,monthly:renderMonthly,calendar:renderCalendar,requests:renderRequests,teachers:renderTeachers,settings:renderSettings,
+        news:renderNews,leave:renderLeave,tasks:renderTasks,resources:renderResources})[tab]();
     }).catch(function(err){
       if(/Admin PIN/.test(err.message)){ try{sessionStorage.removeItem('bchc_admin');}catch(e){} return loginView(err.message); }
       pane.innerHTML='<div class="msg err">'+esc(err.message)+'</div>';
@@ -832,6 +965,7 @@ var Admin = (function(){
   }
 
   function activeTeachers(){ return data.teachers.filter(function(t){return t.active;}); }
+  function aapi(action, d){ return api(action, Object.assign({pin:pin}, d||{})); }
   function thumb(id){
     if(!id) return '<span class="thumbph">—</span>';
     return '<button class="thumbbtn" data-photo="'+esc(id)+'" title="View selfie">'+
@@ -883,6 +1017,8 @@ var Admin = (function(){
     var present=0, late=0, outside=0, noOut=0;
     ts.forEach(function(t){ var d=byT[t.id]; if(d&&d.inR){ present++; if(d.inR.late) late++; if(d.inR.geofence==='OUTSIDE'||(d.outR&&d.outR.geofence==='OUTSIDE')) outside++; if(!d.outR) noOut++; } });
     var pend=data.requests.filter(function(r){return r.status==='PENDING';}).length;
+    var lpend=data.leaves.filter(function(l){return l.status==='PENDING';}).length;
+    var onLeave=data.leaves.filter(function(l){return l.status==='APPROVED' && l.date===day;});
     var rows=ts.map(function(t){
       var d=byT[t.id]||{}; var st;
       if(!d.inR) st='<span class="pill bad">Not checked in</span>';
@@ -898,6 +1034,8 @@ var Admin = (function(){
     pane.innerHTML=
       '<div class="row" style="margin:0 0 12px"><span class="muted">'+esc(niceDate(day))+'</span>'+(di.holiday?'<span class="pill bad">'+esc(dayLabel(di))+'</span>':di.isClass?'<span class="pill ok">'+esc(dayLabel(di))+'</span>':'<span class="pill none">'+esc(dayLabel(di))+'</span>')+(di.meeting?'<span class="pill info">Meeting '+esc(fmtShort(s.MEETING_START)+'–'+fmtShort(s.MEETING_END))+'</span>':'')+'</div>'+
       (pend?'<div class="msg note" style="margin-bottom:14px">'+pend+' fix request'+(pend>1?'s are':' is')+' waiting for you. <button class="btn small black" id="goReq" style="margin-left:8px">Review</button></div>':'')+
+      (lpend?'<div class="msg note" style="margin-bottom:14px">'+lpend+' leave request'+(lpend>1?'s are':' is')+' waiting for you. <button class="btn small black" id="goLeave" style="margin-left:8px">Review</button></div>':'')+
+      (onLeave.length?'<div class="msg good" style="margin-bottom:14px">On approved leave today: '+onLeave.map(function(l){return esc(l.name);}).join(', ')+'</div>':'')+
       '<div class="kpis num">'+
         kpi('Present', present+'<em> / '+ts.length+'</em>', true)+kpi('Absent', ts.length-present)+kpi('Late', late)+kpi('Outside school', outside)+kpi('Not checked out', noOut)+
       '</div>'+
@@ -905,6 +1043,7 @@ var Admin = (function(){
         : '<div class="card empty">No teachers yet. Add them in the Teachers tab.</div>');
     bindThumbs(pane);
     var gr=$('#goReq'); if(gr) gr.onclick=function(){ app.querySelector('[data-tab=requests]').click(); };
+    var gl=$('#goLeave'); if(gl) gl.onclick=function(){ app.querySelector('[data-tab=leave]').click(); };
   }
 
   /* ----- Records */
@@ -963,7 +1102,8 @@ var Admin = (function(){
     return data.teachers.filter(function(t){return t.active;}).map(function(t){
       var mine=days.filter(function(d){return d.teacherId===t.id && (d.inR||d.outR);});
       var total=mine.reduce(function(s,d){return s+(d.hours||0);},0), withH=mine.filter(function(d){return d.hours!=null;}).length;
-      return {t:t, present:mine.length, late:mine.filter(function(d){return d.inR&&d.inR.late;}).length,
+      var lv=data.leaves.filter(function(l){ return l.teacherId===t.id && l.status==='APPROVED' && l.date.slice(0,7)===month && l.date<=todayISO(); }).length;
+      return {t:t, leave:lv, present:mine.length, late:mine.filter(function(d){return d.inR&&d.inR.late;}).length,
         outside:mine.filter(function(d){return (d.inR&&d.inR.geofence==='OUTSIDE')||(d.outR&&d.outR.geofence==='OUTSIDE');}).length,
         fixed:mine.filter(function(d){return (d.inR&&d.inR.geofence==='REGULARIZED')||(d.outR&&d.outR.geofence==='REGULARIZED');}).length,
         noOut:mine.filter(function(d){return !d.outR;}).length, total:total, avg: withH? total/withH : null};
@@ -974,10 +1114,10 @@ var Admin = (function(){
     pane.innerHTML=
       '<div class="toolbar"><label class="f">Month<input class="in" type="month" id="mm" value="'+esc(month)+'"></label>'+
         '<button class="btn black" id="mGo">Show</button><button class="btn yellow" id="mX">Export to Excel</button></div>'+
-      '<p class="faint" style="margin:0 0 10px">Class days so far this month (from the calendar): <b>'+workDays+'</b></p>'+
-      '<div class="tablebox"><table class="num"><thead><tr><th>Teacher</th><th>Days present</th><th>Attendance</th><th>Late days</th><th>Outside school</th><th>Fixed by request</th><th>No check-out</th><th>Total hours</th><th>Avg hours / day</th></tr></thead><tbody>'+
-      stats.map(function(s){ var pct=workDays? Math.min(100,Math.round(s.present/workDays*100)):0;
-        return '<tr><td><div class="who"><b>'+esc(s.t.name)+'</b><small>'+esc(s.t.id)+'</small></div></td><td>'+s.present+' / '+workDays+'</td>'+
+      '<p class="faint" style="margin:0 0 10px">Class days so far this month (from the calendar): <b>'+workDays+'</b>. Approved leave is not counted as absent.</p>'+
+      '<div class="tablebox"><table class="num"><thead><tr><th>Teacher</th><th>Days present</th><th>Leave</th><th>Attendance</th><th>Late days</th><th>Outside school</th><th>Fixed by request</th><th>No check-out</th><th>Total hours</th><th>Avg hours / day</th></tr></thead><tbody>'+
+      stats.map(function(s){ var need=Math.max(0,workDays-s.leave), pct=need? Math.min(100,Math.round(s.present/need*100)):100;
+        return '<tr><td><div class="who"><b>'+esc(s.t.name)+'</b><small>'+esc(s.t.id)+'</small></div></td><td>'+s.present+' / '+need+'</td><td>'+s.leave+'</td>'+
           '<td><span class="pill '+(pct>=90?'ok':pct>=75?'warn':'bad')+'">'+pct+'%</span></td><td>'+s.late+'</td><td>'+s.outside+'</td><td>'+s.fixed+'</td><td>'+s.noOut+'</td>'+
           '<td>'+durText(s.total)+'</td><td>'+(s.avg!=null?durText(s.avg):'—')+'</td></tr>'; }).join('')+
       '</tbody></table></div>';
@@ -1081,7 +1221,7 @@ var Admin = (function(){
     var wb=XLSX.utils.book_new();
     if(stats){
       addSheet(wb, stats.map(function(s){ return {'Teacher ID':s.t.id,'Teacher':s.t.name,'School':s.t.school,'Class days':workDays,'Days present':s.present,
-        'Attendance %':workDays?Math.min(100,Math.round(s.present/workDays*100)):'','Late days':s.late,'Outside-school days':s.outside,'Fixed by request':s.fixed,'Missing check-outs':s.noOut,
+        'Approved leave days':s.leave,'Attendance %':(workDays-s.leave)>0?Math.min(100,Math.round(s.present/(workDays-s.leave)*100)):100,'Late days':s.late,'Outside-school days':s.outside,'Fixed by request':s.fixed,'Missing check-outs':s.noOut,
         'Total hours':+(s.total/60).toFixed(2),'Average hours / day':s.avg!=null?+(s.avg/60).toFixed(2):''}; }), 'Monthly summary');
     }
     addSheet(wb, daily, 'Daily attendance');
@@ -1119,6 +1259,7 @@ var Admin = (function(){
         '<label class="f">PIN (4–6 digits)<input class="in num" id="fPin" inputmode="numeric" value="'+esc(t.pin)+'"></label>'+
         '<label class="f">Full name<input class="in" id="fName" value="'+esc(t.name)+'"></label>'+
         '<label class="f">Phone<input class="in num" id="fPhone" inputmode="tel" value="'+esc(t.phone)+'"></label>'+
+        '<label class="f">Email (for announcements)<input class="in" id="fEmail" type="email" inputmode="email" value="'+esc(t.email||'')+'" placeholder="name@gmail.com"></label>'+
         '<label class="f">School / centre<input class="in" id="fSchool" value="'+esc(t.school)+'"></label>'+
         '<label class="f">Geofence radius (m)<input class="in num" id="fRad" inputmode="numeric" placeholder="'+esc(data.settings.DEFAULT_RADIUS_M||200)+'" value="'+esc(t.radius||'')+'"></label>'+
         '<label class="f">School latitude<input class="in num" id="fLat" inputmode="decimal" value="'+esc(t.lat==null?'':t.lat)+'" placeholder="12.97160"></label>'+
@@ -1146,7 +1287,7 @@ var Admin = (function(){
       e.preventDefault();
       var lat=$('#fLat').value.trim(), lng=$('#fLng').value.trim();
       if(lat.indexOf(',')>0 && !lng){ var p=lat.split(','); lat=p[0].trim(); lng=(p[1]||'').trim(); }
-      var t2={id:$('#fId').value.trim().toUpperCase(),pin:$('#fPin').value.trim(),name:$('#fName').value.trim(),phone:$('#fPhone').value.trim(),school:$('#fSchool').value.trim(),
+      var t2={id:$('#fId').value.trim().toUpperCase(),pin:$('#fPin').value.trim(),name:$('#fName').value.trim(),phone:$('#fPhone').value.trim(),email:$('#fEmail').value.trim(),school:$('#fSchool').value.trim(),
         radius:$('#fRad').value.trim()||null,lat:lat===''?null:+lat,lng:lng===''?null:+lng,active:$('#fAct').checked};
       if((t2.lat==null)!==(t2.lng==null) || (t2.lat!=null && (isNaN(t2.lat)||isNaN(t2.lng)||Math.abs(t2.lat)>90||Math.abs(t2.lng)>180))){ $('#fMsg').innerHTML='<div class="msg err">Enter both latitude and longitude as numbers, or leave both empty.</div>'; return; }
       var b=$('#fSave'); b.disabled=true; b.innerHTML='<span class="spinner"></span> Saving';
@@ -1155,6 +1296,118 @@ var Admin = (function(){
     });
   }
   function nextId(){ var n=0; data.teachers.forEach(function(t){ var m=/^T(\d+)$/.exec(t.id); if(m) n=Math.max(n,+m[1]); }); return 'T'+pad(n+1); }
+
+  /* ----- Announcements */
+  function waLink(a){ return 'https://wa.me/?text='+encodeURIComponent('*BCHC Teacher Connect*'+(a.title?'\n*'+a.title+'*':'')+'\n\n'+a.body+'\n\nOpen the app: '+(data.settings.APP_URL||location.href.split('#')[0])); }
+  function renderNews(){
+    var pane=$('#pane'), act=activeTeachers(), withEmail=act.filter(function(t){return t.email;}).length;
+    pane.innerHTML='<div class="split"><form class="card stack" id="nf" novalidate><h3 style="font-size:1.6rem">New announcement</h3>'+
+        '<label class="f">Title (optional)<input class="in" id="nT" maxlength="120" placeholder="e.g. Saturday meeting / శనివారం సమావేశం"></label>'+
+        '<label class="f">Message — English or Telugu<textarea class="in" id="nB" maxlength="4000" style="min-height:140px" placeholder="Type your message. Telugu works too: ఉదా. రేపు సెలవు."></textarea></label>'+
+        '<label class="row" style="gap:8px;font-weight:600"><input type="checkbox" id="nP"> Pin to the top</label>'+
+        '<label class="row" style="gap:8px;font-weight:600"><input type="checkbox" id="nE" checked> Also email teachers ('+withEmail+' of '+act.length+' have an email)</label>'+
+        '<div id="nMsg" aria-live="polite"></div><button class="btn yellow" id="nSend">Post announcement</button>'+
+        '<p class="faint" style="margin:0">After posting, tap "Send on WhatsApp" to share it in your teachers\' group.</p></form>'+
+      '<section class="stack"><h2 style="font-size:1.4rem">Posted</h2><div id="nl" class="stack"></div></section></div>';
+    var list=data.announcements;
+    $('#nl').innerHTML=list.length?list.map(function(a){
+      var read=a.readBy.length, notRead=act.filter(function(t){ return a.readBy.indexOf(t.id)<0; }).map(function(t){return t.name;});
+      return '<article class="card ann"><div class="meta">'+(a.pinned?'📌 Pinned · ':'')+esc(niceDate(String(a.createdAt).slice(0,10)))+(a.emailed?' · '+esc(a.emailed):'')+'</div>'+
+        (a.title?'<h3>'+esc(a.title)+'</h3>':'')+'<div class="note">'+linkify(a.body)+'</div>'+
+        '<div class="faint">Read by '+read+' of '+act.length+(notRead.length?' · Not yet: '+esc(notRead.join(', ')):'')+'</div>'+
+        '<div class="row"><a class="btn small green" href="'+waLink(a)+'" target="_blank" rel="noopener">Send on WhatsApp</a><button class="btn small danger" data-del="'+esc(a.id)+'">Delete</button></div></article>'; }).join('')
+      :'<div class="card empty">No announcements yet.</div>';
+    $('#nf').addEventListener('submit',function(e){
+      e.preventDefault(); var b=$('#nSend'); b.disabled=true; b.innerHTML='<span class="spinner"></span> Posting';
+      var payload={title:$('#nT').value,body:$('#nB').value,pinned:$('#nP').checked,email:$('#nE').checked};
+      aapi('postAnnouncement',payload).then(function(r){
+        var msg='Posted'+(r.emailsSent?' and emailed to '+r.emailsSent+' teacher'+(r.emailsSent>1?'s':''):'')+'.';
+        if(r.emailError) msg+=' Email could not be sent: '+r.emailError;
+        toast(msg); load();
+      }).catch(function(err){ b.disabled=false; b.textContent='Post announcement'; $('#nMsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
+    });
+    pane.querySelectorAll('[data-del]').forEach(function(b){ b.onclick=function(){
+      if(b.getAttribute('data-sure')!=='1'){ b.setAttribute('data-sure','1'); b.textContent='Tap again to delete'; return; }
+      b.disabled=true; aapi('deleteAnnouncement',{id:b.getAttribute('data-del')}).then(function(){ toast('Announcement deleted'); load(); }).catch(function(err){ b.disabled=false; toast(err.message); }); }; });
+  }
+
+  /* ----- Leave */
+  function renderLeave(){
+    var pane=$('#pane'), ym=todayISO().slice(0,7), pend=data.leaves.filter(function(l){return l.status==='PENDING';}), done=data.leaves.filter(function(l){return l.status!=='PENDING';});
+    function card(l){
+      var bal=leaveBalance(data.leaves.filter(function(x){return x.teacherId===l.teacherId && x.id!==l.id;}), data.settings, l.date.slice(0,7));
+      return '<div class="card reqcard '+esc(l.status)+'"><div class="row between"><div class="who"><b>'+esc(l.name)+'</b><small>'+esc(l.teacherId)+'</small></div>'+statusPill(l.status)+'</div>'+
+        '<div><b>'+(l.type==='SICK'?'Sick leave':'Casual leave')+'</b> on <b>'+esc(niceDate(l.date))+'</b></div><div class="muted">"'+esc(l.reason)+'"</div>'+
+        (l.status==='PENDING'?'<div class="faint">'+(l.type==='SICK'?'Sick':'Casual')+' leave left that month (besides this one): '+bal[l.type].left+'</div>':'')+
+        (l.adminNote?'<div class="faint">Your note: '+esc(l.adminNote)+'</div>':'')+
+        (l.status==='PENDING'?'<input class="in" data-ln="'+esc(l.id)+'" placeholder="Note to teacher (optional)" maxlength="200"><div class="row"><button class="btn green small" data-lok="'+esc(l.id)+'">Approve</button><button class="btn danger small" data-lno="'+esc(l.id)+'">Reject</button></div>':'')+'</div>';
+    }
+    var table='<div class="tablebox"><table class="num"><thead><tr><th>Teacher</th><th>Sick used</th><th>Sick left</th><th>Casual used</th><th>Casual left</th></tr></thead><tbody>'+
+      activeTeachers().map(function(t){ var b=leaveBalance(data.leaves.filter(function(l){return l.teacherId===t.id;}), data.settings, ym);
+        return '<tr><td><div class="namecell">'+avatarHtml(t,30,'sm')+'<b>'+esc(t.name)+'</b></div></td><td>'+b.SICK.used+'</td><td>'+b.SICK.left+'</td><td>'+b.CASUAL.used+'</td><td>'+b.CASUAL.left+'</td></tr>'; }).join('')+'</tbody></table></div>';
+    pane.innerHTML='<div class="split"><section class="stack"><h2 style="font-size:1.4rem">Waiting for you ('+pend.length+')</h2>'+(pend.length?pend.map(card).join(''):'<div class="card empty">No leave requests waiting.</div>')+
+      '<h2 style="font-size:1.4rem;margin-top:8px">Decided</h2>'+(done.length?done.slice(0,30).map(card).join(''):'<div class="card empty">Nothing yet.</div>')+'</section>'+
+      '<section class="stack"><h2 style="font-size:1.4rem">Leave balance · '+esc(monthTitle(ym))+'</h2>'+table+'<p class="faint" style="margin:0">Each teacher gets '+esc(data.settings.SICK_PER_MONTH)+' sick and '+esc(data.settings.CASUAL_PER_MONTH)+' casual leave per month. Change this in Settings.</p></section></div>';
+    pane.querySelectorAll('[data-lok],[data-lno]').forEach(function(b){ b.onclick=function(){
+      var id=b.getAttribute('data-lok')||b.getAttribute('data-lno'), ok=!!b.getAttribute('data-lok');
+      b.disabled=true; aapi('decideLeave',{leaveId:id,decision:ok?'APPROVED':'REJECTED',adminNote:pane.querySelector('[data-ln="'+id+'"]').value})
+        .then(function(){ toast(ok?'Leave approved':'Leave rejected'); load(); }).catch(function(err){ b.disabled=false; toast(err.message); }); }; });
+  }
+
+  /* ----- Tasks */
+  function renderTasks(){
+    var pane=$('#pane'), act=activeTeachers();
+    pane.innerHTML='<div class="split"><form class="card stack" id="kf" novalidate><h3 style="font-size:1.6rem">New task</h3>'+
+        '<label class="f">Task<input class="in" id="kT" maxlength="160" placeholder="e.g. Submit monthly student report"></label>'+
+        '<label class="f">Details (optional)<textarea class="in" id="kD" maxlength="1000"></textarea></label>'+
+        '<label class="f">Due date (optional)<input class="in" type="date" id="kDue"></label>'+
+        '<div><div class="faint" style="margin-bottom:6px">Assign to</div><div class="chk"><label><input type="checkbox" id="kAll" checked> All teachers</label>'+
+        act.map(function(t){ return '<label><input type="checkbox" name="kt" value="'+esc(t.id)+'">'+esc(t.name)+'</label>'; }).join('')+'</div></div>'+
+        '<div id="kMsg" aria-live="polite"></div><button class="btn yellow" id="kSend">Assign task</button></form>'+
+      '<section class="stack"><h2 style="font-size:1.4rem">Tasks</h2>'+(data.tasks.length?data.tasks.map(function(k){
+        var who=k.assignedTo==='ALL'?act:act.filter(function(t){return k.assignedTo.indexOf(t.id)>=0;});
+        var done=who.filter(function(t){return k.doneBy.indexOf(t.id)>=0;}), left=who.filter(function(t){return k.doneBy.indexOf(t.id)<0;});
+        return '<div class="card stack" style="gap:8px"><div class="row between"><b>'+esc(k.title)+'</b>'+(k.due?'<span class="pill '+(k.due<todayISO()&&left.length?'bad':'info')+'">Due '+esc(niceDate(k.due))+'</span>':'')+'</div>'+
+          (k.details?'<div class="muted note">'+linkify(k.details)+'</div>':'')+
+          '<div class="progress"><i style="width:'+(who.length?Math.round(done.length/who.length*100):0)+'%"></i></div>'+
+          '<div class="faint">Done by '+done.length+' of '+who.length+(left.length?' · Waiting: '+esc(left.map(function(t){return t.name;}).join(', ')):'')+'</div>'+
+          '<div><button class="btn small danger" data-kdel="'+esc(k.id)+'">Delete</button></div></div>'; }).join(''):'<div class="card empty">No tasks yet.</div>')+'</section></div>';
+    $('#kAll').onchange=function(){ if(this.checked) pane.querySelectorAll('input[name=kt]').forEach(function(c){ c.checked=false; }); };
+    pane.querySelectorAll('input[name=kt]').forEach(function(c){ c.onchange=function(){ if(c.checked) $('#kAll').checked=false; }; });
+    $('#kf').addEventListener('submit',function(e){
+      e.preventDefault(); var b=$('#kSend'); b.disabled=true;
+      var picked=[].slice.call(pane.querySelectorAll('input[name=kt]:checked')).map(function(c){return c.value;});
+      aapi('postTask',{title:$('#kT').value,details:$('#kD').value,due:$('#kDue').value,assignedTo:$('#kAll').checked||!picked.length?'ALL':picked})
+        .then(function(){ toast('Task assigned'); load(); }).catch(function(err){ b.disabled=false; $('#kMsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
+    });
+    pane.querySelectorAll('[data-kdel]').forEach(function(b){ b.onclick=function(){
+      if(b.getAttribute('data-sure')!=='1'){ b.setAttribute('data-sure','1'); b.textContent='Tap again to delete'; return; }
+      b.disabled=true; aapi('deleteTask',{id:b.getAttribute('data-kdel')}).then(function(){ toast('Task deleted'); load(); }).catch(function(err){ b.disabled=false; toast(err.message); }); }; });
+  }
+
+  /* ----- Resources */
+  function renderResources(){
+    var pane=$('#pane');
+    pane.innerHTML='<div class="split"><form class="card stack" id="rf2" novalidate><h3 style="font-size:1.6rem">Share a resource</h3>'+
+        '<label class="f">Name<input class="in" id="xT" maxlength="160" placeholder="e.g. Class 3 maths worksheets"></label>'+
+        '<label class="f">Link<input class="in" id="xL" inputmode="url" placeholder="https://drive.google.com/…"></label>'+
+        '<label class="f">Category<input class="in" id="xC" maxlength="60" placeholder="e.g. Worksheets, Training, Forms" list="xcats"></label>'+
+        '<datalist id="xcats">'+Object.keys(data.resources.reduce(function(m,r){m[r.category]=1;return m;},{})).map(function(c){return '<option value="'+esc(c)+'">';}).join('')+'</datalist>'+
+        '<label class="f">Note (optional)<input class="in" id="xN" maxlength="300"></label>'+
+        '<p class="faint" style="margin:0">Tip: upload files to Google Drive, set sharing to "Anyone with the link", and paste the link here.</p>'+
+        '<div id="xMsg" aria-live="polite"></div><button class="btn yellow" id="xSend">Add resource</button></form>'+
+      '<section class="stack"><h2 style="font-size:1.4rem">Shared with teachers</h2>'+(data.resources.length?data.resources.map(function(r){
+        return '<div class="card res"><div style="min-width:0"><div class="eyebrow">'+esc(r.category)+'</div><b>'+esc(r.title)+'</b>'+(r.note?'<div class="faint">'+esc(r.note)+'</div>':'')+'</div>'+
+          '<div class="row"><a class="btn small ghost" href="'+esc(r.link)+'" target="_blank" rel="noopener">Open</a><button class="btn small danger" data-xdel="'+esc(r.id)+'">Delete</button></div></div>'; }).join(''):'<div class="card empty">Nothing shared yet.</div>')+'</section></div>';
+    $('#rf2').addEventListener('submit',function(e){
+      e.preventDefault(); var b=$('#xSend'); b.disabled=true;
+      aapi('addResource',{title:$('#xT').value,link:$('#xL').value,category:$('#xC').value,note:$('#xN').value})
+        .then(function(){ toast('Resource added'); load(); }).catch(function(err){ b.disabled=false; $('#xMsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
+    });
+    pane.querySelectorAll('[data-xdel]').forEach(function(b){ b.onclick=function(){
+      if(b.getAttribute('data-sure')!=='1'){ b.setAttribute('data-sure','1'); b.textContent='Tap again to delete'; return; }
+      b.disabled=true; aapi('deleteResource',{id:b.getAttribute('data-xdel')}).then(function(){ toast('Resource deleted'); load(); }).catch(function(err){ b.disabled=false; toast(err.message); }); }; });
+  }
 
   /* ----- Settings */
   function renderSettings(){
@@ -1174,6 +1427,11 @@ var Admin = (function(){
         '<div class="grid2"><label class="f">Class start time<input class="in" type="time" id="sStart" value="'+esc(s.SCHOOL_START)+'"></label>'+
         '<label class="f">Late after (minutes of grace)<input class="in num" id="sGrace" inputmode="numeric" value="'+esc(s.LATE_GRACE_MIN)+'"></label>'+
         '<label class="f">Teachers can ask to fix up to (days back)<input class="in num" id="sBack" inputmode="numeric" value="'+esc(s.FIX_DAYS_BACK)+'"></label></div></section>'+
+      '<section class="card stack"><h3>Leave rules</h3><div class="grid2">'+
+        '<label class="f">Sick leaves per month<input class="in num" id="sSick" inputmode="numeric" value="'+esc(s.SICK_PER_MONTH)+'"></label>'+
+        '<label class="f">Casual leaves per month<input class="in num" id="sCas" inputmode="numeric" value="'+esc(s.CASUAL_PER_MONTH)+'"></label></div>'+
+        '<label class="row" style="gap:8px;font-weight:600"><input type="checkbox" id="sLeaveMeet"'+(String(s.LEAVE_ON_MEETING_DAY).toUpperCase()==='YES'?' checked':'')+'> Allow leave on weekly meeting days</label>'+
+        '<label class="f">App link (used in emails and WhatsApp)<input class="in" id="sUrl" inputmode="url" value="'+esc(s.APP_URL)+'"></label></section>'+
       '<section class="card stack"><h3>Location and security</h3><div class="grid2">'+
         '<label class="f">Organisation name<input class="in" id="sOrg" value="'+esc(s.ORG_NAME)+'"></label>'+
         '<label class="f">Default geofence radius (m)<input class="in num" id="sRad" inputmode="numeric" value="'+esc(s.DEFAULT_RADIUS_M)+'"></label>'+
@@ -1186,6 +1444,7 @@ var Admin = (function(){
       var wh=[].slice.call(pane.querySelectorAll('input[name=wh]:checked')).map(function(x){return x.value;}).join(',');
       var upd={MEETING_TITLE:$('#sMT').value.trim(),MEETING_DAY:$('#sMD').value,MEETING_START:$('#sMS').value,MEETING_END:$('#sME').value,MEETING_LINK:$('#sML').value.trim(),
         CLASS_DAYS:days,WEEKLY_HOLIDAYS:wh,SCHOOL_START:$('#sStart').value,LATE_GRACE_MIN:$('#sGrace').value.trim(),FIX_DAYS_BACK:$('#sBack').value.trim(),
+        SICK_PER_MONTH:$('#sSick').value.trim(),CASUAL_PER_MONTH:$('#sCas').value.trim(),LEAVE_ON_MEETING_DAY:$('#sLeaveMeet').checked?'YES':'NO',APP_URL:$('#sUrl').value.trim(),
         ORG_NAME:$('#sOrg').value.trim(),DEFAULT_RADIUS_M:$('#sRad').value.trim(),MAX_ACCURACY_M:$('#sAcc').value.trim()};
       var np=$('#sPin').value.trim(); if(np) upd.ADMIN_PIN=np;
       var b=$('#sSave'); b.disabled=true;
