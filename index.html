@@ -267,6 +267,72 @@ button.avbtn{border:0;padding:0;background:none;cursor:pointer;border-radius:50%
 .card,.kpi,.tablebox{background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .kpi.hl{background:linear-gradient(135deg,#ffe45c,#ffd200 55%,#f0b400)}
 @media (max-width:520px){ h1{font-size:1.8rem} .hero h1{font-size:2rem} .clock{font-size:2.5rem} .kpi b{font-size:1.9rem} .brand b{font-size:1.2rem} .day{font-size:.85rem} }
+
+/* ---------- v6 premium layer ---------- */
+:root{--radius:20px;--gold:#e8b600;--hair:color-mix(in srgb,var(--line) 70%,transparent);
+  --shadow:0 1px 1px rgba(18,18,18,.04),0 6px 16px -6px rgba(18,18,18,.10),0 24px 48px -24px rgba(18,18,18,.18)}
+.topbar{background:radial-gradient(600px 120px at 85% -40%,rgba(255,210,0,.22),transparent 70%),linear-gradient(180deg,#191919 0%,#0b0b0b 100%)}
+#topBand{height:2px;background:linear-gradient(90deg,transparent 0%,#ffd200 18%,#ffe98a 50%,#138a43 82%,transparent 100%)}
+.brand span{letter-spacing:.14em;font-size:.66rem;color:#ffd200;opacity:.92}
+.card{border:1px solid var(--hair);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card h3{font-size:1.5rem}
+.btn{border-radius:14px;letter-spacing:.005em;transition:transform .08s,box-shadow .2s,background-color .2s}
+.btn.yellow{background:linear-gradient(180deg,#ffdd33 0%,#ffd200 55%,#f2c200 100%);box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 6px 16px -6px rgba(210,160,0,.6)}
+.btn.green{background:linear-gradient(180deg,#19a352 0%,#138a43 100%);box-shadow:0 6px 16px -6px rgba(19,138,67,.55)}
+.btn.huge{border-radius:20px;padding:20px}
+.btn.yellow:hover,.btn.green:hover{transform:translateY(-1px)}
+.clock .sec{font-size:.45em;color:var(--ink-3);letter-spacing:.02em}
+.clock .ap{font-size:.38em;font-family:var(--body);font-weight:700;color:var(--ink-2);letter-spacing:.08em;vertical-align:.5em}
+.running{color:var(--green);font-variant-numeric:tabular-nums}
+.running::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px;vertical-align:.15em;animation:pulse 1.2s infinite alternate}
+.daystrip{background:var(--surface-2);border-color:var(--hair)}
+.pres{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:14px;background:var(--green-soft);border:1px solid color-mix(in srgb,var(--green) 25%,transparent)}
+.pdot{width:12px;height:12px;border-radius:50%;background:var(--green);margin-top:5px;flex:none;box-shadow:0 0 0 5px color-mix(in srgb,var(--green) 22%,transparent);animation:pulse 1.4s infinite alternate}
+.pdot.out{background:var(--red);box-shadow:0 0 0 5px color-mix(in srgb,var(--red) 22%,transparent)}
+.latebox{background:var(--amber-soft);padding:12px;border-radius:14px;color:var(--amber)}
+.latebox textarea{color:var(--ink)}
+/* admin */
+.adminhead{margin-bottom:14px;align-items:flex-end}
+.tabs{gap:6px;border-bottom:0;padding:4px;background:color-mix(in srgb,var(--surface) 70%,transparent);border:1px solid var(--hair);border-radius:999px;margin-bottom:20px;position:sticky;top:6px;z-index:20;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.tab{border-bottom:0;border-radius:999px;padding:8px 14px;font-size:.9rem}
+.tab:hover{background:var(--surface-2)}
+.tab[aria-selected="true"]{background:#121212;color:#ffd200;box-shadow:0 4px 12px -4px rgba(0,0,0,.4)}
+:root[data-theme="dark"] .tab[aria-selected="true"]{background:#ffd200;color:#121212}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .tab[aria-selected="true"]{background:#ffd200;color:#121212} }
+.kpi{border-radius:18px;padding:16px 18px;position:relative;overflow:hidden;border-color:var(--hair);box-shadow:var(--shadow)}
+.kpi::after{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;background:var(--line)}
+.kpi.red::after{background:var(--red)} .kpi.amber::after{background:#e8a200} .kpi.hl::after{display:none}
+.kpi.red b{color:var(--red)}
+.teamhero{display:flex;gap:28px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding:22px 24px;border-radius:24px;color:#fff;
+  background:radial-gradient(520px 260px at 100% 0%,rgba(255,210,0,.22),transparent 65%),radial-gradient(420px 260px at 0% 120%,rgba(19,138,67,.30),transparent 65%),linear-gradient(160deg,#1b1b1b 0%,#0c0c0c 100%);box-shadow:0 18px 40px -18px rgba(0,0,0,.55)}
+.donut{width:150px;height:150px;border-radius:50%;flex:none;display:grid;place-items:center;position:relative}
+.donut > div{width:108px;height:108px;border-radius:50%;background:#121212;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+.donut b{font-family:var(--display);font-weight:400;font-size:2.4rem;line-height:1;color:#ffd200}
+.donut small{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:#bdbdb2;font-weight:700}
+.teamnums{display:grid;grid-template-columns:repeat(2,minmax(120px,1fr));gap:14px 34px;flex:1;min-width:240px}
+.teamnums b{display:block;font-family:var(--display);font-weight:400;font-size:2.6rem;line-height:1}
+.teamnums b em{font-style:normal;font-size:1.1rem;color:#9a9a90}
+.teamnums span{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#cfcfc6}
+.teamnums i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:.05em}
+.live-dot::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;animation:pulse 1s infinite alternate}
+.linkbtn{background:none;border:0;padding:0;cursor:pointer;text-align:left;color:inherit}
+.linkbtn:hover b{text-decoration:underline;text-decoration-color:var(--yellow);text-decoration-thickness:3px;text-underline-offset:3px}
+.formsec{font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);border-top:1px solid var(--hair);padding-top:12px;margin-top:2px}
+.phead{display:flex;gap:16px;align-items:center}
+.phead h2{font-size:2rem}
+.paybox{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--hair);border-radius:16px;overflow:hidden;border:1px solid var(--hair)}
+.paybox > div{background:var(--surface);padding:12px 14px}
+.paybox small{display:block;font-size:.72rem;font-weight:700;color:var(--ink-3);letter-spacing:.04em}
+.paybox b{font-family:var(--display);font-weight:400;font-size:1.7rem}
+.neg{color:var(--red)}
+.schoolcard{border-top:4px solid var(--yellow)}
+.timebig{font-family:var(--display);font-size:2rem;line-height:1}
+.timebig span{font-family:var(--body);font-size:.85rem;color:var(--ink-3);font-weight:700;margin:0 4px}
+.progress{height:10px}
+.modal .card{background:var(--surface);backdrop-filter:none;-webkit-backdrop-filter:none}
+@media (max-width:520px){ .brand b{font-size:1.1rem;white-space:nowrap} .brand span{white-space:normal;font-size:.6rem;letter-spacing:.1em;line-height:1.25;margin-top:2px} .logo{width:40px;height:40px} }
+.progress i{background:linear-gradient(90deg,#138a43,#35c06b)}
+@media (max-width:520px){ .paybox{grid-template-columns:1fr} .teamhero{padding:18px} .donut{width:126px;height:126px} .donut > div{width:90px;height:90px} .teamnums b{font-size:2.1rem} }
 </style>
 </head>
 <body>
@@ -274,7 +340,7 @@ button.avbtn{border:0;padding:0;background:none;cursor:pointer;border-radius:50%
 <header class="topbar">
   <div class="topbar-in">
     <img class="logo" src="logo.png" alt="BCHC logo" width="46" height="46">
-    <div class="brand"><b>BCHC Teacher Connect</b><span id="orgName">Bhim Children Happiness Center</span></div>
+    <div class="brand"><b>BCHC Teacher Connect</b><span id="orgName">Bheem Children Happiness Centre</span></div>
     <div class="spacer"></div>
     <button class="topbtn" id="topAction" hidden></button>
   </div>
@@ -324,7 +390,7 @@ function api(action, data){
   return fetch(API, {method:'POST', body: JSON.stringify(body)})
     .then(function(r){ return r.json(); })
     .catch(function(){ throw new Error('No internet or the server did not answer. Try again.'); })
-    .then(function(res){ if (!res || !res.ok) throw new Error((res && res.error) || 'Something went wrong.'); return res; });
+    .then(function(res){ if (!res || !res.ok){ var e=new Error((res && res.error) || 'Something went wrong.'); e.res=res||{}; throw e; } return res; });
 }
 function pad(n){ return (n<10?'0':'')+n; }
 function iso(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
@@ -337,6 +403,10 @@ function niceDate(s){ if(!s) return ''; return parseISO(s).toLocaleDateString('e
 function niceDay(s){ return parseISO(s).toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'}); }
 function mins(t){ if(!t) return null; var p=String(t).split(':'); return (+p[0])*60+(+p[1])+((+p[2]||0)/60); }
 function nowMins(){ var d=new Date(); return d.getHours()*60+d.getMinutes()+d.getSeconds()/60+0.01; }
+function hms(m){ if(m==null||m<0) m=0; var sec=Math.floor(m*60), h=Math.floor(sec/3600), mm=Math.floor(sec%3600/60), ss=sec%60; return h+':'+pad(mm)+':'+pad(ss); }
+function minText(m){ m=Math.round(m||0); if(m<60) return m+' min'; return Math.floor(m/60)+'h '+pad(m%60)+'m'; }
+function rupees(n){ if(n==null||n===''||isNaN(n)) return '—'; return '₹'+Math.round(+n).toLocaleString('en-IN'); }
+function addMins(t,n){ var m=mins(t)+n; return pad(Math.floor(m/60)%24)+':'+pad(Math.round(m%60)); }
 function durText(m){ if(m==null||m<0) return '—'; var h=Math.floor(m/60), mm=Math.round(m%60); if(mm===60){h++;mm=0;} return h+'h '+pad(mm)+'m'; }
 function haversine(a,b,c,d){ var R=6371000,r=Math.PI/180,x=(c-a)*r,y=(d-b)*r; var s=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*r)*Math.cos(c*r)*Math.sin(y/2)*Math.sin(y/2); return Math.round(2*R*Math.asin(Math.sqrt(s))); }
 function fmtDist(m){ if(m==null||m==='') return '—'; m=+m; return m>=1000 ? (m/1000).toFixed(1)+' km' : m+' m'; }
@@ -476,13 +546,56 @@ window.addEventListener('hashchange', route);
 /* ============================================================ TEACHER */
 var Teacher = (function(){
   var session=null, info=null, hist=null, clockTimer=null, view='home', calMonth=todayISO().slice(0,7), calSel=todayISO(), prefill=null;
+  var off=0, pingTimer=null, lastPing=0, homeKey='';
+  /* Server clock in minutes (the phone clock may be wrong). */
+  function srvMins(){ return nowMins()+off; }
+  /* How late a check-in would be right now, on a class day. */
+  function lateState(){
+    if(!info) return null;
+    var di=dayInfo(info.serverDate, info.settings, calMapOf(info.calendar));
+    if(!di.isClass) return null;
+    var s=info.settings, start=info.schoolStart||s.SCHOOL_START, lm=Math.floor(srvMins()-mins(start));
+    var block=+s.LATE_BLOCK_MIN, need=+s.LATE_REASON_MIN, grace=+s.LATE_GRACE_MIN||0;
+    return {lm:lm, start:start, block:block, need:need, blocked:block>0&&lm>block, needReason:!isNaN(need)&&lm>need&&!(block>0&&lm>block), late:lm>grace};
+  }
+  function stateKey(){ var l=lateState(); return !l?'x':l.blocked?'b':l.needReason?'n':l.late?'l':'o'; }
+  /* While checked in and the app is open, report location every few minutes. */
+  function trackingOn(){
+    if(!info || !info.teacher || info.teacher.lat==null) return false;
+    var inR=info.today.some(function(r){return r.type==='IN';}), outR=info.today.some(function(r){return r.type==='OUT';});
+    return inR && !outR;
+  }
+  function startPings(){
+    stopPings();
+    if(!trackingOn() || !navigator.geolocation) return;
+    var every=Math.max(2,+info.settings.PING_EVERY_MIN||5)*60000;
+    pingTimer=setInterval(ping, every);
+    if(Date.now()-lastPing>120000) ping();
+  }
+  function stopPings(){ if(pingTimer){ clearInterval(pingTimer); pingTimer=null; } }
+  function ping(){
+    if(!trackingOn() || !session) return stopPings();
+    lastPing=Date.now();
+    navigator.geolocation.getCurrentPosition(function(p){
+      api('ping',{teacherId:session.teacherId,pin:session.pin,lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy})
+        .then(function(r){ if(r.presence){ info.presence=r.presence; var b=document.getElementById('presBox'); if(b) b.innerHTML=presenceHtml(); } if(r.tracking===false) stopPings(); })
+        .catch(function(){});
+    }, function(){}, {enableHighAccuracy:true, maximumAge:60000, timeout:30000});
+  }
+  document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible' && pingTimer && Date.now()-lastPing>120000) ping(); });
+  function presenceHtml(){
+    var p=info.presence, every=+info.settings.PING_EVERY_MIN||5;
+    var st = !p||!p.lastTs ? '<span class="pill none">Not checked yet</span>' : p.state==='OUTSIDE' ? '<span class="pill bad">Outside school</span>' : '<span class="pill ok">Inside school</span>';
+    return '<div class="pres"><span class="pdot'+(p&&p.state==='OUTSIDE'?' out':'')+'"></span><div style="flex:1;min-width:0"><div class="row between" style="gap:6px"><b>Location check</b>'+st+'</div>'+
+      '<div class="faint">Every '+every+' min while this app is open'+(p&&p.lastTs?' · last at '+esc(fmt12(String(p.lastTs).slice(11,16))):'')+(p&&p.outsideMin?' · outside so far: '+esc(minText(p.outsideMin)):'')+'</div></div></div>';
+  }
 
   function start(){
     topAction.hidden=false;
     session=store.get('teacher');
     if(!session) return loginView();
     topAction.textContent='Sign out';
-    topAction.onclick=function(){ store.del('teacher'); session=null; info=null; hist=null; loginView(); };
+    topAction.onclick=function(){ stopPings(); store.del('teacher'); session=null; info=null; hist=null; loginView(); };
     nav.querySelectorAll('button').forEach(function(b){ b.onclick=function(){ go(b.getAttribute('data-view')); }; });
     loadHome();
   }
@@ -505,7 +618,7 @@ var Teacher = (function(){
     topAction.onclick=function(){ location.hash='#admin'; };
     app.innerHTML=
       '<div class="narrow stack">'+
-        '<section class="hero"><div class="eyebrow">Bhim Children Happiness Center</div><h1>Welcome, teacher</h1><p style="margin:6px 0 0">Sign in once on your phone. After that, checking in takes one selfie.</p>'+'</section>'+
+        '<section class="hero"><div class="eyebrow">Bheem Children Happiness Centre</div><h1>Welcome, teacher</h1><p style="margin:6px 0 0">Sign in once on your phone. After that, checking in takes one selfie.</p>'+'</section>'+
         '<form class="card stack" id="loginForm" novalidate>'+
           '<label class="f">Teacher ID<input class="in" id="tId" autocomplete="username" autocapitalize="characters" placeholder="e.g. T01" required></label>'+
           '<label class="f">PIN<input class="in pinin num" id="tPin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="6" placeholder="••••" required></label>'+
@@ -528,7 +641,7 @@ var Teacher = (function(){
   function loadHome(){
     showNav(false);
     app.innerHTML='<div class="narrow card" style="text-align:center"><span class="spinner"></span><p class="muted">Loading your day…</p></div>';
-    api('login', session).then(function(res){ info=res; document.getElementById('orgName').textContent=res.org||'Bhim Children Happiness Center'; showNav(true); setBadge(); go(view); })
+    api('login', session).then(function(res){ info=res; if(res.serverTime) off=mins(res.serverTime)-nowMins(); if(Math.abs(off)>720) off=0; startPings(); document.getElementById('orgName').textContent=res.org||'Bheem Children Happiness Centre'; showNav(true); setBadge(); go(view); })
       .catch(function(err){
         if (/PIN|ID|switched off/.test(err.message)) { store.del('teacher'); return loginView(err.message); }
         app.innerHTML='<div class="narrow stack"><div class="msg err">'+esc(err.message)+'</div><button class="btn yellow" id="retry">Try again</button></div>';
@@ -543,11 +656,16 @@ var Teacher = (function(){
     var dInfo=dayInfo(info.serverDate, s, calMap);
     var inR=info.today.filter(function(r){return r.type==='IN';})[0];
     var outR=info.today.filter(function(r){return r.type==='OUT';})[0];
-    var worked = inR&&outR ? durText(mins(outR.time)-mins(inR.time)) : (inR ? 'In class' : '—');
+    var worked = inR&&outR ? durText(mins(outR.time)-mins(inR.time)) : (inR ? '<span id="duty">'+hms(srvMins()-mins(inR.time))+'</span>' : '—');
     var first=(t.name||'').split(' ')[0];
-    var action;
-    if(!inR) action='<button class="btn yellow huge block" id="go" data-type="IN">Check in</button><p class="faint" style="text-align:center;margin:0">Class starts at '+esc(fmt12(s.SCHOOL_START))+'</p>';
-    else if(!outR) action='<button class="btn green huge block" id="go" data-type="OUT">Check out</button><p class="faint" style="text-align:center;margin:0">Check out when you leave.</p>';
+    var action, ls=lateState(), start=info.schoolStart||s.SCHOOL_START, end=info.schoolEnd||s.SCHOOL_END;
+    homeKey=stateKey();
+    if(!inR && ls && ls.blocked) action='<div class="msg err stack" style="gap:6px"><b>Check-in is closed for today</b><span style="font-weight:500">You are '+ls.lm+' minutes late. Class started at '+esc(fmt12(start))+' and check-in closes '+ls.block+' minutes after that.</span></div>'+
+      '<div class="row"><button class="btn yellow" style="flex:1" id="blkFix">Ask the admin to fix</button><button class="btn ghost" style="flex:1" data-go="leave">Apply for leave</button></div>';
+    else if(!inR) action='<button class="btn yellow huge block" id="go" data-type="IN">Check in</button>'+
+      (ls && ls.needReason ? '<div class="msg note" style="text-align:center">You are '+ls.lm+' minutes late. You will be asked for the reason. Check-in closes at '+esc(fmt12(addMins(start,ls.block)))+'.</div>'
+       : '<p class="faint" style="text-align:center;margin:0">Class '+esc(fmt12(start))+(end?' – '+esc(fmt12(end)):'')+(ls&&ls.block>0?' · check-in closes '+esc(fmt12(addMins(start,ls.block))):'')+'</p>');
+    else if(!outR) action='<button class="btn green huge block" id="go" data-type="OUT">Check out</button><p class="faint" style="text-align:center;margin:0">'+(end?'Class ends at '+esc(fmt12(end))+'. ':'')+'Check out when you leave.</p>';
     else action='<div class="msg good" style="text-align:center">You are done for today. Thank you, '+esc(first)+'!</div>';
     var dayPill = dInfo.holiday ? '<span class="pill bad">'+esc(dayLabel(dInfo))+'</span>' : dInfo.isClass ? '<span class="pill ok">'+esc(dayLabel(dInfo))+'</span>' : '<span class="pill none">'+esc(dayLabel(dInfo))+'</span>';
 
@@ -561,9 +679,10 @@ var Teacher = (function(){
           '<div class="daystrip num">'+
             '<div><small>In</small><b>'+(inR?esc(fmt12(inR.time)):'—')+'</b></div>'+
             '<div><small>Out</small><b>'+(outR?esc(fmt12(outR.time)):'—')+'</b></div>'+
-            '<div><small>Worked</small><b style="font-size:1.05rem">'+esc(worked)+'</b></div>'+
+            '<div><small>'+(inR&&!outR?'On duty':'Worked')+'</small><b style="font-size:1.05rem"'+(inR&&!outR?' class="running"':'')+'>'+worked+'</b></div>'+
           '</div>'+
-          (inR ? '<div class="row">'+geoPill(inR.geofence,inR.distance)+(inR.late?'<span class="pill warn">Late</span>':'<span class="pill ok">On time</span>')+'</div>' : '')+
+          (inR ? '<div class="row">'+geoPill(inR.geofence,inR.distance)+(inR.late?'<span class="pill warn">Late'+(inR.lateMin?' · '+inR.lateMin+' min':'')+'</span>':'<span class="pill ok">On time</span>')+'</div>' : '')+
+          (inR&&!outR&&t.lat!=null ? '<div id="presBox">'+presenceHtml()+'</div>' : '')+
           action+
         '</section>'+
         homeUpdates()+
@@ -571,7 +690,9 @@ var Teacher = (function(){
         '<button class="btn ghost block" id="forgot">Forgot to check in or out? Ask for a fix</button>'+
       '</div>';
     tick(); clearInterval(clockTimer); clockTimer=setInterval(tick, 1000);
-    var g=$('#go'); if(g) g.onclick=function(){ punchView(g.getAttribute('data-type')); };
+    var g=$('#go'); if(g) g.onclick=function(){ var l=lateState(); if(g.getAttribute('data-type')==='IN' && l && l.blocked) return homeView(); punchView(g.getAttribute('data-type')); };
+    var bf=$('#blkFix'); if(bf) bf.onclick=function(){ prefill={date:info.serverDate,type:'IN'}; go('requests'); };
+    startPings();
     $('#forgot').onclick=function(){ prefill=null; go('requests'); };
     $('#toProfile').onclick=function(){ go('profile'); };
     app.querySelectorAll('[data-go]').forEach(function(b){ b.onclick=function(){ go(b.getAttribute('data-go')); }; });
@@ -660,13 +781,14 @@ var Teacher = (function(){
     var t=info.teacher;
     app.innerHTML='<div class="narrow stack">'+
       '<section class="card stack"><div class="profile-head"><div id="pAv">'+avatarHtml(t,120)+'</div>'+
-        '<div><h1>'+esc(t.name)+'</h1><div class="muted">Teacher · '+esc(info.org||'BCHC')+'</div></div>'+
+        '<div><h1>'+esc(t.name)+'</h1><div class="muted">'+esc(t.designation||'Teacher')+' · '+esc(info.org||'BCHC')+'</div></div>'+
         '<input type="file" id="pFile" accept="image/*" hidden>'+
         '<div class="row" style="justify-content:center"><button class="btn small yellow" id="pChange">'+(t.avatar?'Change photo':'Add profile photo')+'</button>'+(t.avatar?'<button class="btn small ghost" id="pRemove">Remove</button>':'')+'</div>'+
         '<div id="pMsg" aria-live="polite"></div></div></section>'+
       '<section class="card stack"><h2 style="font-size:1.6rem">This month</h2><div class="stats num" id="pStats"><div class="stat"><b>…</b><small>Days</small></div><div class="stat"><b>…</b><small>Hours</small></div><div class="stat"><b>…</b><small>Late</small></div></div></section>'+
       '<section class="card"><dl class="infolist"><dt>Teacher ID</dt><dd>'+esc(t.id)+'</dd><dt>Centre</dt><dd>'+esc(t.school||'—')+'</dd><dt>Phone</dt><dd class="num">'+esc(t.phone||'—')+'</dd>'+
-        '<dt>Class time</dt><dd>'+esc(fmt12(info.settings.SCHOOL_START))+'</dd></dl></section>'+
+        (t.designation?'<dt>Role</dt><dd>'+esc(t.designation)+'</dd>':'')+
+        '<dt>Class time</dt><dd>'+esc(fmt12(info.schoolStart||info.settings.SCHOOL_START))+(info.schoolEnd?' – '+esc(fmt12(info.schoolEnd)):'')+'</dd></dl></section>'+
       '<section class="card menu">'+
         '<button data-go="requests"><span>Fix a missed check-in<span class="sub">Forgot to check in or out</span></span><span aria-hidden="true">›</span></button>'+
         '<button data-go="resources"><span>Resources<span class="sub">Worksheets, documents and links</span></span><span aria-hidden="true">›</span></button>'+
@@ -693,7 +815,14 @@ var Teacher = (function(){
     }
     (hist?Promise.resolve(hist):loadHist()).then(stats).catch(function(){});
   }
-  function tick(){ var c=document.getElementById('clock'); if(!c){ clearInterval(clockTimer); return; } var d=new Date(); var h=d.getHours(), ap=h>=12?'PM':'AM'; c.textContent=(h%12||12)+':'+pad(d.getMinutes())+' '+ap; }
+  function tick(){
+    var c=document.getElementById('clock'); if(!c){ clearInterval(clockTimer); return; }
+    var m=srvMins(), h=Math.floor(m/60)%24, ap=h>=12?'PM':'AM';
+    c.innerHTML=(h%12||12)+':'+pad(Math.floor(m%60))+'<span class="sec">:'+pad(Math.floor(m*60%60))+'</span> <span class="ap">'+ap+'</span>';
+    var inR=info&&info.today.filter(function(r){return r.type==='IN';})[0], du=document.getElementById('duty');
+    if(du&&inR) du.textContent=hms(m-mins(inR.time));
+    if(view==='home' && !inR && stateKey()!==homeKey) homeView();
+  }
 
   /* ----- Calendar */
   function calendarView(){
@@ -742,7 +871,7 @@ var Teacher = (function(){
         '<div class="grid2">'+
           '<label class="f">Date<input class="in" type="date" id="rDate" min="'+minD+'" max="'+t+'" value="'+esc(p.date||t)+'"></label>'+
           '<label class="f">What did you miss?<select class="in" id="rType"><option value="IN"'+(p.type==='OUT'?'':' selected')+'>Check-in</option><option value="OUT"'+(p.type==='OUT'?' selected':'')+'>Check-out</option></select></label>'+
-          '<label class="f">Correct time<input class="in" type="time" id="rTime" value="'+esc(p.type==='OUT'?'':(s.SCHOOL_START||''))+'"></label>'+
+          '<label class="f">Correct time<input class="in" type="time" id="rTime" value="'+esc(p.type==='OUT'?'':(info.schoolStart||s.SCHOOL_START||''))+'"></label>'+
         '</div>'+
         '<label class="f">Reason<textarea class="in" id="rReason" maxlength="300" placeholder="e.g. Phone battery was dead"></textarea></label>'+
         '<div id="rMsg" aria-live="polite"></div>'+
@@ -784,7 +913,9 @@ var Teacher = (function(){
         '<div class="row between"><h2>'+label+'</h2><button class="btn small ghost" id="cancel">Cancel</button></div>'+
         '<div class="cam" id="cam"><video id="vid" playsinline autoplay muted></video><div class="oval"></div><img id="shot" alt="Your selfie" hidden></div>'+
         '<div class="gps" id="gps"><span class="dot wait" id="gdot"></span><div><b id="gtitle">Finding your location…</b><div class="faint" id="gsub">Stay outdoors or near a window for a better signal.</div></div></div>'+
+        (type==='IN' && lateState() && lateState().needReason ? lateBox(lateState().lm) : '<div id="lateSlot"></div>')+
         '<div id="pmsg" aria-live="polite"></div>'+
+        (type==='IN' && t.lat!=null ? '<p class="faint" style="margin:0">While you are checked in and this app is open, it checks your location every '+esc(+info.settings.PING_EVERY_MIN||5)+' minutes so the admin can see you are at school.</p>' : '')+
         '<input type="file" id="fileCap" accept="image/*" capture="user" hidden>'+
         '<button class="btn yellow huge block" id="snap" disabled>Take selfie</button>'+
         '<div class="row" id="afterSnap" hidden><button class="btn ghost" id="retake" style="flex:1">Retake</button><button class="btn green" id="submit" style="flex:2" disabled>Submit '+label.toLowerCase()+'</button></div>'+
@@ -845,15 +976,28 @@ var Teacher = (function(){
       $('#snap').hidden=false; $('#afterSnap').hidden=true; refresh();
     };
     $('#submit').onclick=function(){
+      var why=$('#lateWhy');
+      if(why && why.value.trim().length<3){ $('#pmsg').innerHTML='<div class="msg err">Please write why you are late.</div>'; why.focus(); return; }
       var b=$('#submit'); b.disabled=true; b.innerHTML='<span class="spinner"></span> Saving';
       $('#retake').disabled=true;
-      api('punch', {teacherId:session.teacherId, pin:session.pin, type:type, photo:state.photo,
+      api('punch', {teacherId:session.teacherId, pin:session.pin, type:type, photo:state.photo, lateReason:why?why.value.trim():'',
         lat:state.pos.coords.latitude, lng:state.pos.coords.longitude, accuracy:state.pos.coords.accuracy, device:navigator.userAgent})
       .then(function(res){ stopCamera(); hist=null; resultView(res.record); })
-      .catch(function(err){ b.disabled=false; $('#retake').disabled=false; refresh(); $('#pmsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
+      .catch(function(err){
+        b.disabled=false; $('#retake').disabled=false; refresh();
+        var r=err.res||{};
+        if(r.needReason && !$('#lateWhy')){ var sl=$('#lateSlot'); if(sl) sl.outerHTML=lateBox(r.lateBy); var w=$('#lateWhy'); if(w) w.focus(); }
+        if(r.blocked){ b.disabled=true; $('#retake').disabled=true; }
+        $('#pmsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'+(r.blocked?'<div class="row" style="margin-top:8px"><button class="btn yellow" id="bFix" style="flex:1">Ask the admin to fix</button><button class="btn ghost" id="bHome" style="flex:1">Back</button></div>':'');
+        var bfx=$('#bFix'); if(bfx) bfx.onclick=function(){ stopCamera(); showNav(true); prefill={date:info.serverDate,type:'IN'}; go('requests'); };
+        var bh=$('#bHome'); if(bh) bh.onclick=function(){ stopCamera(); showNav(true); homeView(); };
+      });
     };
   }
 
+  function lateBox(lm){
+    return '<label class="f latebox">You are '+esc(lm)+' minutes late · reason (required)<textarea class="in" id="lateWhy" maxlength="300" placeholder="e.g. Bus was late / ఆటో ఆలస్యం"></textarea></label>';
+  }
   function resultView(r){
     var isIn=r.type==='IN';
     app.innerHTML=
@@ -861,12 +1005,15 @@ var Teacher = (function(){
         '<p class="muted" style="margin:0">'+(isIn?'Checked in':'Checked out')+' · '+esc(niceDate(r.date))+'</p>'+
         '<div class="big num">'+esc(fmt12(r.time))+'</div>'+
         '<div class="row" style="justify-content:center">'+geoPill(r.geofence,r.distance)+
-          (isIn ? (r.late?'<span class="pill warn">Late</span>':'<span class="pill ok">On time</span>') : '')+'</div>'+
+          (isIn ? (r.late?'<span class="pill warn">Late'+(r.lateMin?' · '+r.lateMin+' min':'')+'</span>':'<span class="pill ok">On time</span>') : '')+'</div>'+
+        (r.lateReason?'<div class="muted">Reason: '+esc(r.lateReason)+'</div>':'')+
+        (isIn?'<p class="faint" style="margin:0">Have a good day of teaching!</p>':'')+
         (r.note?'<div class="msg note">'+esc(r.note)+'</div>':'')+
         '<p class="faint" style="margin:0">Time is recorded by the server, not your phone.</p>'+
         '<button class="btn yellow block" id="done">Done</button>'+
       '</div>';
     $('#done').onclick=function(){ view='home'; loadHome(); };
+    if(!isIn) stopPings();
   }
 
   return {start:start};
@@ -911,7 +1058,7 @@ var Admin = (function(){
 
   function start(){
     nav.hidden=true; document.body.classList.remove('has-nav');
-    topAction.hidden=false; topAction.textContent='Open teacher app';
+    topAction.hidden=false; topAction.textContent='Teacher app';
     topAction.onclick=function(){ location.hash=''; };
     try{ pin=sessionStorage.getItem('bchc_admin'); }catch(e){ pin=null; }
     if(!pin) return loginView();
@@ -920,7 +1067,7 @@ var Admin = (function(){
 
   function loginView(msg){
     app.innerHTML=
-      '<div class="narrow stack"><section class="hero"><div class="eyebrow">For the BCHC admin</div><h1>Admin dashboard</h1><p style="margin:6px 0 0">Attendance, calendar, meetings and fix requests in one place.</p>'+'</section>'+
+      '<div class="narrow stack"><section class="hero"><div class="eyebrow">For the BCHC admin</div><h1>Admin dashboard</h1><p style="margin:6px 0 0">Team attendance, schools, leave, payroll and announcements in one place.</p>'+'</section>'+
       '<form class="card stack" id="aForm" novalidate><label class="f">Admin PIN<input class="in pinin num" id="aPin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="8" placeholder="••••"></label>'+
       '<div id="aMsg" aria-live="polite">'+(msg?'<div class="msg err">'+esc(msg)+'</div>':'')+'</div><button class="btn yellow block" id="aBtn">Open dashboard</button></form></div>';
     $('#aForm').addEventListener('submit',function(e){
@@ -930,10 +1077,10 @@ var Admin = (function(){
     });
   }
 
-  var TABS=[['today','Today'],['news','Announcements'],['leave','Leave'],['requests','Fix requests'],['tasks','Tasks'],['records','Records'],['monthly','Monthly report'],['calendar','Calendar'],['resources','Resources'],['teachers','Teachers'],['settings','Settings']];
+  var TABS=[['today','Team today'],['news','Announcements'],['leave','Leave'],['requests','Fix requests'],['tasks','Tasks'],['records','Records'],['monthly','Monthly report'],['payroll','Payroll'],['calendar','Calendar'],['resources','Resources'],['teachers','Teachers'],['schools','Schools'],['settings','Settings']];
   function shell(){
     app.innerHTML=
-      '<div class="row between" style="margin-bottom:10px"><h1 style="font-size:2.4rem">Admin dashboard</h1>'+
+      '<div class="row between adminhead"><div><div class="eyebrow">'+esc((data&&data.settings&&data.settings.ORG_NAME)||'Bheem Children Happiness Centre')+'</div><h1 style="font-size:2.4rem">Admin dashboard</h1></div>'+
         '<div class="row"><a class="btn small ghost" id="sheetLink" target="_blank" rel="noopener" hidden>Open Google Sheet</a><button class="btn small ghost" id="refresh">Refresh</button><button class="btn small ghost" id="aOut">Lock</button></div></div>'+
       '<nav class="tabs" role="tablist">'+TABS.map(function(p){ return '<button class="tab" role="tab" data-tab="'+p[0]+'" aria-selected="'+(tab===p[0])+'">'+p[1]+(p[0]==='requests'?'<span id="reqBadge"></span>':'')+(p[0]==='leave'?'<span id="leaveBadge"></span>':'')+'</button>'; }).join('')+
       '</nav><section id="pane"></section>';
@@ -947,7 +1094,8 @@ var Admin = (function(){
     var pane=$('#pane'); pane.innerHTML='<div class="card empty"><span class="spinner"></span></div>';
     var from, to;
     if(tab==='records'){ from=range.from; to=range.to; }
-    else if(tab==='monthly'){ from=month+'-01'; to=month+'-31'; }
+    else if(tab==='monthly'||tab==='payroll'){ from=month+'-01'; to=month+'-31'; }
+    else if(tab==='teachers'){ from=todayISO().slice(0,7)+'-01'; to=todayISO(); }
     else if(tab==='calendar'){ from=calMonth+'-01'; to=calMonth+'-31'; }
     else { from=to=todayISO(); }
     api('adminData',{pin:pin,from:from,to:to}).then(function(res){
@@ -957,7 +1105,7 @@ var Admin = (function(){
       var rb=$('#reqBadge'); if(rb) rb.innerHTML=pend?'<span class="badge">'+pend+'</span>':'';
       var lp=res.leaves.filter(function(l){return l.status==='PENDING';}).length, lb=$('#leaveBadge'); if(lb) lb.innerHTML=lp?'<span class="badge">'+lp+'</span>':'';
       ({today:renderToday,records:renderRecords,monthly:renderMonthly,calendar:renderCalendar,requests:renderRequests,teachers:renderTeachers,settings:renderSettings,
-        news:renderNews,leave:renderLeave,tasks:renderTasks,resources:renderResources})[tab]();
+        news:renderNews,leave:renderLeave,tasks:renderTasks,resources:renderResources,payroll:renderPayroll,schools:renderSchools})[tab]();
     }).catch(function(err){
       if(/Admin PIN/.test(err.message)){ try{sessionStorage.removeItem('bchc_admin');}catch(e){} return loginView(err.message); }
       pane.innerHTML='<div class="msg err">'+esc(err.message)+'</div>';
@@ -999,47 +1147,105 @@ var Admin = (function(){
         '<div><div class="faint">GPS</div><b>'+esc(rec.lat)+', '+esc(rec.lng)+'</b><div class="faint">±'+esc(rec.accuracy)+' m</div></div>'+
         '<div><div class="faint">Map</div><a href="https://www.google.com/maps?q='+esc(rec.lat)+','+esc(rec.lng)+'" target="_blank" rel="noopener">Open in Google Maps</a></div></div>'+
         (rec.note?'<div class="msg note">'+esc(rec.note)+'</div>':'')+
-        '<div class="row"><button class="btn small ghost" id="setSchool">Use this spot as '+esc(rec.name.split(' ')[0])+'\'s school location</button></div>':'')+
+        (rec.lat!=null?'<div class="row"><button class="btn small ghost" id="setSchool">Use this spot as '+esc(rec.name.split(' ')[0])+'\'s school location</button></div>':'')+(rec.lateReason?'<div class="msg note">Late reason: '+esc(rec.lateReason)+'</div>':'')+'':'')+
       '</div>');
     getPhoto(id).then(function(u){ var i=$('#mp'); if(i) i.src=u; }).catch(function(err){ toast(err.message); });
     var ss=$('#setSchool'); if(ss) ss.onclick=function(){
       var t=data.teachers.filter(function(x){return x.id===rec.teacherId;})[0]; if(!t) return;
-      ss.disabled=true; api('saveTeacher',{pin:pin,teacher:Object.assign({},t,{lat:rec.lat,lng:rec.lng})}).then(function(){ toast('School location saved for '+t.name); close(); load(); }).catch(function(err){ ss.disabled=false; toast(err.message); });
+      ss.disabled=true;
+      var sc=t.schoolLink && schoolById(t.schoolLink);
+      var call = sc ? api('saveSchool',{pin:pin,school:Object.assign({},sc,{lat:rec.lat,lng:rec.lng})}) : api('saveTeacher',{pin:pin,teacher:teacherPayload(t,{lat:rec.lat,lng:rec.lng})});
+      call.then(function(){ toast('Location saved for '+(sc?sc.name:t.name)); close(); load(); }).catch(function(err){ ss.disabled=false; toast(err.message); });
     };
   }
-  function kpi(label,val,hl){ return '<div class="kpi'+(hl?' hl':'')+'"><small>'+label+'</small><b>'+val+'</b></div>'; }
+  function kpi(label,val,hl,tone){ return '<div class="kpi'+(hl?' hl':'')+(tone?' '+tone:'')+'"><small>'+label+'</small><b>'+val+'</b></div>'; }
+  function schoolById(id){ return (data.schools||[]).filter(function(x){ return String(x.id).toUpperCase()===String(id||'').toUpperCase(); })[0]||null; }
+  function presenceOf(tid, day){ return (data.presence||[]).filter(function(p){ return p.teacherId===tid && p.date===day; })[0]||null; }
+  /* Fields the server expects when saving a teacher (keeps everything not being changed). */
+  function teacherPayload(t, over){
+    return Object.assign({id:t.id,name:t.name,pin:t.pin,phone:t.phone,email:t.email,school:t.ownSchool,lat:t.ownLat,lng:t.ownLng,radius:t.ownRadius,active:t.active,
+      schoolId:t.schoolLink,joinDate:t.joinDate,salary:t.salary,deductPerDay:t.deductPerDay,designation:t.designation,notes:t.notes}, over||{});
+  }
+  /* Pay for one teacher for month ym: absent class days are deducted. Approved leave is paid. */
+  function payrollFor(t, ym){
+    var y=+ym.slice(0,4), m=+ym.slice(5,7)-1, d=new Date(y,m,1), today=todayISO(), total=0, passed=0, present=0, leave=0, absent=0, absentDays=[];
+    var mine={}; groupDays(data.records.filter(function(r){return r.teacherId===t.id;})).forEach(function(x){ if(x.inR) mine[x.date]=x; });
+    var lv={}; data.leaves.forEach(function(l){ if(l.teacherId===t.id && l.status==='APPROVED') lv[l.date]=1; });
+    while(d.getMonth()===m){
+      var ds=iso(d), di=dayInfo(ds, data.settings, data.calMap);
+      if(di.isClass && (!t.joinDate || ds>=t.joinDate)){
+        total++;
+        if(ds<=today){ passed++; if(mine[ds]) present++; else if(lv[ds]) leave++; else if(ds<today || nowMins()>mins(t.end||data.settings.SCHOOL_END||'16:00')){ absent++; absentDays.push(ds); } }
+      }
+      d.setDate(d.getDate()+1);
+    }
+    var sal=t.salary, perDay = t.deductPerDay!=null ? t.deductPerDay : (sal && total ? Math.round(sal/total) : 0);
+    var ded = Math.min(sal||0, absent*perDay);
+    return {t:t, total:total, passed:passed, present:present, leave:leave, absent:absent, absentDays:absentDays, salary:sal, perDay:perDay, auto:t.deductPerDay==null, deduction:ded, net: sal!=null ? sal-ded : null,
+      done: ym<today.slice(0,7)};
+  }
+  function donut(parts, center, sub){
+    var tot=parts.reduce(function(a,p){return a+p[1];},0)||1, acc=0;
+    var g=parts.map(function(p){ var a=acc/tot*360; acc+=p[1]; return p[2]+' '+a+'deg '+(acc/tot*360)+'deg'; }).join(',');
+    return '<div class="donut" style="background:conic-gradient('+g+')"><div><b class="num">'+center+'</b><small>'+sub+'</small></div></div>';
+  }
 
-  /* ----- Today */
+  /* ----- Team today */
   function renderToday(){
     var pane=$('#pane'), day=data.serverDate||todayISO(), s=data.settings, di=dayInfo(day,s,data.calMap);
     var byT={}; groupDays(data.records.filter(function(r){return r.date===day;})).forEach(function(d){ byT[d.teacherId]=d; });
     var ts=activeTeachers();
-    var present=0, late=0, outside=0, noOut=0;
-    ts.forEach(function(t){ var d=byT[t.id]; if(d&&d.inR){ present++; if(d.inR.late) late++; if(d.inR.geofence==='OUTSIDE'||(d.outR&&d.outR.geofence==='OUTSIDE')) outside++; if(!d.outR) noOut++; } });
+    var leaveIds={}; data.leaves.forEach(function(l){ if(l.status==='APPROVED' && l.date===day) leaveIds[l.teacherId]=l; });
+    var c={present:0,late:0,leave:0,absent:0,notYet:0,outsideNow:0,noOut:0};
+    var nowM=nowMins(), alerts=[];
+    ts.forEach(function(t){
+      var d=byT[t.id], p=presenceOf(t.id, day);
+      if(d&&d.inR){ c.present++; if(d.inR.late) c.late++; if(!d.outR) c.noOut++; }
+      else if(leaveIds[t.id]) c.leave++;
+      else if(di.isClass){ if(nowM<=mins(t.start||s.SCHOOL_START)+(+s.LATE_BLOCK_MIN||0)) c.notYet++; else c.absent++; }
+      if(p && !p.closed && p.state==='OUTSIDE'){ c.outsideNow++; }
+      if(p && p.outsideMin>=10) alerts.push({t:t,p:p});
+    });
+    var schools={}; ts.forEach(function(t){ var k=t.school||'No school set'; var o=schools[k]||(schools[k]={n:0,p:0,start:t.start}); o.n++; if(byT[t.id]&&byT[t.id].inR) o.p++; });
     var pend=data.requests.filter(function(r){return r.status==='PENDING';}).length;
     var lpend=data.leaves.filter(function(l){return l.status==='PENDING';}).length;
-    var onLeave=data.leaves.filter(function(l){return l.status==='APPROVED' && l.date===day;});
+    var pct = ts.length ? Math.round(c.present/ts.length*100) : 0;
     var rows=ts.map(function(t){
-      var d=byT[t.id]||{}; var st;
-      if(!d.inR) st='<span class="pill bad">Not checked in</span>';
-      else if(!d.outR) st='<span class="pill info">In class</span>';
+      var d=byT[t.id]||{}, p=presenceOf(t.id, day), st;
+      if(!d.inR) st = leaveIds[t.id] ? '<span class="pill info">On leave</span>' : !di.isClass ? '<span class="pill none">No class</span>' : (nowM<=mins(t.start||s.SCHOOL_START)+(+s.LATE_BLOCK_MIN||0) ? '<span class="pill none">Not yet</span>' : '<span class="pill bad">Absent</span>');
+      else if(!d.outR) st='<span class="pill ok live-dot">In class</span>';
       else st='<span class="pill ok">Done</span>';
-      var hrs = d.inR&&d.outR ? durText(d.hours) : (d.inR ? 'so far '+durText(nowMins()-mins(d.inR.time)) : '—');
+      var hrs = d.inR&&d.outR ? durText(d.hours) : (d.inR ? durText(nowMins()-mins(d.inR.time))+' so far' : '—');
+      var outTxt = !p ? (d.inR&&t.lat!=null?'<span class="faint">No checks</span>':'—') :
+        (p.state==='OUTSIDE'&&!p.closed?'<span class="pill bad">Outside now</span> ':'')+(p.outsideMin?'<b>'+esc(minText(p.outsideMin))+'</b>':(p.state==='OUTSIDE'&&!p.closed?'':'<span class="pill ok">Inside</span>'))+
+        (p.untrackedMin?'<div class="faint">'+esc(minText(p.untrackedMin))+' app closed</div>':'');
       return '<tr><td><div class="namecell">'+avatarHtml(t,34,'sm')+'<div class="who"><b>'+esc(t.name)+'</b><small>'+esc(t.id)+' · '+esc(t.school||'')+'</small></div></div></td><td>'+st+'</td>'+
-        '<td class="num">'+(d.inR?esc(fmt12(d.inR.time))+(d.inR.late?' <span class="pill warn">Late</span>':''):'—')+'</td>'+
+        '<td class="num">'+(d.inR?esc(fmt12(d.inR.time))+(d.inR.late?' <span class="pill warn">Late'+(d.inR.lateMin?' '+d.inR.lateMin+'m':'')+'</span>':'')+(d.inR.lateReason?'<div class="faint" style="white-space:normal;max-width:200px">"'+esc(d.inR.lateReason)+'"</div>':''):'—')+'</td>'+
         '<td>'+(d.inR?geoPill(d.inR.geofence,d.inR.distance):'')+'</td><td>'+(d.inR?thumb(d.inR.photoId):'')+'</td>'+
+        '<td>'+outTxt+'</td>'+
         '<td class="num">'+(d.outR?esc(fmt12(d.outR.time)):'—')+'</td><td>'+(d.outR?geoPill(d.outR.geofence,d.outR.distance):'')+'</td><td>'+(d.outR?thumb(d.outR.photoId):'')+'</td>'+
         '<td class="num">'+esc(hrs)+'</td></tr>';
     }).join('');
     pane.innerHTML=
-      '<div class="row" style="margin:0 0 12px"><span class="muted">'+esc(niceDate(day))+'</span>'+(di.holiday?'<span class="pill bad">'+esc(dayLabel(di))+'</span>':di.isClass?'<span class="pill ok">'+esc(dayLabel(di))+'</span>':'<span class="pill none">'+esc(dayLabel(di))+'</span>')+(di.meeting?'<span class="pill info">Meeting '+esc(fmtShort(s.MEETING_START)+'–'+fmtShort(s.MEETING_END))+'</span>':'')+'</div>'+
+      '<div class="row" style="margin:0 0 14px"><span class="muted">'+esc(niceDate(day))+'</span>'+(di.holiday?'<span class="pill bad">'+esc(dayLabel(di))+'</span>':di.isClass?'<span class="pill ok">'+esc(dayLabel(di))+'</span>':'<span class="pill none">'+esc(dayLabel(di))+'</span>')+(di.meeting?'<span class="pill info">Meeting '+esc(fmtShort(s.MEETING_START)+'–'+fmtShort(s.MEETING_END))+'</span>':'')+'</div>'+
       (pend?'<div class="msg note" style="margin-bottom:14px">'+pend+' fix request'+(pend>1?'s are':' is')+' waiting for you. <button class="btn small black" id="goReq" style="margin-left:8px">Review</button></div>':'')+
       (lpend?'<div class="msg note" style="margin-bottom:14px">'+lpend+' leave request'+(lpend>1?'s are':' is')+' waiting for you. <button class="btn small black" id="goLeave" style="margin-left:8px">Review</button></div>':'')+
-      (onLeave.length?'<div class="msg good" style="margin-bottom:14px">On approved leave today: '+onLeave.map(function(l){return esc(l.name);}).join(', ')+'</div>':'')+
-      '<div class="kpis num">'+
-        kpi('Present', present+'<em> / '+ts.length+'</em>', true)+kpi('Absent', ts.length-present)+kpi('Late', late)+kpi('Outside school', outside)+kpi('Not checked out', noOut)+
-      '</div>'+
-      (ts.length? '<div class="tablebox"><table><thead><tr><th>Teacher</th><th>Status</th><th>In</th><th>In location</th><th>In selfie</th><th>Out</th><th>Out location</th><th>Out selfie</th><th>Hours</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
+      '<section class="teamhero">'+
+        donut([[0,c.present,'#35c06b'],[0,c.leave,'#5b8def'],[0,c.absent,'#ff6b5e'],[0,c.notYet,'rgba(255,255,255,.18)']].map(function(x,i){return ['',x[1],x[2]];}), pct+'%', 'present')+
+        '<div class="teamnums">'+
+          '<div><b class="num">'+c.present+'<em>/'+ts.length+'</em></b><span><i style="background:#35c06b"></i>Present</span></div>'+
+          '<div><b class="num">'+c.absent+'</b><span><i style="background:#ff6b5e"></i>Absent</span></div>'+
+          '<div><b class="num">'+c.leave+'</b><span><i style="background:#5b8def"></i>On leave</span></div>'+
+          '<div><b class="num">'+c.notYet+'</b><span><i style="background:rgba(255,255,255,.35)"></i>Not yet in</span></div>'+
+        '</div></section>'+
+      '<div class="kpis num">'+kpi('Late today', c.late, false, c.late?'amber':'')+kpi('Outside school now', c.outsideNow, false, c.outsideNow?'red':'')+kpi('Still in class', c.noOut)+kpi('Leave waiting', lpend, false, lpend?'amber':'')+'</div>'+
+      '<div class="split" style="margin-bottom:18px"><section class="card stack"><h3>By school</h3>'+Object.keys(schools).map(function(k){ var o=schools[k];
+          return '<div class="stack" style="gap:4px"><div class="row between"><b>'+esc(k)+'</b><span class="num faint">'+o.p+' of '+o.n+(o.start?' · starts '+esc(fmt12(o.start)):'')+'</span></div><div class="progress"><i style="width:'+(o.n?Math.round(o.p/o.n*100):0)+'%"></i></div></div>'; }).join('')+'</section>'+
+        '<section class="card stack"><h3>Outside the school radius</h3>'+(alerts.length?alerts.map(function(a){ var sp=a.p.spells.slice(-3).map(function(x){return esc(fmtShort(x.from))+'–'+esc(fmtShort(x.to));}).join(', ');
+            return '<div class="row between"><div class="namecell">'+avatarHtml(a.t,30,'sm')+'<div class="who"><b>'+esc(a.t.name)+'</b><small>'+(sp||'still outside')+(a.p.maxDist?' · up to '+esc(fmtDist(a.p.maxDist)):'')+'</small></div></div><span class="pill '+(a.p.outsideMin>=30?'bad':'warn')+'">'+esc(minText(a.p.outsideMin))+'</span></div>'; }).join('')
+          :'<p class="muted" style="margin:0">No one has been outside for 10 minutes or more today.</p>')+
+          '<p class="faint" style="margin:0">Checked every '+esc(s.PING_EVERY_MIN||5)+' min while the teacher\'s app is open. When the app is closed, that time shows as "app closed".</p></section></div>'+
+      (ts.length? '<div class="tablebox"><table><thead><tr><th>Teacher</th><th>Status</th><th>In</th><th>In location</th><th>In selfie</th><th>Time outside</th><th>Out</th><th>Out location</th><th>Out selfie</th><th>Hours</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
         : '<div class="card empty">No teachers yet. Add them in the Teachers tab.</div>');
     bindThumbs(pane);
     var gr=$('#goReq'); if(gr) gr.onclick=function(){ app.querySelector('[data-tab=requests]').click(); };
@@ -1060,9 +1266,9 @@ var Admin = (function(){
         '<div class="row"><button class="btn small ghost" data-q="7">Last 7 days</button><button class="btn small ghost" data-q="30">Last 30 days</button></div>'+
       '</div>'+
       (days.length?'<div class="tablebox"><table><thead><tr><th>Date</th><th>Teacher</th><th>In</th><th>In location</th><th>In selfie</th><th>Out</th><th>Out location</th><th>Out selfie</th><th>Hours</th><th>Notes</th></tr></thead><tbody>'+
-        days.map(function(d){ var notes=[d.inR&&d.inR.note,d.outR&&d.outR.note].filter(Boolean).join('; ');
+        days.map(function(d){ var notes=[d.inR&&d.inR.lateReason?'Late: '+d.inR.lateReason:'',d.inR&&d.inR.note,d.outR&&d.outR.note].filter(Boolean).join('; ');
           return '<tr><td class="num">'+esc(niceDate(d.date))+'</td><td><div class="who"><b>'+esc(d.name)+'</b><small>'+esc(d.teacherId)+'</small></div></td>'+
-          '<td class="num">'+(d.inR?esc(fmt12(d.inR.time))+(d.inR.late?' <span class="pill warn">Late</span>':''):'<span class="pill warn">Missing</span>')+'</td><td>'+(d.inR?geoPill(d.inR.geofence,d.inR.distance):'')+'</td><td>'+(d.inR?thumb(d.inR.photoId):'')+'</td>'+
+          '<td class="num">'+(d.inR?esc(fmt12(d.inR.time))+(d.inR.late?' <span class="pill warn">Late'+(d.inR.lateMin?' '+d.inR.lateMin+'m':'')+'</span>':''):'<span class="pill warn">Missing</span>')+'</td><td>'+(d.inR?geoPill(d.inR.geofence,d.inR.distance):'')+'</td><td>'+(d.inR?thumb(d.inR.photoId):'')+'</td>'+
           '<td class="num">'+(d.outR?esc(fmt12(d.outR.time)):'<span class="pill warn">Missing</span>')+'</td><td>'+(d.outR?geoPill(d.outR.geofence,d.outR.distance):'')+'</td><td>'+(d.outR?thumb(d.outR.photoId):'')+'</td>'+
           '<td class="num">'+esc(d.hours!=null?durText(d.hours):'—')+'</td><td class="wrap-ok faint">'+esc(notes)+'</td></tr>'; }).join('')+
         '</tbody></table></div>':'<div class="card empty">No check-ins between these dates.</div>');
@@ -1080,7 +1286,7 @@ var Admin = (function(){
         '<label class="f">Teacher<select class="in" id="aT">'+activeTeachers().map(function(t){return '<option value="'+esc(t.id)+'"'+(pre.teacherId===t.id?' selected':'')+'>'+esc(t.name)+'</option>';}).join('')+'</select></label>'+
         '<label class="f">Date<input class="in" type="date" id="aD" max="'+todayISO()+'" value="'+esc(pre.date||todayISO())+'"></label>'+
         '<label class="f">Type<select class="in" id="aY"><option value="IN">Check-in</option><option value="OUT">Check-out</option></select></label>'+
-        '<label class="f">Time<input class="in" type="time" id="aTm" value="'+esc(data.settings.SCHOOL_START||'')+'"></label>'+
+        '<label class="f">Time<input class="in" type="time" id="aTm" value="'+esc((activeTeachers()[0]||{}).start||data.settings.SCHOOL_START||'')+'"></label>'+
       '</div><label class="f">Note (optional)<input class="in" id="aN" maxlength="200" placeholder="e.g. Called me, phone was broken"></label>'+
       '<div id="aeMsg" aria-live="polite"></div><button class="btn yellow block" id="aeSave">Add entry</button></form>');
     $('#ae').addEventListener('submit',function(e){
@@ -1106,7 +1312,8 @@ var Admin = (function(){
       return {t:t, leave:lv, present:mine.length, late:mine.filter(function(d){return d.inR&&d.inR.late;}).length,
         outside:mine.filter(function(d){return (d.inR&&d.inR.geofence==='OUTSIDE')||(d.outR&&d.outR.geofence==='OUTSIDE');}).length,
         fixed:mine.filter(function(d){return (d.inR&&d.inR.geofence==='REGULARIZED')||(d.outR&&d.outR.geofence==='REGULARIZED');}).length,
-        noOut:mine.filter(function(d){return !d.outR;}).length, total:total, avg: withH? total/withH : null};
+        noOut:mine.filter(function(d){return !d.outR;}).length, total:total, avg: withH? total/withH : null,
+        outMin:(data.presence||[]).filter(function(p){return p.teacherId===t.id;}).reduce(function(a,p){return a+p.outsideMin;},0)};
     });
   }
   function renderMonthly(){
@@ -1115,10 +1322,10 @@ var Admin = (function(){
       '<div class="toolbar"><label class="f">Month<input class="in" type="month" id="mm" value="'+esc(month)+'"></label>'+
         '<button class="btn black" id="mGo">Show</button><button class="btn yellow" id="mX">Export to Excel</button></div>'+
       '<p class="faint" style="margin:0 0 10px">Class days so far this month (from the calendar): <b>'+workDays+'</b>. Approved leave is not counted as absent.</p>'+
-      '<div class="tablebox"><table class="num"><thead><tr><th>Teacher</th><th>Days present</th><th>Leave</th><th>Attendance</th><th>Late days</th><th>Outside school</th><th>Fixed by request</th><th>No check-out</th><th>Total hours</th><th>Avg hours / day</th></tr></thead><tbody>'+
+      '<div class="tablebox"><table class="num"><thead><tr><th>Teacher</th><th>Days present</th><th>Leave</th><th>Attendance</th><th>Late days</th><th>Outside school</th><th>Time outside radius</th><th>Fixed by request</th><th>No check-out</th><th>Total hours</th><th>Avg hours / day</th></tr></thead><tbody>'+
       stats.map(function(s){ var need=Math.max(0,workDays-s.leave), pct=need? Math.min(100,Math.round(s.present/need*100)):100;
         return '<tr><td><div class="who"><b>'+esc(s.t.name)+'</b><small>'+esc(s.t.id)+'</small></div></td><td>'+s.present+' / '+need+'</td><td>'+s.leave+'</td>'+
-          '<td><span class="pill '+(pct>=90?'ok':pct>=75?'warn':'bad')+'">'+pct+'%</span></td><td>'+s.late+'</td><td>'+s.outside+'</td><td>'+s.fixed+'</td><td>'+s.noOut+'</td>'+
+          '<td><span class="pill '+(pct>=90?'ok':pct>=75?'warn':'bad')+'">'+pct+'%</span></td><td>'+s.late+'</td><td>'+s.outside+'</td><td>'+(s.outMin?esc(minText(s.outMin)):'—')+'</td><td>'+s.fixed+'</td><td>'+s.noOut+'</td>'+
           '<td>'+durText(s.total)+'</td><td>'+(s.avg!=null?durText(s.avg):'—')+'</td></tr>'; }).join('')+
       '</tbody></table></div>';
     $('#mGo').onclick=function(){ month=$('#mm').value||month; load(); };
@@ -1208,7 +1415,7 @@ var Admin = (function(){
     if(!window.XLSX){ toast('Excel tool is still loading. Try again in a moment.'); return; }
     var daily=days.map(function(d){ return {
       'Date':d.date,'Teacher ID':d.teacherId,'Teacher':d.name,
-      'Check-in time':d.inR?d.inR.time:'','Late':d.inR?(d.inR.late?'Yes':'No'):'',
+      'Check-in time':d.inR?d.inR.time:'','Late':d.inR?(d.inR.late?'Yes':'No'):'','Late by (min)':d.inR&&d.inR.lateMin!=null?d.inR.lateMin:'','Late reason':d.inR?d.inR.lateReason||'':'',
       'Check-in location':d.inR?d.inR.geofence:'','Check-in distance (m)':d.inR?d.inR.distance:'',
       'Check-in GPS':d.inR&&d.inR.lat!=null?d.inR.lat+','+d.inR.lng:'',
       'Check-out time':d.outR?d.outR.time:'','Check-out location':d.outR?d.outR.geofence:'','Check-out distance (m)':d.outR?d.outR.distance:'',
@@ -1217,14 +1424,16 @@ var Admin = (function(){
       'Notes':[d.inR&&d.inR.note,d.outR&&d.outR.note].filter(Boolean).join('; ')
     }; });
     var raw=data.records.map(function(r){ return {'Record ID':r.id,'Date':r.date,'Time':r.time,'Teacher ID':r.teacherId,'Teacher':r.name,'Type':r.type,
-      'Latitude':r.lat,'Longitude':r.lng,'GPS accuracy (m)':r.accuracy,'Distance from school (m)':r.distance,'Location':r.geofence,'Late':r.late?'Yes':'No','Selfie file ID':r.photoId,'Note':r.note}; });
+      'Latitude':r.lat,'Longitude':r.lng,'GPS accuracy (m)':r.accuracy,'Distance from school (m)':r.distance,'Location':r.geofence,'Late':r.late?'Yes':'No','Late by (min)':r.lateMin!=null?r.lateMin:'','Late reason':r.lateReason||'','Selfie file ID':r.photoId,'Note':r.note}; });
     var wb=XLSX.utils.book_new();
     if(stats){
       addSheet(wb, stats.map(function(s){ return {'Teacher ID':s.t.id,'Teacher':s.t.name,'School':s.t.school,'Class days':workDays,'Days present':s.present,
-        'Approved leave days':s.leave,'Attendance %':(workDays-s.leave)>0?Math.min(100,Math.round(s.present/(workDays-s.leave)*100)):100,'Late days':s.late,'Outside-school days':s.outside,'Fixed by request':s.fixed,'Missing check-outs':s.noOut,
+        'Approved leave days':s.leave,'Attendance %':(workDays-s.leave)>0?Math.min(100,Math.round(s.present/(workDays-s.leave)*100)):100,'Late days':s.late,'Outside-school days':s.outside,'Minutes outside radius':s.outMin||0,'Fixed by request':s.fixed,'Missing check-outs':s.noOut,
         'Total hours':+(s.total/60).toFixed(2),'Average hours / day':s.avg!=null?+(s.avg/60).toFixed(2):''}; }), 'Monthly summary');
     }
     addSheet(wb, daily, 'Daily attendance');
+    if(stats && data.presence && data.presence.length) addSheet(wb, data.presence.map(function(p){ return {'Date':p.date,'Teacher ID':p.teacherId,'Teacher':p.name,'Minutes inside':p.insideMin,'Minutes outside':p.outsideMin,
+      'Minutes app closed':p.untrackedMin,'Outside spells':p.spells.map(function(x){return x.from+'-'+x.to+' ('+x.min+' min)';}).join('; '),'Farthest (m)':p.maxDist==null?'':p.maxDist,'Location checks':p.pings}; }), 'Inside-outside');
     addSheet(wb, raw, 'All check-ins');
     XLSX.writeFile(wb, filename+'.xlsx');
     toast('Excel file downloaded');
@@ -1238,37 +1447,82 @@ var Admin = (function(){
 
   /* ----- Teachers */
   function renderTeachers(){
-    var pane=$('#pane');
+    var pane=$('#pane'), ym=todayISO().slice(0,7);
     pane.innerHTML=
-      '<div class="row between" style="margin-bottom:12px"><p class="muted" style="margin:0">'+data.teachers.length+' teachers. Each one signs in with their ID and PIN.</p><button class="btn yellow" id="addT">Add teacher</button></div>'+
-      '<div class="tablebox"><table><thead><tr><th>Teacher</th><th>PIN</th><th>Phone</th><th>School</th><th>School location</th><th>Radius</th><th>Status</th><th></th></tr></thead><tbody>'+
-      data.teachers.map(function(t,i){ return '<tr><td><div class="namecell">'+avatarHtml(t,34,'sm')+'<div class="who"><b>'+esc(t.name)+'</b><small>'+esc(t.id)+'</small></div></div></td><td class="num">'+esc(t.pin)+'</td><td class="num">'+esc(t.phone)+'</td><td>'+esc(t.school)+'</td>'+
-        '<td class="num">'+(t.lat!=null?'<a href="https://www.google.com/maps?q='+t.lat+','+t.lng+'" target="_blank" rel="noopener">'+t.lat.toFixed(5)+', '+t.lng.toFixed(5)+'</a>':'<span class="pill warn">Not set</span>')+'</td>'+
-        '<td class="num">'+(t.radius||((data.settings.DEFAULT_RADIUS_M||200)+' (default)'))+' m</td><td>'+(t.active?'<span class="pill ok">Active</span>':'<span class="pill none">Off</span>')+'</td>'+
+      '<div class="row between" style="margin-bottom:12px"><p class="muted" style="margin:0">'+data.teachers.length+' teachers. Each one signs in with their ID and PIN. Tap a name to see the full profile.</p><div class="row"><button class="btn ghost" id="tX">Export to Excel</button><button class="btn yellow" id="addT">Add teacher</button></div></div>'+
+      '<div class="tablebox"><table><thead><tr><th>Teacher</th><th>School</th><th>Mobile</th><th>Email</th><th>Joined</th><th>Salary / month</th><th>Leave this month</th><th>PIN</th><th>Status</th><th></th></tr></thead><tbody>'+
+      data.teachers.map(function(t,i){ var b=leaveBalance(data.leaves.filter(function(l){return l.teacherId===t.id;}), data.settings, ym);
+        return '<tr><td><button class="linkbtn namecell" data-view="'+i+'">'+avatarHtml(t,36,'sm')+'<span class="who"><b>'+esc(t.name)+'</b><small>'+esc(t.id)+(t.designation?' · '+esc(t.designation):'')+'</small></span></button></td>'+
+        '<td>'+esc(t.school||'—')+(t.schoolLink?'<div class="faint num">'+esc(fmtShort(t.start))+'–'+esc(fmtShort(t.end))+'</div>':(t.lat==null?'<div><span class="pill warn">No location</span></div>':''))+'</td>'+
+        '<td class="num">'+(t.phone?'<a href="tel:'+esc(t.phone)+'">'+esc(t.phone)+'</a>':'—')+'</td><td>'+(t.email?'<a href="mailto:'+esc(t.email)+'">'+esc(t.email)+'</a>':'—')+'</td>'+
+        '<td class="num">'+(t.joinDate?esc(niceDate(t.joinDate)):'—')+'</td><td class="num">'+rupees(t.salary)+'</td>'+
+        '<td class="num">Sick '+b.SICK.used+'/'+b.SICK.limit+' · Casual '+b.CASUAL.used+'/'+b.CASUAL.limit+'</td>'+
+        '<td class="num">'+esc(t.pin)+'</td><td>'+(t.active?'<span class="pill ok">Active</span>':'<span class="pill none">Off</span>')+'</td>'+
         '<td><button class="btn small ghost" data-edit="'+i+'">Edit</button></td></tr>'; }).join('')+
       '</tbody></table></div>'+
-      '<p class="faint">Tip: if you do not know a school\'s coordinates, let the teacher check in once at school. Then open that selfie and choose "Use this spot as school location".</p>';
+      '<p class="faint">Salary and pay details are seen only here in the admin dashboard, never by teachers.</p>';
     $('#addT').onclick=function(){ teacherForm(null); };
+    $('#tX').onclick=function(){
+      if(!window.XLSX){ toast('Excel tool is still loading. Try again in a moment.'); return; }
+      var wb=XLSX.utils.book_new();
+      addSheet(wb, data.teachers.map(function(t){ var b=leaveBalance(data.leaves.filter(function(l){return l.teacherId===t.id;}), data.settings, ym);
+        return {'Teacher ID':t.id,'Name':t.name,'Role':t.designation||'','School':t.school||'','Class time':t.start+'-'+t.end,'Mobile':t.phone||'','Email':t.email||'','Joined':t.joinDate||'',
+          'Salary / month':t.salary==null?'':t.salary,'Deduction per absent day':t.deductPerDay==null?'Auto':t.deductPerDay,'Sick leave used (this month)':b.SICK.used,'Casual leave used (this month)':b.CASUAL.used,'Active':t.active?'Yes':'No','Notes':t.notes||''}; }), 'Teachers');
+      XLSX.writeFile(wb, 'BCHC_Teachers.xlsx'); toast('Excel file downloaded');
+    };
     pane.querySelectorAll('[data-edit]').forEach(function(b){ b.onclick=function(){ teacherForm(data.teachers[+b.getAttribute('data-edit')]); }; });
+    pane.querySelectorAll('[data-view]').forEach(function(b){ b.onclick=function(){ teacherProfile(data.teachers[+b.getAttribute('data-view')]); }; });
+  }
+  function teacherProfile(t){
+    var ym=todayISO().slice(0,7), pr=payrollFor(t, ym), b=leaveBalance(data.leaves.filter(function(l){return l.teacherId===t.id;}), data.settings, ym);
+    var days=groupDays(data.records.filter(function(r){return r.teacherId===t.id;})).filter(function(d){return d.inR;});
+    var late=days.filter(function(d){return d.inR.late;}).length, outMin=(data.presence||[]).filter(function(p){return p.teacherId===t.id;}).reduce(function(a,p){return a+p.outsideMin;},0);
+    var wa=t.phone?'https://wa.me/'+String(t.phone).replace(/\D/g,'').replace(/^(\d{10})$/,'91$1'):'';
+    var close=modal('<div class="card stack profilecard"><div class="row between"><span class="eyebrow">Teacher profile</span><button class="btn small ghost" id="mx">Close</button></div>'+
+      '<div class="phead">'+avatarHtml(t,84)+'<div style="min-width:0"><h2>'+esc(t.name)+'</h2><div class="muted">'+esc(t.designation||'Teacher')+' · '+esc(t.id)+'</div>'+
+        '<div class="row" style="gap:6px;margin-top:8px">'+(t.active?'<span class="pill ok">Active</span>':'<span class="pill none">Off</span>')+(t.school?'<span class="pill info">'+esc(t.school)+'</span>':'')+'</div></div></div>'+
+      '<div class="row">'+(t.phone?'<a class="btn small ghost" href="tel:'+esc(t.phone)+'">Call</a>':'')+(wa?'<a class="btn small green" href="'+esc(wa)+'" target="_blank" rel="noopener">WhatsApp</a>':'')+(t.email?'<a class="btn small ghost" href="mailto:'+esc(t.email)+'">Email</a>':'')+'<button class="btn small yellow" id="pEdit">Edit details</button></div>'+
+      '<dl class="infolist"><dt>Mobile</dt><dd class="num">'+esc(t.phone||'—')+'</dd><dt>Email</dt><dd>'+esc(t.email||'—')+'</dd><dt>School</dt><dd>'+esc(t.school||'—')+'</dd>'+
+        '<dt>Class time</dt><dd class="num">'+esc(fmt12(t.start))+' – '+esc(fmt12(t.end))+'</dd><dt>Joined</dt><dd>'+esc(t.joinDate?niceDate(t.joinDate):'—')+'</dd><dt>PIN</dt><dd class="num">'+esc(t.pin)+'</dd>'+(t.notes?'<dt>Notes</dt><dd style="white-space:pre-wrap">'+esc(t.notes)+'</dd>':'')+'</dl>'+
+      '<h3>'+esc(monthTitle(ym))+' so far</h3>'+
+      '<div class="stats num" style="grid-template-columns:repeat(4,1fr)"><div class="stat"><b>'+pr.present+'</b><small>Present</small></div><div class="stat"><b>'+pr.absent+'</b><small>Absent</small></div><div class="stat"><b>'+pr.leave+'</b><small>On leave</small></div><div class="stat"><b>'+late+'</b><small>Late</small></div></div>'+
+      '<div class="faint">Leave used: sick '+b.SICK.used+' of '+b.SICK.limit+', casual '+b.CASUAL.used+' of '+b.CASUAL.limit+' · Time outside radius: '+(outMin?esc(minText(outMin)):'none')+'</div>'+
+      '<div class="paybox"><div><small>Monthly salary</small><b class="num">'+rupees(pr.salary)+'</b></div><div><small>Deduction ('+pr.absent+' × '+rupees(pr.perDay)+(pr.auto?' auto':'')+')</small><b class="num neg">−'+rupees(pr.deduction)+'</b></div><div><small>Net pay so far</small><b class="num">'+rupees(pr.net)+'</b></div></div>'+
+      (pr.salary==null?'<p class="faint" style="margin:0">Add the monthly salary in Edit details to see pay.</p>':'')+
+      '</div>');
+    $('#pEdit').onclick=function(){ close(); teacherForm(t); };
   }
   function teacherForm(t){
-    var isNew=!t; t=t||{id:nextId(),name:'',pin:String(Math.floor(1000+Math.random()*9000)),phone:'',school:'',lat:null,lng:null,radius:null,active:true};
+    var isNew=!t; t=t||{id:nextId(),name:'',pin:String(Math.floor(1000+Math.random()*9000)),phone:'',school:'',ownLat:null,ownLng:null,ownRadius:null,active:true,schoolLink:(data.schools[0]||{}).id||''};
+    var schOpts='<option value="">No school — use own location below</option>'+(data.schools||[]).map(function(x){ return '<option value="'+esc(x.id)+'"'+(t.schoolLink===x.id?' selected':'')+'>'+esc(x.name)+' · '+esc(fmtShort(x.start))+'–'+esc(fmtShort(x.end))+'</option>'; }).join('');
     var close=modal('<form class="card stack" id="tf" novalidate><div class="row between"><h3>'+(isNew?'Add teacher':'Edit '+esc(t.name))+'</h3><button type="button" class="btn small ghost" id="mx">Close</button></div>'+
-      '<div class="grid2">'+
+      '<div class="formsec">Basic details</div><div class="grid2">'+
         '<label class="f">Teacher ID<input class="in" id="fId" value="'+esc(t.id)+'" '+(isNew?'':'readonly')+'></label>'+
         '<label class="f">PIN (4–6 digits)<input class="in num" id="fPin" inputmode="numeric" value="'+esc(t.pin)+'"></label>'+
         '<label class="f">Full name<input class="in" id="fName" value="'+esc(t.name)+'"></label>'+
-        '<label class="f">Phone<input class="in num" id="fPhone" inputmode="tel" value="'+esc(t.phone)+'"></label>'+
+        '<label class="f">Role / designation<input class="in" id="fDes" maxlength="60" value="'+esc(t.designation||'')+'" placeholder="e.g. Teacher, Lead teacher"></label>'+
+        '<label class="f">Mobile<input class="in num" id="fPhone" inputmode="tel" value="'+esc(t.phone)+'"></label>'+
         '<label class="f">Email (for announcements)<input class="in" id="fEmail" type="email" inputmode="email" value="'+esc(t.email||'')+'" placeholder="name@gmail.com"></label>'+
-        '<label class="f">School / centre<input class="in" id="fSchool" value="'+esc(t.school)+'"></label>'+
-        '<label class="f">Geofence radius (m)<input class="in num" id="fRad" inputmode="numeric" placeholder="'+esc(data.settings.DEFAULT_RADIUS_M||200)+'" value="'+esc(t.radius||'')+'"></label>'+
-        '<label class="f">School latitude<input class="in num" id="fLat" inputmode="decimal" value="'+esc(t.lat==null?'':t.lat)+'" placeholder="12.97160"></label>'+
-        '<label class="f">School longitude<input class="in num" id="fLng" inputmode="decimal" value="'+esc(t.lng==null?'':t.lng)+'" placeholder="77.59460"></label>'+
+        '<label class="f">Joining date<input class="in" id="fJoin" type="date" value="'+esc(t.joinDate||'')+'"></label>'+
       '</div>'+
+      '<div class="formsec">School</div>'+
+      '<label class="f">School<select class="in" id="fSch">'+schOpts+'</select></label>'+
+      '<div id="ownLoc" class="stack"'+(t.schoolLink?' hidden':'')+'><div class="grid2">'+
+        '<label class="f">School / centre name<input class="in" id="fSchool" value="'+esc(t.ownSchool||'')+'"></label>'+
+        '<label class="f">Geofence radius (m)<input class="in num" id="fRad" inputmode="numeric" placeholder="'+esc(data.settings.DEFAULT_RADIUS_M||200)+'" value="'+esc(t.ownRadius||'')+'"></label>'+
+        '<label class="f">School latitude<input class="in num" id="fLat" inputmode="decimal" value="'+esc(t.ownLat==null?'':t.ownLat)+'" placeholder="17.38500"></label>'+
+        '<label class="f">School longitude<input class="in num" id="fLng" inputmode="decimal" value="'+esc(t.ownLng==null?'':t.ownLng)+'" placeholder="78.48670"></label>'+
+      '</div><div class="row"><button type="button" class="btn small ghost" id="here">Use my current location</button></div></div>'+
+      '<p class="faint" style="margin:0">Timings and location come from the school. Manage schools in the Schools tab.</p>'+
+      '<div class="formsec">Pay (admin only)</div><div class="grid2">'+
+        '<label class="f">Monthly salary (₹)<input class="in num" id="fSal" inputmode="numeric" value="'+esc(t.salary==null?'':t.salary)+'" placeholder="e.g. 12000"></label>'+
+        '<label class="f">Deduct per absent day (₹)<input class="in num" id="fDed" inputmode="numeric" value="'+esc(t.deductPerDay==null?'':t.deductPerDay)+'" placeholder="Empty = salary ÷ class days"></label>'+
+      '</div>'+
+      '<label class="f">Notes (admin only)<textarea class="in" id="fNotes" maxlength="500">'+esc(t.notes||'')+'</textarea></label>'+
       (isNew?'':'<div class="row" style="align-items:center"><span id="fAv">'+avatarHtml(t,56)+'</span><input type="file" id="fPhoto" accept="image/*" hidden><button type="button" class="btn small ghost" id="fPhotoBtn">'+(t.avatar?'Change photo':'Add photo')+'</button>'+(t.avatar?'<button type="button" class="btn small ghost" id="fPhotoDel">Remove photo</button>':'')+'</div>')+
-      '<div class="row"><button type="button" class="btn small ghost" id="here">Use my current location</button><label class="row" style="gap:6px;font-weight:600"><input type="checkbox" id="fAct" '+(t.active?'checked':'')+'> Active</label></div>'+
-      '<p class="faint" style="margin:0">Paste coordinates from Google Maps: long-press the school on the map and copy the numbers shown.</p>'+
+      '<label class="row" style="gap:6px;font-weight:600"><input type="checkbox" id="fAct" '+(t.active?'checked':'')+'> Active (can sign in)</label>'+
       '<div id="fMsg" aria-live="polite"></div><button class="btn yellow block" id="fSave">Save teacher</button></form>');
+    $('#fSch').onchange=function(){ $('#ownLoc').hidden=!!this.value; };
     var pb=$('#fPhotoBtn'); if(pb){
       pb.onclick=function(){ $('#fPhoto').click(); };
       $('#fPhoto').onchange=function(e){ var file=e.target.files&&e.target.files[0]; if(!file) return; pb.disabled=true; pb.textContent='Saving…';
@@ -1277,23 +1531,91 @@ var Admin = (function(){
           .catch(function(err){ pb.disabled=false; pb.textContent='Add photo'; $('#fMsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; }); };
       var pd=$('#fPhotoDel'); if(pd) pd.onclick=function(){ pd.disabled=true; api('adminSetAvatar',{pin:pin,teacherId:t.id,avatar:''}).then(function(){ t.avatar=''; $('#fAv').innerHTML=avatarHtml(t,56); pd.remove(); toast('Photo removed'); }).catch(function(err){ pd.disabled=false; toast(err.message); }); };
     }
-    $('#here').onclick=function(){
-      var b=$('#here'); b.disabled=true; b.textContent='Finding location…';
-      navigator.geolocation.getCurrentPosition(function(p){ $('#fLat').value=p.coords.latitude.toFixed(6); $('#fLng').value=p.coords.longitude.toFixed(6); b.disabled=false; b.textContent='Location filled (±'+Math.round(p.coords.accuracy)+' m)'; },
-        function(){ b.disabled=false; b.textContent='Use my current location'; $('#fMsg').innerHTML='<div class="msg err">Could not read your location. Allow location access or type the coordinates.</div>'; },
-        {enableHighAccuracy:true,timeout:20000,maximumAge:0});
-    };
+    $('#here').onclick=function(){ fillHere($('#here'), $('#fLat'), $('#fLng'), $('#fMsg')); };
     $('#tf').addEventListener('submit',function(e){
       e.preventDefault();
       var lat=$('#fLat').value.trim(), lng=$('#fLng').value.trim();
       if(lat.indexOf(',')>0 && !lng){ var p=lat.split(','); lat=p[0].trim(); lng=(p[1]||'').trim(); }
       var t2={id:$('#fId').value.trim().toUpperCase(),pin:$('#fPin').value.trim(),name:$('#fName').value.trim(),phone:$('#fPhone').value.trim(),email:$('#fEmail').value.trim(),school:$('#fSchool').value.trim(),
-        radius:$('#fRad').value.trim()||null,lat:lat===''?null:+lat,lng:lng===''?null:+lng,active:$('#fAct').checked};
+        radius:$('#fRad').value.trim()||null,lat:lat===''?null:+lat,lng:lng===''?null:+lng,active:$('#fAct').checked,schoolId:$('#fSch').value,
+        designation:$('#fDes').value.trim(),joinDate:$('#fJoin').value,salary:$('#fSal').value.replace(/[,₹\s]/g,''),deductPerDay:$('#fDed').value.replace(/[,₹\s]/g,''),notes:$('#fNotes').value};
       if((t2.lat==null)!==(t2.lng==null) || (t2.lat!=null && (isNaN(t2.lat)||isNaN(t2.lng)||Math.abs(t2.lat)>90||Math.abs(t2.lng)>180))){ $('#fMsg').innerHTML='<div class="msg err">Enter both latitude and longitude as numbers, or leave both empty.</div>'; return; }
       var b=$('#fSave'); b.disabled=true; b.innerHTML='<span class="spinner"></span> Saving';
       api('saveTeacher',{pin:pin,teacher:t2}).then(function(){ close(); toast('Saved '+t2.name+(isNew?'. Open Edit to add a photo.':'')); load(); })
         .catch(function(err){ b.disabled=false; b.textContent='Save teacher'; $('#fMsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
     });
+  }
+  function fillHere(b, latEl, lngEl, msgEl){
+    b.disabled=true; b.textContent='Finding location…';
+    navigator.geolocation.getCurrentPosition(function(p){ latEl.value=p.coords.latitude.toFixed(6); lngEl.value=p.coords.longitude.toFixed(6); b.disabled=false; b.textContent='Location filled (±'+Math.round(p.coords.accuracy)+' m)'; },
+      function(){ b.disabled=false; b.textContent='Use my current location'; msgEl.innerHTML='<div class="msg err">Could not read your location. Allow location access or type the coordinates.</div>'; },
+      {enableHighAccuracy:true,timeout:20000,maximumAge:0});
+  }
+
+  /* ----- Schools */
+  function renderSchools(){
+    var pane=$('#pane'), list=data.schools||[];
+    pane.innerHTML='<div class="row between" style="margin-bottom:12px"><p class="muted" style="margin:0">Each school has its own class time and location. Teachers linked to a school use its timings for late check-ins.</p><button class="btn yellow" id="addS">Add school</button></div>'+
+      (list.length?'<div class="grid2">'+list.map(function(x,i){ var n=data.teachers.filter(function(t){return t.schoolLink===x.id;});
+        return '<article class="card stack schoolcard"><div class="row between"><div><div class="eyebrow">'+esc(x.id)+'</div><h3>'+esc(x.name)+'</h3></div><button class="btn small ghost" data-sedit="'+i+'">Edit</button></div>'+
+          '<div class="timebig num">'+esc(fmt12(x.start))+' <span>to</span> '+esc(fmt12(x.end))+'</div>'+
+          '<div class="row">'+(x.lat!=null?'<a class="pill ok" href="https://www.google.com/maps?q='+x.lat+','+x.lng+'" target="_blank" rel="noopener">Location set · '+esc(x.radius||data.settings.DEFAULT_RADIUS_M||200)+' m</a>':'<span class="pill warn">Location not set</span>')+'<span class="pill none">'+n.length+' teacher'+(n.length===1?'':'s')+'</span></div>'+
+          (n.length?'<div class="faint">'+esc(n.map(function(t){return t.name;}).join(', '))+'</div>':'')+(x.address?'<div class="faint">'+esc(x.address)+'</div>':'')+'</article>'; }).join('')+'</div>'
+       :'<div class="card empty">No schools yet. Add your first school.</div>');
+    $('#addS').onclick=function(){ schoolForm(null); };
+    pane.querySelectorAll('[data-sedit]').forEach(function(b){ b.onclick=function(){ schoolForm(list[+b.getAttribute('data-sedit')]); }; });
+  }
+  function schoolForm(x){
+    var isNew=!x; x=x||{id:'',name:'',start:data.settings.SCHOOL_START||'09:30',end:data.settings.SCHOOL_END||'16:00',lat:null,lng:null,radius:null,address:''};
+    var others=(data.schools||[]).filter(function(o){return o.id!==x.id;});
+    var close=modal('<form class="card stack" id="sfm" novalidate><div class="row between"><h3>'+(isNew?'Add school':'Edit '+esc(x.name))+'</h3><button type="button" class="btn small ghost" id="mx">Close</button></div>'+
+      '<label class="f">School name<input class="in" id="xNm" value="'+esc(x.name)+'" placeholder="e.g. MPPS Gandhi Nagar"></label>'+
+      (isNew&&others.length?'<div class="row"><span class="faint">Same time as</span><select class="in" id="xCopy" style="width:auto"><option value="">—</option>'+others.map(function(o){return '<option value="'+esc(o.id)+'">'+esc(o.name)+'</option>';}).join('')+'</select></div>':'')+
+      '<div class="grid2"><label class="f">Class starts<input class="in" type="time" id="xSt" value="'+esc(x.start)+'"></label><label class="f">Class ends<input class="in" type="time" id="xEn" value="'+esc(x.end)+'"></label>'+
+      '<label class="f">Latitude<input class="in num" id="xLa" inputmode="decimal" value="'+esc(x.lat==null?'':x.lat)+'"></label><label class="f">Longitude<input class="in num" id="xLo" inputmode="decimal" value="'+esc(x.lng==null?'':x.lng)+'"></label>'+
+      '<label class="f">Geofence radius (m)<input class="in num" id="xRa" inputmode="numeric" value="'+esc(x.radius||'')+'" placeholder="'+esc(data.settings.DEFAULT_RADIUS_M||200)+'"></label>'+
+      '<label class="f">Address (optional)<input class="in" id="xAd" maxlength="200" value="'+esc(x.address||'')+'"></label></div>'+
+      '<div class="row"><button type="button" class="btn small ghost" id="xHere">Use my current location</button></div>'+
+      '<p class="faint" style="margin:0">Tip: in Google Maps, long-press the school and copy the two numbers. Or let a teacher check in there once, open the selfie and choose "Use this spot".</p>'+
+      '<div id="xMsg2" aria-live="polite"></div><div class="row"><button class="btn yellow" id="xSave" style="flex:1">Save school</button>'+(isNew?'':'<button type="button" class="btn danger" id="xDel">Delete</button>')+'</div></form>');
+    var cp=$('#xCopy'); if(cp) cp.onchange=function(){ var o=schoolById(cp.value); if(o){ $('#xSt').value=o.start; $('#xEn').value=o.end; } };
+    $('#xHere').onclick=function(){ fillHere($('#xHere'), $('#xLa'), $('#xLo'), $('#xMsg2')); };
+    var del=$('#xDel'); if(del) del.onclick=function(){
+      if(del.getAttribute('data-sure')!=='1'){ del.setAttribute('data-sure','1'); del.textContent='Tap again to delete'; return; }
+      del.disabled=true; aapi('deleteSchool',{id:x.id}).then(function(){ close(); toast('School deleted'); load(); }).catch(function(err){ del.disabled=false; $('#xMsg2').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; }); };
+    $('#sfm').addEventListener('submit',function(e){
+      e.preventDefault();
+      var la=$('#xLa').value.trim(), lo=$('#xLo').value.trim();
+      if(la.indexOf(',')>0 && !lo){ var p=la.split(','); la=p[0].trim(); lo=(p[1]||'').trim(); }
+      var b=$('#xSave'); b.disabled=true;
+      aapi('saveSchool',{school:{id:x.id,name:$('#xNm').value,start:$('#xSt').value,end:$('#xEn').value,lat:la===''?'':+la,lng:lo===''?'':+lo,radius:$('#xRa').value.trim(),address:$('#xAd').value}})
+        .then(function(){ close(); toast('School saved'); load(); }).catch(function(err){ b.disabled=false; $('#xMsg2').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
+    });
+  }
+
+  /* ----- Payroll */
+  function renderPayroll(){
+    var pane=$('#pane'), rows=activeTeachers().map(function(t){ return payrollFor(t, month); });
+    var tot=rows.reduce(function(a,r){ a.sal+=r.salary||0; a.ded+=r.deduction; a.net+=r.net||0; a.abs+=r.absent; return a; },{sal:0,ded:0,net:0,abs:0});
+    var inProgress=month===todayISO().slice(0,7);
+    pane.innerHTML='<div class="toolbar"><label class="f">Month<input class="in" type="month" id="pm" value="'+esc(month)+'"></label><button class="btn black" id="pGo">Show</button><button class="btn yellow" id="pX">Export payroll to Excel</button></div>'+
+      '<div class="kpis num">'+kpi('Total salary', rupees(tot.sal))+kpi('Absent days', tot.abs, false, tot.abs?'red':'')+kpi('Total deduction', rupees(tot.ded), false, tot.ded?'red':'')+kpi(inProgress?'Net pay so far':'Net pay', rupees(tot.net), true)+'</div>'+
+      (inProgress?'<div class="msg note" style="margin-bottom:12px">This month is still running. Numbers will change as days pass.</div>':'')+
+      '<div class="tablebox"><table class="num"><thead><tr><th>Teacher</th><th>Salary</th><th>Class days</th><th>Present</th><th>Paid leave</th><th>Absent</th><th>Per day</th><th>Deduction</th><th>Net pay</th></tr></thead><tbody>'+
+      rows.map(function(r){ return '<tr><td><div class="namecell">'+avatarHtml(r.t,30,'sm')+'<div class="who"><b>'+esc(r.t.name)+'</b><small>'+esc(r.t.school||'')+'</small></div></div></td>'+
+        '<td>'+rupees(r.salary)+'</td><td>'+r.passed+(r.passed!==r.total?' <span class="faint">of '+r.total+'</span>':'')+'</td><td>'+r.present+'</td><td>'+r.leave+'</td>'+
+        '<td>'+(r.absent?'<span class="pill bad" title="'+esc(r.absentDays.join(', '))+'">'+r.absent+'</span>':'0')+'</td>'+
+        '<td>'+rupees(r.perDay)+(r.auto&&r.salary?' <span class="faint">auto</span>':'')+'</td><td>'+(r.deduction?'<span class="neg">−'+rupees(r.deduction)+'</span>':'—')+'</td><td><b>'+rupees(r.net)+'</b></td></tr>'; }).join('')+
+      '</tbody></table></div>'+
+      '<p class="faint">Absent = a class day with no check-in and no approved leave. Approved "fix missed" requests count as present. "Auto" per-day amount = monthly salary ÷ class days in the month. Set a fixed amount per teacher in Teachers → Edit.</p>';
+    $('#pGo').onclick=function(){ month=$('#pm').value||month; load(); };
+    $('#pX').onclick=function(){
+      if(!window.XLSX){ toast('Excel tool is still loading. Try again in a moment.'); return; }
+      var wb=XLSX.utils.book_new();
+      addSheet(wb, rows.map(function(r){ return {'Teacher ID':r.t.id,'Teacher':r.t.name,'School':r.t.school||'','Monthly salary':r.salary==null?'':r.salary,'Class days in month':r.total,'Class days so far':r.passed,
+        'Present':r.present,'Paid leave':r.leave,'Absent':r.absent,'Absent dates':r.absentDays.join(', '),'Deduction per day':r.perDay,'Per-day rule':r.auto?'Salary ÷ class days':'Fixed','Deduction':r.deduction,'Net pay':r.net==null?'':r.net}; }), 'Payroll '+month);
+      XLSX.writeFile(wb, 'BCHC_Payroll_'+month+'.xlsx'); toast('Excel file downloaded');
+    };
   }
   function nextId(){ var n=0; data.teachers.forEach(function(t){ var m=/^T(\d+)$/.exec(t.id); if(m) n=Math.max(n,+m[1]); }); return 'T'+pad(n+1); }
 
@@ -1423,9 +1745,13 @@ var Admin = (function(){
         DOW_LONG.map(function(d,i){ return '<label><input type="checkbox" name="cd" value="'+i+'"'+(cd.indexOf(String(i))>=0?' checked':'')+'>'+d.slice(0,3)+'</label>'; }).join('')+'</div></div>'+
         '<div><div class="faint" style="margin-bottom:6px">Holiday every week</div><div class="chk">'+
         DOW_LONG.map(function(d,i){ return '<label><input type="checkbox" name="wh" value="'+i+'"'+(dayList(s.WEEKLY_HOLIDAYS==null?'0':s.WEEKLY_HOLIDAYS).indexOf(i)>=0?' checked':'')+'>'+d.slice(0,3)+'</label>'; }).join('')+'</div>'+
-        '<p class="faint" style="margin:6px 0 0">To mark a single holiday (like a festival), use the Calendar tab.</p></div>'+
-        '<div class="grid2"><label class="f">Class start time<input class="in" type="time" id="sStart" value="'+esc(s.SCHOOL_START)+'"></label>'+
-        '<label class="f">Late after (minutes of grace)<input class="in num" id="sGrace" inputmode="numeric" value="'+esc(s.LATE_GRACE_MIN)+'"></label>'+
+        '<p class="faint" style="margin:6px 0 0">To mark a single holiday (like a festival), use the Calendar tab. Each school can have its own times in the Schools tab; these are the defaults.</p></div>'+
+        '<div class="grid2"><label class="f">Default class start<input class="in" type="time" id="sStart" value="'+esc(s.SCHOOL_START)+'"></label>'+
+        '<label class="f">Default class end<input class="in" type="time" id="sEnd" value="'+esc(s.SCHOOL_END||'16:00')+'"></label>'+
+        '<label class="f">Marked late after (minutes)<input class="in num" id="sGrace" inputmode="numeric" value="'+esc(s.LATE_GRACE_MIN)+'"></label>'+
+        '<label class="f">Reason needed when late by more than (minutes)<input class="in num" id="sNeed" inputmode="numeric" value="'+esc(s.LATE_REASON_MIN||10)+'"></label>'+
+        '<label class="f">Check-in closes when late by more than (minutes)<input class="in num" id="sBlock" inputmode="numeric" value="'+esc(s.LATE_BLOCK_MIN||30)+'"></label>'+
+        '<label class="f">Location check while checked in (every … minutes)<input class="in num" id="sPing" inputmode="numeric" value="'+esc(s.PING_EVERY_MIN||5)+'"></label>'+
         '<label class="f">Teachers can ask to fix up to (days back)<input class="in num" id="sBack" inputmode="numeric" value="'+esc(s.FIX_DAYS_BACK)+'"></label></div></section>'+
       '<section class="card stack"><h3>Leave rules</h3><div class="grid2">'+
         '<label class="f">Sick leaves per month<input class="in num" id="sSick" inputmode="numeric" value="'+esc(s.SICK_PER_MONTH)+'"></label>'+
@@ -1443,7 +1769,8 @@ var Admin = (function(){
       var days=[].slice.call(pane.querySelectorAll('input[name=cd]:checked')).map(function(x){return x.value;}).join(',');
       var wh=[].slice.call(pane.querySelectorAll('input[name=wh]:checked')).map(function(x){return x.value;}).join(',');
       var upd={MEETING_TITLE:$('#sMT').value.trim(),MEETING_DAY:$('#sMD').value,MEETING_START:$('#sMS').value,MEETING_END:$('#sME').value,MEETING_LINK:$('#sML').value.trim(),
-        CLASS_DAYS:days,WEEKLY_HOLIDAYS:wh,SCHOOL_START:$('#sStart').value,LATE_GRACE_MIN:$('#sGrace').value.trim(),FIX_DAYS_BACK:$('#sBack').value.trim(),
+        CLASS_DAYS:days,WEEKLY_HOLIDAYS:wh,SCHOOL_START:$('#sStart').value,SCHOOL_END:$('#sEnd').value,LATE_GRACE_MIN:$('#sGrace').value.trim(),
+        LATE_REASON_MIN:$('#sNeed').value.trim(),LATE_BLOCK_MIN:$('#sBlock').value.trim(),PING_EVERY_MIN:$('#sPing').value.trim(),FIX_DAYS_BACK:$('#sBack').value.trim(),
         SICK_PER_MONTH:$('#sSick').value.trim(),CASUAL_PER_MONTH:$('#sCas').value.trim(),LEAVE_ON_MEETING_DAY:$('#sLeaveMeet').checked?'YES':'NO',APP_URL:$('#sUrl').value.trim(),
         ORG_NAME:$('#sOrg').value.trim(),DEFAULT_RADIUS_M:$('#sRad').value.trim(),MAX_ACCURACY_M:$('#sAcc').value.trim()};
       var np=$('#sPin').value.trim(); if(np) upd.ADMIN_PIN=np;
