@@ -1,18 +1,18 @@
 {
+  "id": "/bchc-attendance/",
   "name": "BCHC Teacher Connect",
   "short_name": "BCHC Connect",
-  "description": "Attendance, calendar and weekly meeting for Bhim Children Happiness Center teachers",
-  "start_url": "./",
-  "scope": "./",
+  "description": "Attendance, leave, calendar and weekly meeting for Bheem Children Happiness Centre teachers",
+  "start_url": "/bchc-attendance/",
+  "scope": "/bchc-attendance/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "background_color": "#121212",
   "theme_color": "#121212",
+  "categories": ["education", "productivity"],
   "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
