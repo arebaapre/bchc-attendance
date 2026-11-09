@@ -405,6 +405,12 @@ function niceDate(s){ if(!s) return ''; return parseISO(s).toLocaleDateString('e
 function niceDay(s){ return parseISO(s).toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'}); }
 function mins(t){ if(!t) return null; var p=String(t).split(':'); return (+p[0])*60+(+p[1])+((+p[2]||0)/60); }
 function nowMins(){ var d=new Date(); return d.getHours()*60+d.getMinutes()+d.getSeconds()/60+0.01; }
+function parseMapLink(text){
+  var s=String(text||''); for(var i=0;i<3;i++){ try{ var d=decodeURIComponent(s); if(d===s) break; s=d; }catch(e){ break; } }
+  var pats=[/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/,/[?&](?:q|query|ll|center|destination|daddr|sll)=(?:loc:)?\s*(-?\d+\.\d+)\s*,\s*\+?(-?\d+\.\d+)/,/\/(?:place|search|dir)\/(-?\d+\.\d+)\s*,\s*\+?(-?\d+\.\d+)/,/@(-?\d+\.\d+),(-?\d+\.\d+)/,/^\s*(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)\s*$/,/(-?\d{1,2}\.\d{4,})\s*,\s*\+?(-?\d{1,3}\.\d{4,})/];
+  for(var j=0;j<pats.length;j++){ var m=pats[j].exec(s); if(m){ var a=+m[1], b=+m[2]; if(isFinite(a)&&isFinite(b)&&Math.abs(a)<=90&&Math.abs(b)<=180&&!(a===0&&b===0)) return {lat:Math.round(a*1e6)/1e6,lng:Math.round(b*1e6)/1e6}; } }
+  return null;
+}
 function hms(m){ if(m==null||m<0) m=0; var sec=Math.floor(m*60), h=Math.floor(sec/3600), mm=Math.floor(sec%3600/60), ss=sec%60; return h+':'+pad(mm)+':'+pad(ss); }
 function minText(m){ m=Math.round(m||0); if(m<60) return m+' min'; return Math.floor(m/60)+'h '+pad(m%60)+'m'; }
 function rupees(n){ if(n==null||n===''||isNaN(n)) return '—'; return '₹'+Math.round(+n).toLocaleString('en-IN'); }
@@ -1527,11 +1533,8 @@ var Admin = (function(){
       '<label class="f">School<select class="in" id="fSch">'+schOpts+'</select></label>'+
       '<div id="ownLoc" class="stack"'+(t.schoolLink?' hidden':'')+'><div class="grid2">'+
         '<label class="f">School / centre name<input class="in" id="fSchool" value="'+esc(t.ownSchool||'')+'"></label>'+
-        '<label class="f">Geofence radius (m)<input class="in num" id="fRad" inputmode="numeric" placeholder="'+esc(data.settings.DEFAULT_RADIUS_M||200)+'" value="'+esc(t.ownRadius||'')+'"></label>'+
-        '<label class="f">School latitude<input class="in num" id="fLat" inputmode="decimal" value="'+esc(t.ownLat==null?'':t.ownLat)+'" placeholder="17.38500"></label>'+
-        '<label class="f">School longitude<input class="in num" id="fLng" inputmode="decimal" value="'+esc(t.ownLng==null?'':t.ownLng)+'" placeholder="78.48670"></label>'+
-      '</div><div class="row"><button type="button" class="btn small ghost" id="here">Use my current location</button></div></div>'+
-      '<p class="faint" style="margin:0">Timings and location come from the school. Manage schools in the Schools tab.</p>'+
+      '</div>'+mapPickerHtml('tm',{lat:t.ownLat,lng:t.ownLng,link:''})+radiusHtml('fRad', t.ownRadius, 'Default '+(data.settings.DEFAULT_RADIUS_M||200)+' m')+'</div>'+
+      '<p class="faint" style="margin:0">Timings and location come from the chosen school (Schools tab). Only fill the map link above for a teacher without a school.</p>'+
       '<div class="formsec">Pay (admin only)</div><div class="grid2">'+
         '<label class="f">Monthly salary (₹)<input class="in num" id="fSal" inputmode="numeric" value="'+esc(t.salary==null?'':t.salary)+'" placeholder="e.g. 12000"></label>'+
         '<label class="f">Deduct per absent day (₹)<input class="in num" id="fDed" inputmode="numeric" value="'+esc(t.deductPerDay==null?'':t.deductPerDay)+'" placeholder="Empty = salary ÷ class days"></label>'+
@@ -1549,20 +1552,53 @@ var Admin = (function(){
           .catch(function(err){ pb.disabled=false; pb.textContent='Add photo'; $('#fMsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; }); };
       var pd=$('#fPhotoDel'); if(pd) pd.onclick=function(){ pd.disabled=true; api('adminSetAvatar',{pin:pin,teacherId:t.id,avatar:''}).then(function(){ t.avatar=''; $('#fAv').innerHTML=avatarHtml(t,56); pd.remove(); toast('Photo removed'); }).catch(function(err){ pd.disabled=false; toast(err.message); }); };
     }
-    $('#here').onclick=function(){ fillHere($('#here'), $('#fLat'), $('#fLng'), $('#fMsg')); };
+    var tloc={lat:t.ownLat,lng:t.ownLng,link:''}, tpick=bindMapPicker('tm', tloc); bindRadius();
     $('#tf').addEventListener('submit',function(e){
       e.preventDefault();
-      var lat=$('#fLat').value.trim(), lng=$('#fLng').value.trim();
-      if(lat.indexOf(',')>0 && !lng){ var p=lat.split(','); lat=p[0].trim(); lng=(p[1]||'').trim(); }
       var t2={id:$('#fId').value.trim().toUpperCase(),pin:$('#fPin').value.trim(),name:$('#fName').value.trim(),phone:$('#fPhone').value.trim(),email:$('#fEmail').value.trim(),school:$('#fSchool').value.trim(),
-        radius:$('#fRad').value.trim()||null,lat:lat===''?null:+lat,lng:lng===''?null:+lng,active:$('#fAct').checked,schoolId:$('#fSch').value,
+        radius:$('#fRad').value.trim()||null,lat:tloc.lat==null?null:tloc.lat,lng:tloc.lng==null?null:tloc.lng,active:$('#fAct').checked,schoolId:$('#fSch').value,
         designation:$('#fDes').value.trim(),joinDate:$('#fJoin').value,salary:$('#fSal').value.replace(/[,₹\s]/g,''),deductPerDay:$('#fDed').value.replace(/[,₹\s]/g,''),notes:$('#fNotes').value};
-      if((t2.lat==null)!==(t2.lng==null) || (t2.lat!=null && (isNaN(t2.lat)||isNaN(t2.lng)||Math.abs(t2.lat)>90||Math.abs(t2.lng)>180))){ $('#fMsg').innerHTML='<div class="msg err">Enter both latitude and longitude as numbers, or leave both empty.</div>'; return; }
       var b=$('#fSave'); b.disabled=true; b.innerHTML='<span class="spinner"></span> Saving';
-      api('saveTeacher',{pin:pin,teacher:t2}).then(function(){ close(); toast('Saved '+t2.name+(isNew?'. Open Edit to add a photo.':'')); load(); })
+      (t2.schoolId?Promise.resolve(true):tpick.ensure()).then(function(ok){ if(!ok) throw new Error('Fix the location link first.'); t2.lat=tloc.lat==null?null:tloc.lat; t2.lng=tloc.lng==null?null:tloc.lng; return api('saveTeacher',{pin:pin,teacher:t2}); })
+        .then(function(){ close(); toast('Saved '+t2.name+(isNew?'. Open Edit to add a photo.':'')); load(); })
         .catch(function(err){ b.disabled=false; b.textContent='Save teacher'; $('#fMsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
     });
   }
+  /* Location picker: paste a Google Maps link (or use current location). Calls onSet({lat,lng,link}). */
+  function mapPickerHtml(prefix, cur){
+    var has=cur&&cur.lat!=null;
+    return '<div class="mappick stack" style="gap:8px">'+
+      '<label class="f">Google Maps link of the school<input class="in" id="'+prefix+'Link" inputmode="url" value="'+esc((cur&&cur.link)||'')+'" placeholder="Paste link, e.g. https://maps.app.goo.gl/…"></label>'+
+      '<div class="row"><button type="button" class="btn small black" id="'+prefix+'Find">Find location</button><button type="button" class="btn small ghost" id="'+prefix+'Here">Use my current location</button></div>'+
+      '<div id="'+prefix+'Status" aria-live="polite">'+(has?locFound(cur):'<div class="faint">In Google Maps: search the school → tap <b>Share</b> → <b>Copy link</b> → paste it above.</div>')+'</div></div>';
+  }
+  function locFound(p){ return '<div class="msg good" style="font-weight:600">📍 Location set · <a href="https://www.google.com/maps?q='+p.lat+','+p.lng+'" target="_blank" rel="noopener">Check it on the map</a></div>'; }
+  function bindMapPicker(prefix, state){
+    var st=$('#'+prefix+'Status');
+    function set(p, link){ state.lat=p.lat; state.lng=p.lng; if(link!=null) state.link=link; st.innerHTML=locFound(p); }
+    function find(){
+      var link=$('#'+prefix+'Link').value.trim(); if(!link){ st.innerHTML='<div class="msg err">Paste the Google Maps link first.</div>'; return Promise.resolve(false); }
+      var local=parseMapLink(link); if(local){ set(local, link); return Promise.resolve(true); }
+      st.innerHTML='<div class="faint"><span class="spinner" style="width:16px;height:16px"></span> Reading the link…</div>';
+      return aapi('resolveMapLink',{link:link}).then(function(r){ set(r, link); return true; }).catch(function(err){ st.innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; return false; });
+    }
+    $('#'+prefix+'Find').onclick=find;
+    $('#'+prefix+'Link').addEventListener('paste',function(){ setTimeout(find,50); });
+    $('#'+prefix+'Link').addEventListener('input',function(){ state.dirty=true; });
+    $('#'+prefix+'Here').onclick=function(){
+      var b=this; b.disabled=true; b.textContent='Finding location…';
+      navigator.geolocation.getCurrentPosition(function(p){ b.disabled=false; b.textContent='Use my current location';
+          var q={lat:Math.round(p.coords.latitude*1e6)/1e6,lng:Math.round(p.coords.longitude*1e6)/1e6}; $('#'+prefix+'Link').value='https://www.google.com/maps?q='+q.lat+','+q.lng; set(q,$('#'+prefix+'Link').value); state.dirty=false; },
+        function(){ b.disabled=false; b.textContent='Use my current location'; st.innerHTML='<div class="msg err">Could not read your location. Allow location access, or paste a Google Maps link.</div>'; },
+        {enableHighAccuracy:true,timeout:20000,maximumAge:0});
+    };
+    return { ensure:function(){ return state.dirty && $('#'+prefix+'Link').value.trim() ? find().then(function(ok){ if(ok) state.dirty=false; return ok; }) : Promise.resolve(true); } };
+  }
+  function radiusHtml(id, val, ph){
+    return '<label class="f">Allowed distance around the school (metres)<input class="in num" id="'+id+'" inputmode="numeric" value="'+esc(val||'')+'" placeholder="'+esc(ph)+'"></label>'+
+      '<div class="quick">'+[50,100,200,300,500].map(function(m){ return '<button type="button" class="btn small ghost" data-rad="'+id+'" data-m="'+m+'">'+m+' m</button>'; }).join('')+'</div>';
+  }
+  function bindRadius(){ document.querySelectorAll('[data-rad]').forEach(function(b){ b.onclick=function(){ $('#'+b.getAttribute('data-rad')).value=b.getAttribute('data-m'); }; }); }
   function fillHere(b, latEl, lngEl, msgEl){
     b.disabled=true; b.textContent='Finding location…';
     navigator.geolocation.getCurrentPosition(function(p){ latEl.value=p.coords.latitude.toFixed(6); lngEl.value=p.coords.longitude.toFixed(6); b.disabled=false; b.textContent='Location filled (±'+Math.round(p.coords.accuracy)+' m)'; },
@@ -1577,7 +1613,7 @@ var Admin = (function(){
       (list.length?'<div class="grid2">'+list.map(function(x,i){ var n=data.teachers.filter(function(t){return t.schoolLink===x.id;});
         return '<article class="card stack schoolcard"><div class="row between"><div><div class="eyebrow">'+esc(x.id)+'</div><h3>'+esc(x.name)+'</h3></div><button class="btn small ghost" data-sedit="'+i+'">Edit</button></div>'+
           '<div class="timebig num">'+esc(fmt12(x.start))+' <span>to</span> '+esc(fmt12(x.end))+'</div>'+
-          '<div class="row">'+(x.lat!=null?'<a class="pill ok" href="https://www.google.com/maps?q='+x.lat+','+x.lng+'" target="_blank" rel="noopener">Location set · '+esc(x.radius||data.settings.DEFAULT_RADIUS_M||200)+' m</a>':'<span class="pill warn">Location not set</span>')+'<span class="pill none">'+n.length+' teacher'+(n.length===1?'':'s')+'</span></div>'+
+          '<div class="row">'+(x.lat!=null?'<a class="pill ok" href="'+esc(x.mapLink||('https://www.google.com/maps?q='+x.lat+','+x.lng))+'" target="_blank" rel="noopener">📍 Location set · '+esc(x.radius||data.settings.DEFAULT_RADIUS_M||200)+' m</a>':'<span class="pill warn">Location not set</span>')+'<span class="pill none">'+n.length+' teacher'+(n.length===1?'':'s')+'</span></div>'+
           (n.length?'<div class="faint">'+esc(n.map(function(t){return t.name;}).join(', '))+'</div>':'')+(x.address?'<div class="faint">'+esc(x.address)+'</div>':'')+'</article>'; }).join('')+'</div>'
        :'<div class="card empty">No schools yet. Add your first school.</div>');
     $('#addS').onclick=function(){ schoolForm(null); };
@@ -1590,24 +1626,24 @@ var Admin = (function(){
       '<label class="f">School name<input class="in" id="xNm" value="'+esc(x.name)+'" placeholder="e.g. MPPS Gandhi Nagar"></label>'+
       (isNew&&others.length?'<div class="row"><span class="faint">Same time as</span><select class="in" id="xCopy" style="width:auto"><option value="">—</option>'+others.map(function(o){return '<option value="'+esc(o.id)+'">'+esc(o.name)+'</option>';}).join('')+'</select></div>':'')+
       '<div class="grid2"><label class="f">Class starts<input class="in" type="time" id="xSt" value="'+esc(x.start)+'"></label><label class="f">Class ends<input class="in" type="time" id="xEn" value="'+esc(x.end)+'"></label>'+
-      '<label class="f">Latitude<input class="in num" id="xLa" inputmode="decimal" value="'+esc(x.lat==null?'':x.lat)+'"></label><label class="f">Longitude<input class="in num" id="xLo" inputmode="decimal" value="'+esc(x.lng==null?'':x.lng)+'"></label>'+
-      '<label class="f">Geofence radius (m)<input class="in num" id="xRa" inputmode="numeric" value="'+esc(x.radius||'')+'" placeholder="'+esc(data.settings.DEFAULT_RADIUS_M||200)+'"></label>'+
       '<label class="f">Address (optional)<input class="in" id="xAd" maxlength="200" value="'+esc(x.address||'')+'"></label></div>'+
-      '<div class="row"><button type="button" class="btn small ghost" id="xHere">Use my current location</button></div>'+
-      '<p class="faint" style="margin:0">Tip: in Google Maps, long-press the school and copy the two numbers. Or let a teacher check in there once, open the selfie and choose "Use this spot".</p>'+
+      '<div class="formsec">School location</div>'+mapPickerHtml('xm',{lat:x.lat,lng:x.lng,link:x.mapLink})+
+      radiusHtml('xRa', x.radius, 'Default '+(data.settings.DEFAULT_RADIUS_M||200)+' m')+
+      '<p class="faint" style="margin:0">Teachers can check in and out only within this distance of the location.</p>'+
       '<div id="xMsg2" aria-live="polite"></div><div class="row"><button class="btn yellow" id="xSave" style="flex:1">Save school</button>'+(isNew?'':'<button type="button" class="btn danger" id="xDel">Delete</button>')+'</div></form>');
     var cp=$('#xCopy'); if(cp) cp.onchange=function(){ var o=schoolById(cp.value); if(o){ $('#xSt').value=o.start; $('#xEn').value=o.end; } };
-    $('#xHere').onclick=function(){ fillHere($('#xHere'), $('#xLa'), $('#xLo'), $('#xMsg2')); };
+    var loc={lat:x.lat,lng:x.lng,link:x.mapLink||''}, picker=bindMapPicker('xm', loc); bindRadius();
     var del=$('#xDel'); if(del) del.onclick=function(){
       if(del.getAttribute('data-sure')!=='1'){ del.setAttribute('data-sure','1'); del.textContent='Tap again to delete'; return; }
       del.disabled=true; aapi('deleteSchool',{id:x.id}).then(function(){ close(); toast('School deleted'); load(); }).catch(function(err){ del.disabled=false; $('#xMsg2').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; }); };
     $('#sfm').addEventListener('submit',function(e){
       e.preventDefault();
-      var la=$('#xLa').value.trim(), lo=$('#xLo').value.trim();
-      if(la.indexOf(',')>0 && !lo){ var p=la.split(','); la=p[0].trim(); lo=(p[1]||'').trim(); }
       var b=$('#xSave'); b.disabled=true;
-      aapi('saveSchool',{school:{id:x.id,name:$('#xNm').value,start:$('#xSt').value,end:$('#xEn').value,lat:la===''?'':+la,lng:lo===''?'':+lo,radius:$('#xRa').value.trim(),address:$('#xAd').value}})
-        .then(function(){ close(); toast('School saved'); load(); }).catch(function(err){ b.disabled=false; $('#xMsg2').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
+      picker.ensure().then(function(ok){
+        if(!ok){ b.disabled=false; return; }
+        return aapi('saveSchool',{school:{id:x.id,name:$('#xNm').value,start:$('#xSt').value,end:$('#xEn').value,lat:loc.lat==null?'':loc.lat,lng:loc.lng==null?'':loc.lng,radius:$('#xRa').value.trim(),address:$('#xAd').value,mapLink:loc.link||''}})
+          .then(function(){ close(); toast('School saved'+(loc.lat==null?' (no location yet)':'')); load(); });
+      }).catch(function(err){ b.disabled=false; $('#xMsg2').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
     });
   }
 
