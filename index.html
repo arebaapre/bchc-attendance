@@ -329,6 +329,8 @@ button.avbtn{border:0;padding:0;background:none;cursor:pointer;border-radius:50%
 .timebig{font-family:var(--display);font-size:2rem;line-height:1}
 .timebig span{font-family:var(--body);font-size:.85rem;color:var(--ink-3);font-weight:700;margin:0 4px}
 .progress{height:10px}
+.cam{position:relative}
+.camflip{position:absolute;right:12px;bottom:12px;width:48px;height:48px;border-radius:50%;border:0;background:rgba(18,18,18,.65);color:#ffd200;display:grid;place-items:center;cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .modal .card{background:var(--surface);backdrop-filter:none;-webkit-backdrop-filter:none}
 @media (max-width:520px){ .brand b{font-size:1.1rem;white-space:nowrap} .brand span{white-space:normal;font-size:.6rem;letter-spacing:.1em;line-height:1.25;margin-top:2px} .logo{width:40px;height:40px} }
 .progress i{background:linear-gradient(90deg,#138a43,#35c06b)}
@@ -555,10 +557,10 @@ var Teacher = (function(){
     var di=dayInfo(info.serverDate, info.settings, calMapOf(info.calendar));
     if(!di.isClass) return null;
     var s=info.settings, start=info.schoolStart||s.SCHOOL_START, lm=Math.floor(srvMins()-mins(start));
-    var block=+s.LATE_BLOCK_MIN, need=+s.LATE_REASON_MIN, grace=+s.LATE_GRACE_MIN||0;
-    return {lm:lm, start:start, block:block, need:need, blocked:block>0&&lm>block, needReason:!isNaN(need)&&lm>need&&!(block>0&&lm>block), late:lm>grace};
+    var need=+s.LATE_REASON_MIN, grace=+s.LATE_GRACE_MIN||0;
+    return {lm:lm, start:start, need:need, askReason:!isNaN(need)&&lm>need, late:lm>grace};
   }
-  function stateKey(){ var l=lateState(); return !l?'x':l.blocked?'b':l.needReason?'n':l.late?'l':'o'; }
+  function stateKey(){ var l=lateState(); return !l?'x':l.askReason?'n':l.late?'l':'o'; }
   /* While checked in and the app is open, report location every few minutes. */
   function trackingOn(){
     if(!info || !info.teacher || info.teacher.lat==null) return false;
@@ -660,12 +662,13 @@ var Teacher = (function(){
     var first=(t.name||'').split(' ')[0];
     var action, ls=lateState(), start=info.schoolStart||s.SCHOOL_START, end=info.schoolEnd||s.SCHOOL_END;
     homeKey=stateKey();
-    if(!inR && ls && ls.blocked) action='<div class="msg err stack" style="gap:6px"><b>Check-in is closed for today</b><span style="font-weight:500">You are '+ls.lm+' minutes late. Class started at '+esc(fmt12(start))+' and check-in closes '+ls.block+' minutes after that.</span></div>'+
-      '<div class="row"><button class="btn yellow" style="flex:1" id="blkFix">Ask the admin to fix</button><button class="btn ghost" style="flex:1" data-go="leave">Apply for leave</button></div>';
-    else if(!inR) action='<button class="btn yellow huge block" id="go" data-type="IN">Check in</button>'+
-      (ls && ls.needReason ? '<div class="msg note" style="text-align:center">You are '+ls.lm+' minutes late. You will be asked for the reason. Check-in closes at '+esc(fmt12(addMins(start,ls.block)))+'.</div>'
-       : '<p class="faint" style="text-align:center;margin:0">Class '+esc(fmt12(start))+(end?' – '+esc(fmt12(end)):'')+(ls&&ls.block>0?' · check-in closes '+esc(fmt12(addMins(start,ls.block))):'')+'</p>');
-    else if(!outR) action='<button class="btn green huge block" id="go" data-type="OUT">Check out</button><p class="faint" style="text-align:center;margin:0">'+(end?'Class ends at '+esc(fmt12(end))+'. ':'')+'Check out when you leave.</p>';
+    var radius=t.radius||+s.DEFAULT_RADIUS_M||200;
+    var noLoc = t.lat==null || t.lng==null;
+    if(!outR && noLoc) action='<div class="msg err stack" style="gap:6px"><b>Your school location is not set yet</b><span style="font-weight:500">Attendance can only be marked at school. Please ask the admin to set your school location.</span></div>';
+    else if(!inR) action='<button class="btn yellow huge block" id="go" data-type="IN">Check in with selfie</button>'+
+      (ls && ls.askReason ? '<div class="msg note" style="text-align:center">You are '+ls.lm+' minutes late. You can add a reason (optional).</div>' : '')+
+      '<p class="faint" style="text-align:center;margin:0">Class '+esc(fmt12(start))+(end?' – '+esc(fmt12(end)):'')+' · works only within '+radius+' m of '+esc(t.school||'school')+'</p>';
+    else if(!outR) action='<button class="btn green huge block" id="go" data-type="OUT">Check out with selfie</button><p class="faint" style="text-align:center;margin:0">'+(end?'Class ends at '+esc(fmt12(end))+'. ':'')+'Check out when you leave.</p>';
     else action='<div class="msg good" style="text-align:center">You are done for today. Thank you, '+esc(first)+'!</div>';
     var dayPill = dInfo.holiday ? '<span class="pill bad">'+esc(dayLabel(dInfo))+'</span>' : dInfo.isClass ? '<span class="pill ok">'+esc(dayLabel(dInfo))+'</span>' : '<span class="pill none">'+esc(dayLabel(dInfo))+'</span>';
 
@@ -690,8 +693,7 @@ var Teacher = (function(){
         '<button class="btn ghost block" id="forgot">Forgot to check in or out? Ask for a fix</button>'+
       '</div>';
     tick(); clearInterval(clockTimer); clockTimer=setInterval(tick, 1000);
-    var g=$('#go'); if(g) g.onclick=function(){ var l=lateState(); if(g.getAttribute('data-type')==='IN' && l && l.blocked) return homeView(); punchView(g.getAttribute('data-type')); };
-    var bf=$('#blkFix'); if(bf) bf.onclick=function(){ prefill={date:info.serverDate,type:'IN'}; go('requests'); };
+    var g=$('#go'); if(g) g.onclick=function(){ punchView(g.getAttribute('data-type')); };
     startPings();
     $('#forgot').onclick=function(){ prefill=null; go('requests'); };
     $('#toProfile').onclick=function(){ go('profile'); };
@@ -783,10 +785,10 @@ var Teacher = (function(){
       '<section class="card stack"><div class="profile-head"><div id="pAv">'+avatarHtml(t,120)+'</div>'+
         '<div><h1>'+esc(t.name)+'</h1><div class="muted">'+esc(t.designation||'Teacher')+' · '+esc(info.org||'BCHC')+'</div></div>'+
         '<input type="file" id="pFile" accept="image/*" hidden>'+
-        '<div class="row" style="justify-content:center"><button class="btn small yellow" id="pChange">'+(t.avatar?'Change photo':'Add profile photo')+'</button>'+(t.avatar?'<button class="btn small ghost" id="pRemove">Remove</button>':'')+'</div>'+
+        '<div class="row" style="justify-content:center"><button class="btn small yellow" id="pChange">'+(t.avatar?'Change photo':'Add profile photo')+'</button>'+(t.avatar?'<button class="btn small ghost" id="pRemove">Remove</button>':'')+'<button class="btn small ghost" id="pEditMe">Edit my details</button></div>'+
         '<div id="pMsg" aria-live="polite"></div></div></section>'+
       '<section class="card stack"><h2 style="font-size:1.6rem">This month</h2><div class="stats num" id="pStats"><div class="stat"><b>…</b><small>Days</small></div><div class="stat"><b>…</b><small>Hours</small></div><div class="stat"><b>…</b><small>Late</small></div></div></section>'+
-      '<section class="card"><dl class="infolist"><dt>Teacher ID</dt><dd>'+esc(t.id)+'</dd><dt>Centre</dt><dd>'+esc(t.school||'—')+'</dd><dt>Phone</dt><dd class="num">'+esc(t.phone||'—')+'</dd>'+
+      '<section class="card"><dl class="infolist"><dt>Teacher ID</dt><dd>'+esc(t.id)+'</dd><dt>Centre</dt><dd>'+esc(t.school||'—')+'</dd><dt>Mobile</dt><dd class="num">'+esc(t.phone||'—')+'</dd><dt>Email</dt><dd>'+esc(t.email||'—')+'</dd>'+
         (t.designation?'<dt>Role</dt><dd>'+esc(t.designation)+'</dd>':'')+
         '<dt>Class time</dt><dd>'+esc(fmt12(info.schoolStart||info.settings.SCHOOL_START))+(info.schoolEnd?' – '+esc(fmt12(info.schoolEnd)):'')+'</dd></dl></section>'+
       '<section class="card menu">'+
@@ -804,6 +806,21 @@ var Teacher = (function(){
         .catch(function(err){ $('#pMsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
     };
     var rm=$('#pRemove'); if(rm) rm.onclick=function(){ rm.disabled=true; api('setAvatar',{teacherId:session.teacherId,pin:session.pin,avatar:''}).then(function(){ info.teacher.avatar=''; toast('Photo removed'); profileView(); }).catch(function(err){ rm.disabled=false; toast(err.message); }); };
+    $('#pEditMe').onclick=function(){
+      var box=$('#pMsg');
+      box.innerHTML='<form class="stack" id="meForm" novalidate style="text-align:left;width:100%;max-width:380px">'+
+        '<label class="f">Your name<input class="in" id="meName" maxlength="60" value="'+esc(t.name)+'"></label>'+
+        '<label class="f">Mobile<input class="in num" id="mePhone" inputmode="tel" maxlength="20" value="'+esc(t.phone||'')+'"></label>'+
+        '<label class="f">Email<input class="in" id="meEmail" type="email" inputmode="email" maxlength="120" value="'+esc(t.email||'')+'"></label>'+
+        '<div id="meMsg" aria-live="polite"></div><div class="row"><button class="btn yellow" id="meSave" style="flex:1">Save</button><button type="button" class="btn ghost" id="meCancel">Cancel</button></div></form>';
+      $('#meCancel').onclick=function(){ box.innerHTML=''; };
+      $('#meForm').addEventListener('submit',function(e){
+        e.preventDefault(); var b=$('#meSave'); b.disabled=true; b.innerHTML='<span class="spinner"></span> Saving';
+        api('updateProfile',{teacherId:session.teacherId,pin:session.pin,profile:{name:$('#meName').value,phone:$('#mePhone').value,email:$('#meEmail').value}})
+          .then(function(r){ info.teacher=Object.assign(info.teacher, r.teacher); toast('Your details are saved'); profileView(); })
+          .catch(function(err){ b.disabled=false; b.textContent='Save'; $('#meMsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
+      });
+    };
     $('#pOut').onclick=function(){ topAction.click(); };
     $('#pAdmin').onclick=function(){ location.hash='#admin'; };
     app.querySelectorAll('[data-go]').forEach(function(b){ b.onclick=function(){ go(b.getAttribute('data-go')); }; });
@@ -904,80 +921,82 @@ var Teacher = (function(){
     (hist?Promise.resolve(hist):loadHist()).then(list).catch(function(err){ var x=$('#rList'); if(x) x.innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; });
   }
 
-  /* ----- check-in / check-out with selfie + GPS */
+  /* ----- check-in / check-out: live camera photo + GPS inside the school area only */
   function punchView(type){
     showNav(false);
     var t=info.teacher, label= type==='IN'?'Check in':'Check out';
+    var radius=t.radius||+info.settings.DEFAULT_RADIUS_M||200, maxAcc=+info.settings.MAX_ACCURACY_M||150;
+    var ls=type==='IN'?lateState():null;
     app.innerHTML=
       '<div class="narrow stack">'+
         '<div class="row between"><h2>'+label+'</h2><button class="btn small ghost" id="cancel">Cancel</button></div>'+
-        '<div class="cam" id="cam"><video id="vid" playsinline autoplay muted></video><div class="oval"></div><img id="shot" alt="Your selfie" hidden></div>'+
-        '<div class="gps" id="gps"><span class="dot wait" id="gdot"></span><div><b id="gtitle">Finding your location…</b><div class="faint" id="gsub">Stay outdoors or near a window for a better signal.</div></div></div>'+
-        (type==='IN' && lateState() && lateState().needReason ? lateBox(lateState().lm) : '<div id="lateSlot"></div>')+
+        '<div class="cam" id="cam"><video id="vid" playsinline autoplay muted></video><div class="oval"></div><img id="shot" alt="Your photo" hidden>'+
+          '<button class="camflip" id="flip" type="button" aria-label="Switch between front and back camera" hidden><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3l2-3h6l2 3h3v12H4z"/><path d="M9 13a3 3 0 0 0 5.2 2"/><path d="M15 12a3 3 0 0 0-5.2-2"/><path d="M14 15.5l.2-.5.5.2M10 9.5l-.2.5-.5-.2"/></svg></button></div>'+
+        '<div class="gps" id="gps"><span class="dot wait" id="gdot"></span><div><b id="gtitle">Finding your location…</b><div class="faint" id="gsub">Attendance works only within '+radius+' m of '+esc(t.school||'your school')+'.</div></div></div>'+
+        (ls && ls.askReason ? lateBox(ls.lm) : '')+
         '<div id="pmsg" aria-live="polite"></div>'+
-        (type==='IN' && t.lat!=null ? '<p class="faint" style="margin:0">While you are checked in and this app is open, it checks your location every '+esc(+info.settings.PING_EVERY_MIN||5)+' minutes so the admin can see you are at school.</p>' : '')+
-        '<input type="file" id="fileCap" accept="image/*" capture="user" hidden>'+
-        '<button class="btn yellow huge block" id="snap" disabled>Take selfie</button>'+
+        (type==='IN' ? '<p class="faint" style="margin:0">Only a live camera photo is accepted. While you are checked in and this app is open, it checks your location every '+esc(+info.settings.PING_EVERY_MIN||5)+' minutes.</p>' : '')+
+        '<button class="btn yellow huge block" id="snap" disabled>Take photo</button>'+
         '<div class="row" id="afterSnap" hidden><button class="btn ghost" id="retake" style="flex:1">Retake</button><button class="btn green" id="submit" style="flex:2" disabled>Submit '+label.toLowerCase()+'</button></div>'+
       '</div>';
-    var state={photo:null,pos:null,camOk:false};
+    var state={photo:null,pos:null,camOk:false,facing:'user',dist:null};
     $('#cancel').onclick=function(){ stopCamera(); showNav(true); homeView(); };
 
-    startCamera($('#vid')).then(function(){ state.camOk=true; refresh(); })
-      .catch(function(){
-        $('#vid').hidden=true; $('.oval').hidden=true;
-        $('#cam').style.aspectRatio='auto'; $('#cam').style.minHeight='120px';
-        $('#pmsg').innerHTML='<div class="msg note">Live camera is blocked in this browser. Tap "Take selfie" to open your phone camera.</div>';
-        state.camOk='fallback'; refresh();
+    function openCam(){
+      state.camOk=false; refresh();
+      startCamera($('#vid'), state.facing).then(function(){
+        state.camOk=true; $('#vid').style.transform= state.facing==='user'?'scaleX(-1)':'none';
+        $('#pmsg').innerHTML='';
+        if(navigator.mediaDevices.enumerateDevices) navigator.mediaDevices.enumerateDevices().then(function(d){ var n=d.filter(function(x){return x.kind==='videoinput';}).length; var f=$('#flip'); if(f) f.hidden=n<2; }).catch(function(){});
+        refresh();
+      }).catch(function(){
+        $('#pmsg').innerHTML='<div class="msg err stack" style="gap:6px"><b>Camera is not allowed</b><span style="font-weight:500">Attendance needs a live photo. Allow camera for this site (tap the lock icon next to the address, then Camera → Allow) and tap Try again. Photos from the gallery are not accepted.</span><div><button class="btn small black" id="camRetry">Try again</button></div></div>';
+        var cr=$('#camRetry'); if(cr) cr.onclick=openCam;
+        refresh();
       });
+    }
+    openCam();
+    $('#flip').onclick=function(){ state.facing = state.facing==='user'?'environment':'user'; if(camStream){ camStream.getTracks().forEach(function(x){x.stop();}); camStream=null; } openCam(); };
 
     if(!navigator.geolocation){ gps('bad','Location not supported','Open this app in Chrome.'); }
     else {
       gpsWatch = navigator.geolocation.watchPosition(function(p){
         if(!state.pos || p.coords.accuracy < state.pos.coords.accuracy || Date.now()-state.pos.timestamp>15000) state.pos=p;
-        var acc=Math.round(state.pos.coords.accuracy), dist=null;
-        if(t.lat!=null && t.lng!=null) dist=haversine(state.pos.coords.latitude,state.pos.coords.longitude,t.lat,t.lng);
-        var radius=t.radius||+info.settings.DEFAULT_RADIUS_M||200;
+        var acc=Math.round(state.pos.coords.accuracy);
+        state.dist=haversine(state.pos.coords.latitude,state.pos.coords.longitude,t.lat,t.lng);
         var sub='GPS accuracy ±'+acc+' m';
-        if(dist==null) gps(acc<=150?'ok':'warn','Location found',sub+'. The admin has not set your school location yet.');
-        else if(dist<=radius) gps(acc<=150?'ok':'warn','You are at school · '+fmtDist(dist), sub);
-        else gps('bad','You are '+fmtDist(dist)+' from school', sub+'. You can still submit, but it will be marked "Outside".');
+        if(acc>maxAcc) gps('warn','GPS signal is weak', sub+'. Step outside or near a window and wait a few seconds.');
+        else if(state.dist<=radius) gps('ok','You are at school · '+fmtDist(state.dist), sub);
+        else gps('bad','You are '+fmtDist(state.dist)+' from school', 'Attendance works only within '+radius+' m. Go to the school to mark it.');
         refresh();
       }, function(err){
         var m = err.code===1 ? 'Location permission is off' : 'Could not get location';
         gps('bad', m, err.code===1 ? 'Allow location for this site in your browser settings, then reopen the app.' : 'Turn on GPS / Location on your phone and try again.');
       }, {enableHighAccuracy:true, maximumAge:0, timeout:30000});
     }
-
+    function inside(){ return state.pos && state.dist!=null && state.dist<=radius && state.pos.coords.accuracy<=maxAcc; }
     function gps(kind,title,sub){ var d=$('#gdot'); if(!d) return; d.className='dot '+kind; $('#gtitle').textContent=title; $('#gsub').textContent=sub; }
     function refresh(){
       var snap=$('#snap'), sub=$('#submit'); if(!snap) return;
-      snap.disabled = !state.camOk;
-      sub.disabled = !(state.photo && state.pos);
-      if(state.photo && !state.pos) sub.textContent='Waiting for GPS…'; else sub.textContent='Submit '+label.toLowerCase();
+      snap.disabled = state.camOk!==true;
+      sub.disabled = !(state.photo && inside());
+      sub.textContent = !state.photo ? 'Submit '+label.toLowerCase() : !state.pos ? 'Waiting for GPS…' : !inside() ? 'Only inside school area' : 'Submit '+label.toLowerCase();
     }
     $('#snap').onclick=function(){
-      if(state.camOk==='fallback'){ $('#fileCap').click(); return; }
-      state.photo=capture($('#vid'), true, t.name); showShot();
-    };
-    $('#fileCap').onchange=function(e){
-      var f=e.target.files&&e.target.files[0]; if(!f) return;
-      var img=new Image(); img.onload=function(){ state.photo=capture(img,false,t.name); URL.revokeObjectURL(img.src); showShot(); };
-      img.src=URL.createObjectURL(f);
+      if(state.camOk!==true) return;
+      state.photo=capture($('#vid'), state.facing==='user', t.name); showShot();
     };
     function showShot(){
-      var s=$('#shot'); s.src=state.photo; s.hidden=false; $('#vid').hidden=true; $('.oval').hidden=true;
-      $('#cam').style.aspectRatio='3/4';
+      var s=$('#shot'); s.src=state.photo; s.hidden=false; $('#vid').hidden=true; $('.oval').hidden=true; $('#flip').hidden=true;
       $('#snap').hidden=true; $('#afterSnap').hidden=false; refresh();
     }
     $('#retake').onclick=function(){
-      state.photo=null; $('#shot').hidden=true;
-      if(state.camOk!=='fallback'){ $('#vid').hidden=false; $('.oval').hidden=false; } else { $('#fileCap').value=''; }
-      $('#snap').hidden=false; $('#afterSnap').hidden=true; refresh();
+      state.photo=null; $('#shot').hidden=true; $('#vid').hidden=false; $('.oval').hidden=false;
+      $('#snap').hidden=false; $('#afterSnap').hidden=true; openCam();
     };
     $('#submit').onclick=function(){
+      if(!inside()) return refresh();
       var why=$('#lateWhy');
-      if(why && why.value.trim().length<3){ $('#pmsg').innerHTML='<div class="msg err">Please write why you are late.</div>'; why.focus(); return; }
       var b=$('#submit'); b.disabled=true; b.innerHTML='<span class="spinner"></span> Saving';
       $('#retake').disabled=true;
       api('punch', {teacherId:session.teacherId, pin:session.pin, type:type, photo:state.photo, lateReason:why?why.value.trim():'',
@@ -985,18 +1004,13 @@ var Teacher = (function(){
       .then(function(res){ stopCamera(); hist=null; resultView(res.record); })
       .catch(function(err){
         b.disabled=false; $('#retake').disabled=false; refresh();
-        var r=err.res||{};
-        if(r.needReason && !$('#lateWhy')){ var sl=$('#lateSlot'); if(sl) sl.outerHTML=lateBox(r.lateBy); var w=$('#lateWhy'); if(w) w.focus(); }
-        if(r.blocked){ b.disabled=true; $('#retake').disabled=true; }
-        $('#pmsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>'+(r.blocked?'<div class="row" style="margin-top:8px"><button class="btn yellow" id="bFix" style="flex:1">Ask the admin to fix</button><button class="btn ghost" id="bHome" style="flex:1">Back</button></div>':'');
-        var bfx=$('#bFix'); if(bfx) bfx.onclick=function(){ stopCamera(); showNav(true); prefill={date:info.serverDate,type:'IN'}; go('requests'); };
-        var bh=$('#bHome'); if(bh) bh.onclick=function(){ stopCamera(); showNav(true); homeView(); };
+        $('#pmsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>';
       });
     };
   }
 
   function lateBox(lm){
-    return '<label class="f latebox">You are '+esc(lm)+' minutes late · reason (required)<textarea class="in" id="lateWhy" maxlength="300" placeholder="e.g. Bus was late / ఆటో ఆలస్యం"></textarea></label>';
+    return '<label class="f latebox">You are '+esc(lm)+' minutes late · reason (optional)<textarea class="in" id="lateWhy" maxlength="300" placeholder="e.g. Bus was late / ఆటో ఆలస్యం"></textarea></label>';
   }
   function resultView(r){
     var isIn=r.type==='IN';
@@ -1021,9 +1035,10 @@ var Teacher = (function(){
 
 /* ------------------------------------------------- camera + photo helpers */
 var camStream=null, gpsWatch=null;
-function startCamera(video){
+function startCamera(video, facing){
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia) return Promise.reject(new Error('no camera api'));
-  return navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:960},height:{ideal:1280}},audio:false})
+  if(camStream){ camStream.getTracks().forEach(function(t){t.stop();}); camStream=null; }
+  return navigator.mediaDevices.getUserMedia({video:{facingMode:facing||'user',width:{ideal:960},height:{ideal:1280}},audio:false})
     .then(function(s){ camStream=s; video.srcObject=s; return video.play(); });
 }
 function stopCamera(){
@@ -1081,7 +1096,7 @@ var Admin = (function(){
   function shell(){
     app.innerHTML=
       '<div class="row between adminhead"><div><div class="eyebrow">'+esc((data&&data.settings&&data.settings.ORG_NAME)||'Bheem Children Happiness Centre')+'</div><h1 style="font-size:2.4rem">Admin dashboard</h1></div>'+
-        '<div class="row"><a class="btn small ghost" id="sheetLink" target="_blank" rel="noopener" hidden>Open Google Sheet</a><button class="btn small ghost" id="refresh">Refresh</button><button class="btn small ghost" id="aOut">Lock</button></div></div>'+
+        '<div class="row"><a class="btn small ghost" id="sheetLink" target="_blank" rel="noopener" hidden>Open Google Sheet</a><a class="btn small ghost" id="photoLink" target="_blank" rel="noopener" hidden>Selfies in Drive</a><button class="btn small ghost" id="refresh">Refresh</button><button class="btn small ghost" id="aOut">Lock</button></div></div>'+
       '<nav class="tabs" role="tablist">'+TABS.map(function(p){ return '<button class="tab" role="tab" data-tab="'+p[0]+'" aria-selected="'+(tab===p[0])+'">'+p[1]+(p[0]==='requests'?'<span id="reqBadge"></span>':'')+(p[0]==='leave'?'<span id="leaveBadge"></span>':'')+'</button>'; }).join('')+
       '</nav><section id="pane"></section>';
     app.querySelectorAll('.tab').forEach(function(b){ b.onclick=function(){ tab=b.getAttribute('data-tab'); app.querySelectorAll('.tab').forEach(function(x){x.setAttribute('aria-selected', x===b);}); load(); }; });
@@ -1101,6 +1116,7 @@ var Admin = (function(){
     api('adminData',{pin:pin,from:from,to:to}).then(function(res){
       data=res; data.calMap=calMapOf(res.calendar);
       var sl=$('#sheetLink'); if(sl&&res.sheetUrl){ sl.href=res.sheetUrl; sl.hidden=false; }
+      var pl=$('#photoLink'); if(pl&&res.photoFolderUrl){ pl.href=res.photoFolderUrl; pl.hidden=false; }
       var pend=res.requests.filter(function(r){return r.status==='PENDING';}).length;
       var rb=$('#reqBadge'); if(rb) rb.innerHTML=pend?'<span class="badge">'+pend+'</span>':'';
       var lp=res.leaves.filter(function(l){return l.status==='PENDING';}).length, lb=$('#leaveBadge'); if(lb) lb.innerHTML=lp?'<span class="badge">'+lp+'</span>':'';
@@ -1145,7 +1161,8 @@ var Admin = (function(){
       (rec?'<div class="grid2 num"><div><div class="faint">When</div><b>'+esc(niceDate(rec.date))+', '+esc(fmt12(rec.time))+'</b></div>'+
         '<div><div class="faint">Where</div>'+geoPill(rec.geofence,rec.distance)+'</div>'+
         '<div><div class="faint">GPS</div><b>'+esc(rec.lat)+', '+esc(rec.lng)+'</b><div class="faint">±'+esc(rec.accuracy)+' m</div></div>'+
-        '<div><div class="faint">Map</div><a href="https://www.google.com/maps?q='+esc(rec.lat)+','+esc(rec.lng)+'" target="_blank" rel="noopener">Open in Google Maps</a></div></div>'+
+        '<div><div class="faint">Map</div><a href="https://www.google.com/maps?q='+esc(rec.lat)+','+esc(rec.lng)+'" target="_blank" rel="noopener">Open in Google Maps</a></div>'+
+        (rec.photoUrl?'<div><div class="faint">Drive</div><a href="'+esc(rec.photoUrl)+'" target="_blank" rel="noopener">Open photo in Drive</a></div>':'')+'</div>'+
         (rec.note?'<div class="msg note">'+esc(rec.note)+'</div>':'')+
         (rec.lat!=null?'<div class="row"><button class="btn small ghost" id="setSchool">Use this spot as '+esc(rec.name.split(' ')[0])+'\'s school location</button></div>':'')+(rec.lateReason?'<div class="msg note">Late reason: '+esc(rec.lateReason)+'</div>':'')+'':'')+
       '</div>');
@@ -1202,7 +1219,7 @@ var Admin = (function(){
       var d=byT[t.id], p=presenceOf(t.id, day);
       if(d&&d.inR){ c.present++; if(d.inR.late) c.late++; if(!d.outR) c.noOut++; }
       else if(leaveIds[t.id]) c.leave++;
-      else if(di.isClass){ if(nowM<=mins(t.start||s.SCHOOL_START)+(+s.LATE_BLOCK_MIN||0)) c.notYet++; else c.absent++; }
+      else if(di.isClass){ if(nowM<=mins(t.end||s.SCHOOL_END||'16:00')) c.notYet++; else c.absent++; }
       if(p && !p.closed && p.state==='OUTSIDE'){ c.outsideNow++; }
       if(p && p.outsideMin>=10) alerts.push({t:t,p:p});
     });
@@ -1212,7 +1229,7 @@ var Admin = (function(){
     var pct = ts.length ? Math.round(c.present/ts.length*100) : 0;
     var rows=ts.map(function(t){
       var d=byT[t.id]||{}, p=presenceOf(t.id, day), st;
-      if(!d.inR) st = leaveIds[t.id] ? '<span class="pill info">On leave</span>' : !di.isClass ? '<span class="pill none">No class</span>' : (nowM<=mins(t.start||s.SCHOOL_START)+(+s.LATE_BLOCK_MIN||0) ? '<span class="pill none">Not yet</span>' : '<span class="pill bad">Absent</span>');
+      if(!d.inR) st = leaveIds[t.id] ? '<span class="pill info">On leave</span>' : !di.isClass ? '<span class="pill none">No class</span>' : (nowM<=mins(t.end||s.SCHOOL_END||'16:00') ? '<span class="pill none">Not yet</span>' : '<span class="pill bad">Absent</span>');
       else if(!d.outR) st='<span class="pill ok live-dot">In class</span>';
       else st='<span class="pill ok">Done</span>';
       var hrs = d.inR&&d.outR ? durText(d.hours) : (d.inR ? durText(nowMins()-mins(d.inR.time))+' so far' : '—');
@@ -1421,10 +1438,11 @@ var Admin = (function(){
       'Check-out time':d.outR?d.outR.time:'','Check-out location':d.outR?d.outR.geofence:'','Check-out distance (m)':d.outR?d.outR.distance:'',
       'Check-out GPS':d.outR&&d.outR.lat!=null?d.outR.lat+','+d.outR.lng:'',
       'Hours worked':d.hours!=null?+(d.hours/60).toFixed(2):'',
+      'Check-in selfie':d.inR&&d.inR.photoId?(d.inR.photoUrl||'https://drive.google.com/file/d/'+d.inR.photoId+'/view'):'','Check-out selfie':d.outR&&d.outR.photoId?(d.outR.photoUrl||'https://drive.google.com/file/d/'+d.outR.photoId+'/view'):'',
       'Notes':[d.inR&&d.inR.note,d.outR&&d.outR.note].filter(Boolean).join('; ')
     }; });
     var raw=data.records.map(function(r){ return {'Record ID':r.id,'Date':r.date,'Time':r.time,'Teacher ID':r.teacherId,'Teacher':r.name,'Type':r.type,
-      'Latitude':r.lat,'Longitude':r.lng,'GPS accuracy (m)':r.accuracy,'Distance from school (m)':r.distance,'Location':r.geofence,'Late':r.late?'Yes':'No','Late by (min)':r.lateMin!=null?r.lateMin:'','Late reason':r.lateReason||'','Selfie file ID':r.photoId,'Note':r.note}; });
+      'Latitude':r.lat,'Longitude':r.lng,'GPS accuracy (m)':r.accuracy,'Distance from school (m)':r.distance,'Location':r.geofence,'Late':r.late?'Yes':'No','Late by (min)':r.lateMin!=null?r.lateMin:'','Late reason':r.lateReason||'','Selfie link':r.photoUrl||(r.photoId?'https://drive.google.com/file/d/'+r.photoId+'/view':''),'Note':r.note}; });
     var wb=XLSX.utils.book_new();
     if(stats){
       addSheet(wb, stats.map(function(s){ return {'Teacher ID':s.t.id,'Teacher':s.t.name,'School':s.t.school,'Class days':workDays,'Days present':s.present,
@@ -1749,8 +1767,7 @@ var Admin = (function(){
         '<div class="grid2"><label class="f">Default class start<input class="in" type="time" id="sStart" value="'+esc(s.SCHOOL_START)+'"></label>'+
         '<label class="f">Default class end<input class="in" type="time" id="sEnd" value="'+esc(s.SCHOOL_END||'16:00')+'"></label>'+
         '<label class="f">Marked late after (minutes)<input class="in num" id="sGrace" inputmode="numeric" value="'+esc(s.LATE_GRACE_MIN)+'"></label>'+
-        '<label class="f">Reason needed when late by more than (minutes)<input class="in num" id="sNeed" inputmode="numeric" value="'+esc(s.LATE_REASON_MIN||10)+'"></label>'+
-        '<label class="f">Check-in closes when late by more than (minutes)<input class="in num" id="sBlock" inputmode="numeric" value="'+esc(s.LATE_BLOCK_MIN||30)+'"></label>'+
+        '<label class="f">Show optional "reason for late" box when late by more than (minutes)<input class="in num" id="sNeed" inputmode="numeric" value="'+esc(s.LATE_REASON_MIN||10)+'"></label>'+
         '<label class="f">Location check while checked in (every … minutes)<input class="in num" id="sPing" inputmode="numeric" value="'+esc(s.PING_EVERY_MIN||5)+'"></label>'+
         '<label class="f">Teachers can ask to fix up to (days back)<input class="in num" id="sBack" inputmode="numeric" value="'+esc(s.FIX_DAYS_BACK)+'"></label></div></section>'+
       '<section class="card stack"><h3>Leave rules</h3><div class="grid2">'+
@@ -1760,7 +1777,7 @@ var Admin = (function(){
         '<label class="f">App link (used in emails and WhatsApp)<input class="in" id="sUrl" inputmode="url" value="'+esc(s.APP_URL)+'"></label></section>'+
       '<section class="card stack"><h3>Location and security</h3><div class="grid2">'+
         '<label class="f">Organisation name<input class="in" id="sOrg" value="'+esc(s.ORG_NAME)+'"></label>'+
-        '<label class="f">Default geofence radius (m)<input class="in num" id="sRad" inputmode="numeric" value="'+esc(s.DEFAULT_RADIUS_M)+'"></label>'+
+        '<label class="f">Default school radius (m) — attendance only inside this<input class="in num" id="sRad" inputmode="numeric" value="'+esc(s.DEFAULT_RADIUS_M)+'"></label>'+
         '<label class="f">Flag GPS weaker than (m)<input class="in num" id="sAcc" inputmode="numeric" value="'+esc(s.MAX_ACCURACY_M)+'"></label>'+
         '<label class="f">New admin PIN (optional)<input class="in num" id="sPin" inputmode="numeric" type="password" placeholder="Leave empty to keep"></label>'+
       '</div></section><div id="sMsg" aria-live="polite"></div><div><button class="btn yellow" id="sSave">Save settings</button></div></form>';
@@ -1770,7 +1787,7 @@ var Admin = (function(){
       var wh=[].slice.call(pane.querySelectorAll('input[name=wh]:checked')).map(function(x){return x.value;}).join(',');
       var upd={MEETING_TITLE:$('#sMT').value.trim(),MEETING_DAY:$('#sMD').value,MEETING_START:$('#sMS').value,MEETING_END:$('#sME').value,MEETING_LINK:$('#sML').value.trim(),
         CLASS_DAYS:days,WEEKLY_HOLIDAYS:wh,SCHOOL_START:$('#sStart').value,SCHOOL_END:$('#sEnd').value,LATE_GRACE_MIN:$('#sGrace').value.trim(),
-        LATE_REASON_MIN:$('#sNeed').value.trim(),LATE_BLOCK_MIN:$('#sBlock').value.trim(),PING_EVERY_MIN:$('#sPing').value.trim(),FIX_DAYS_BACK:$('#sBack').value.trim(),
+        LATE_REASON_MIN:$('#sNeed').value.trim(),PING_EVERY_MIN:$('#sPing').value.trim(),FIX_DAYS_BACK:$('#sBack').value.trim(),
         SICK_PER_MONTH:$('#sSick').value.trim(),CASUAL_PER_MONTH:$('#sCas').value.trim(),LEAVE_ON_MEETING_DAY:$('#sLeaveMeet').checked?'YES':'NO',APP_URL:$('#sUrl').value.trim(),
         ORG_NAME:$('#sOrg').value.trim(),DEFAULT_RADIUS_M:$('#sRad').value.trim(),MAX_ACCURACY_M:$('#sAcc').value.trim()};
       var np=$('#sPin').value.trim(); if(np) upd.ADMIN_PIN=np;
