@@ -445,6 +445,7 @@ var TE={
  'Saved on this phone (no internet).':'ఈ ఫోన్‌లో సేవ్ అయింది (ఇంటర్నెట్ లేదు).',
  'It will upload automatically when internet is back. Please open the app once you have network.':'ఇంటర్నెట్ వచ్చాక ఆటోమేటిక్‌గా అప్‌లోడ్ అవుతుంది. నెట్‌వర్క్ ఉన్నప్పుడు ఒకసారి యాప్ తెరవండి.',
  'No internet. Your entry will be saved on this phone and uploaded automatically later.':'ఇంటర్నెట్ లేదు. మీ ఎంట్రీ ఈ ఫోన్‌లో సేవ్ అయి, తర్వాత ఆటోమేటిక్‌గా అప్‌లోడ్ అవుతుంది.',
+ 'It uploads by itself when internet is back, even if the app is closed.':'ఇంటర్నెట్ రాగానే యాప్ మూసి ఉన్నా ఇది దానంతట అదే అప్‌లోడ్ అవుతుంది.',
  'Still no internet. It will upload automatically.':'ఇంకా ఇంటర్నెట్ లేదు. ఆటోమేటిక్‌గా అప్‌లోడ్ అవుతుంది.',
  'Phone storage is full. Free some space and try again.':'ఫోన్ స్టోరేజ్ నిండిపోయింది. కొంత స్థలం ఖాళీ చేసి మళ్ళీ ప్రయత్నించండి.',
  'Your school location is not set yet':'మీ స్కూల్ లొకేషన్ ఇంకా సెట్ చేయలేదు',
@@ -502,7 +503,8 @@ var TE_RULES=[
  [/^Holiday: (.+)$/, function(m){ return 'సెలవు: '+m[1]; }],
  [/^Meeting (\d.*)$/, function(m){ return 'మీటింగ్ '+m[1]; }],
  [/^(January|February|March|April|May|June|July|August|September|October|November|December) (\d{4})$/, function(m){ return TE_MONTHS[m[1]]+' '+m[2]; }],
- [/^(entry|entries) saved on this phone, waiting to upload$/, function(){ return 'ఎంట్రీ(లు) ఈ ఫోన్‌లో సేవ్ అయ్యాయి, అప్‌లోడ్ కోసం వేచి ఉన్నాయి'; }],
+ [/^(entry|entries) saved on this phone\. They upload by themselves when internet is back, even if the app is closed\.$/, function(){ return 'ఎంట్రీ(లు) ఈ ఫోన్‌లో సేవ్ అయ్యాయి. ఇంటర్నెట్ రాగానే యాప్ మూసి ఉన్నా వాటంతట అవే అప్‌లోడ్ అవుతాయి.'; }],
+ [/^(entry|entries) saved on this phone\. They upload by themselves when internet is back and the app is opened\.$/, function(){ return 'ఎంట్రీ(లు) ఈ ఫోన్‌లో సేవ్ అయ్యాయి. ఇంటర్నెట్ వచ్చి యాప్ తెరవగానే వాటంతట అవే అప్‌లోడ్ అవుతాయి.'; }],
  [/^(\d+) saved entr(y|ies) uploaded$/, function(m){ return m[1]+' సేవ్ చేసిన ఎంట్రీ(లు) అప్‌లోడ్ అయ్యాయి'; }],
  [/^Not accepted: (check-in|check-out) (.+?) — (.+)$/, function(m){ return 'అంగీకరించలేదు: '+TE[m[1]]+' '+m[2]+' — '+trCore(m[3]); }],
  [/^You are (\S+ (?:km|m)) away from (.+)\. Attendance can be marked only within (\d+) m of the school\.$/, function(m){ return 'మీరు '+m[2]+' నుంచి '+m[1]+' దూరంలో ఉన్నారు. స్కూల్ నుంచి '+m[3]+' మీ. లోపల మాత్రమే అటెండెన్స్ వేయగలరు.'; }],
@@ -553,6 +555,24 @@ function api(action, data){
     .catch(function(){ throw new Error('No internet or the server did not answer. Try again.'); })
     .then(function(res){ if (!res || !res.ok){ var e=new Error((res && res.error) || 'Something went wrong.'); e.res=res||{}; throw e; } return res; });
 }
+/* Background upload: offline entries are also kept in IndexedDB so the service worker can upload them
+   by itself when internet comes back, even if the app is closed (Android Chrome / the installed app). */
+var BGQ=(function(){
+  function db(){ return new Promise(function(res,rej){ try{ var r=indexedDB.open('bchc-bg',1);
+    r.onupgradeneeded=function(){ var d=r.result; if(!d.objectStoreNames.contains('q')) d.createObjectStore('q',{keyPath:'id'}); if(!d.objectStoreNames.contains('done')) d.createObjectStore('done',{keyPath:'id'}); };
+    r.onsuccess=function(){ res(r.result); }; r.onerror=function(){ rej(r.error); }; }catch(e){ rej(e); } }); }
+  function tx(store, mode, fn){ return db().then(function(d){ return new Promise(function(res,rej){ var t=d.transaction(store,mode), st=t.objectStore(store), out=fn(st); t.oncomplete=function(){ res(out&&out.result!==undefined?out.result:out); }; t.onerror=function(){ rej(t.error); }; }); }); }
+  var supported = 'serviceWorker' in navigator && 'SyncManager' in window && 'indexedDB' in window;
+  function kick(){ if(!supported) return Promise.resolve(); return navigator.serviceWorker.ready.then(function(r){ return r.sync.register('bchc-upload'); }).catch(function(){}); }
+  return {
+    supported: supported,
+    kick: kick,
+    put: function(item){ return tx('q','readwrite',function(st){ st.put(item); }).then(kick).catch(function(){}); },
+    del: function(id){ return tx('q','readwrite',function(st){ st.delete(id); }).catch(function(){}); },
+    /* entries the service worker already handled: [{id, ok, error}] (then forgotten) */
+    takeDone: function(){ return tx('done','readwrite',function(st){ var r=st.getAll(); st.clear(); return r; }).catch(function(){ return []; }); }
+  };
+})();
 function pad(n){ return (n<10?'0':'')+n; }
 function iso(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
 function todayISO(){ return iso(new Date()); }
@@ -782,9 +802,29 @@ var Teacher = (function(){
     return i;
   }
   var syncing=false;
+  /* pick up entries the service worker already uploaded in the background */
+  function reconcile(){
+    return BGQ.takeDone().then(function(done){
+      if(!done || !done.length) return 0;
+      var ids={}, f=store.get('syncfail')||[], up=0;
+      done.forEach(function(d){ ids[d.id]=1; var it=qGet().filter(function(x){ return x.id===d.id; })[0];
+        if(d.ok){ if(it) up++; } else if(it) f.push({type:it.type,date:it.date,time:it.time,error:d.error||'Not accepted'}); });
+      qSet(qGet().filter(function(x){ return !ids[x.id]; })); store.set('syncfail',f.slice(-10));
+      return up;
+    });
+  }
   function syncQueue(){
-    if(syncing || !session || !navigator.onLine) return Promise.resolve();
-    var q=myQueue(); if(!q.length) return Promise.resolve();
+    if(syncing || !session) return Promise.resolve();
+    syncing=true;
+    return reconcile().then(function(bg){
+      syncing=false;
+      if(bg){ toast(bg+' saved entr'+(bg>1?'ies':'y')+' uploaded'); if(navigator.onLine) refreshInfo().then(redraw,redraw); else redraw(); }
+      if(!navigator.onLine || !myQueue().length) return;
+      return sendAll();
+    }, function(){ syncing=false; });
+  }
+  function redraw(){ if(info) withPending(info); if(view==='home' && document.getElementById('clock')) homeView(); }
+  function sendAll(){
     syncing=true; var sent=0;
     function next(){
       var item=myQueue()[0];
@@ -793,26 +833,26 @@ var Teacher = (function(){
           lateReason:item.lateReason||'',device:item.device,offline:true,clientTime:item.clientTime})
         .then(function(){ drop(item); sent++; return next(); })
         .catch(function(err){
-          if(isNetErr(err)){ syncing=false; afterSync(); return; }
+          if(isNetErr(err)){ syncing=false; BGQ.kick(); afterSync(); return; }
           drop(item); var f=store.get('syncfail')||[]; f.push({type:item.type,date:item.date,time:item.time,error:err.message}); store.set('syncfail',f.slice(-10)); return next();
         });
     }
-    function drop(item){ qSet(qGet().filter(function(x){ return x.id!==item.id; })); }
+    function drop(item){ qSet(qGet().filter(function(x){ return x.id!==item.id; })); BGQ.del(item.id); }
     function afterSync(){ if(sent) toast(sent+' saved entr'+(sent>1?'ies':'y')+' uploaded'); if(view==='home' && document.getElementById('clock')) homeView(); }
     return next();
   }
   window.addEventListener('online', function(){ syncQueue(); if(info && info._offline) loadHome(); });
   setInterval(function(){ if(myQueue().length) syncQueue(); }, 60000);
   document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible' && myQueue().length) syncQueue(); });
+  if(navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', function(e){ if(e.data && e.data.type==='bchc-uploaded' && myQueue().length) syncQueue(); });
   function offlineBanner(){
     var q=myQueue(), f=store.get('syncfail')||[], h='';
     if(info && info._offline) h+='<div class="msg note offnote"><b>No internet right now.</b> You can still check in and out with a photo inside the school area. It is saved on this phone and uploads automatically when internet is back.</div>';
-    if(q.length) h+='<div class="msg note offnote row between" style="gap:8px"><span><b>'+q.length+'</b> '+(q.length>1?'entries':'entry')+' saved on this phone, waiting to upload</span><button class="btn small black" id="syncNow">Upload now</button></div>';
+    if(q.length) h+='<div class="msg note offnote"><b>'+q.length+'</b> '+(q.length>1?'entries':'entry')+' saved on this phone. '+(BGQ.supported?'They upload by themselves when internet is back, even if the app is closed.':'They upload by themselves when internet is back and the app is opened.')+'</div>';
     if(f.length) h+='<div class="msg err">'+f.map(function(x){ return 'Not accepted: '+(x.type==='IN'?'check-in':'check-out')+' '+esc(niceDate(x.date))+' '+esc(fmt12(x.time))+' — '+esc(x.error); }).join('<br>')+'<div><button class="btn small ghost" id="clearFail" style="margin-top:6px">OK</button></div></div>';
     return h;
   }
   function bindBanner(){
-    var b=document.getElementById('syncNow'); if(b) b.onclick=function(){ if(!navigator.onLine){ toast('Still no internet. It will upload automatically.'); return; } b.disabled=true; syncQueue().then(function(){ b.disabled=false; }); };
     var c=document.getElementById('clearFail'); if(c) c.onclick=function(){ store.del('syncfail'); homeView(); };
   }
   function saveOffline(type, state, why, label){
@@ -823,6 +863,8 @@ var Teacher = (function(){
       late:!!(ls&&ls.late),lateMin:ls&&ls.lm>0?ls.lm:null};
     var q=qGet(); q.push(item);
     if(!qSet(q)){ toast('Phone storage is full. Free some space and try again.'); return null; }
+    BGQ.put({id:item.id,teacherId:item.teacherId,url:API,body:{action:'punch',teacherId:session.teacherId,pin:session.pin,type:type,photo:item.photo,lat:item.lat,lng:item.lng,
+      accuracy:item.accuracy,lateReason:item.lateReason,device:item.device,offline:true,clientTime:item.clientTime}});
     if(info){ withPending(info); cacheInfo(); }
     return {type:type,date:item.date,time:t,geofence:'INSIDE',distance:state.dist,late:item.late,lateMin:item.lateMin,lateReason:item.lateReason,pending:true};
   }
@@ -1266,7 +1308,7 @@ var Teacher = (function(){
         (r.lateReason?'<div class="muted">Reason: '+esc(r.lateReason)+'</div>':'')+
         (isIn?'<p class="faint" style="margin:0">Have a good day of teaching!</p>':'')+
         (r.note?'<div class="msg note">'+esc(r.note)+'</div>':'')+
-        (r.pending?'<div class="msg note offnote"><b>Saved on this phone (no internet).</b> It will upload automatically when internet is back. Please open the app once you have network.</div>'
+        (r.pending?'<div class="msg note offnote"><b>Saved on this phone (no internet).</b> '+(BGQ.supported?'It uploads by itself when internet is back, even if the app is closed.':'It will upload automatically when internet is back. Please open the app once you have network.')+'</div>'
           :'<p class="faint" style="margin:0">Time is recorded by the server, not your phone.</p>')+
         '<button class="btn yellow block" id="done">Done</button>'+
       '</div>';
