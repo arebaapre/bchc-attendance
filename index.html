@@ -329,6 +329,9 @@ button.avbtn{border:0;padding:0;background:none;cursor:pointer;border-radius:50%
 .timebig{font-family:var(--display);font-size:2rem;line-height:1}
 .timebig span{font-family:var(--body);font-size:.85rem;color:var(--ink-3);font-weight:700;margin:0 4px}
 .progress{height:10px}
+.topbar #langBtn{font-family:var(--body);padding:6px 10px}
+.offnote{border:1px dashed color-mix(in srgb,var(--amber) 55%,transparent)}
+body.is-admin #langBtn{display:none}
 .cam{position:relative}
 .camflip{position:absolute;right:12px;bottom:12px;width:48px;height:48px;border-radius:50%;border:0;background:rgba(18,18,18,.65);color:#ffd200;display:grid;place-items:center;cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .modal .card{background:var(--surface);backdrop-filter:none;-webkit-backdrop-filter:none}
@@ -344,6 +347,7 @@ button.avbtn{border:0;padding:0;background:none;cursor:pointer;border-radius:50%
     <img class="logo" src="logo.png" alt="BCHC logo" width="46" height="46">
     <div class="brand"><b>BCHC Teacher Connect</b><span id="orgName">Bheem Children Happiness Centre</span></div>
     <div class="spacer"></div>
+    <button class="topbtn" id="langBtn" type="button" aria-label="Change language"></button>
     <button class="topbtn" id="topAction" hidden></button>
   </div>
   <div id="topBand" aria-hidden="true"></div>
@@ -379,6 +383,161 @@ var store = {
   set: function(k,v){ try { localStorage.setItem('bchc_'+k, JSON.stringify(v)); } catch(e){} },
   del: function(k){ try { localStorage.removeItem('bchc_'+k); } catch(e){} }
 };
+/* ============================================================ language (English / Telugu)
+   Teacher screens are written in English and translated on screen when Telugu is chosen.
+   The admin dashboard always stays in English. */
+var LANG=(function(){ try{ return localStorage.getItem('bchc_lang')==='te'?'te':'en'; }catch(e){ return 'en'; } })();
+var LOC = LANG==='te' ? 'te-IN' : 'en-IN';
+var TE_DAYS={Sunday:'ఆదివారం',Monday:'సోమవారం',Tuesday:'మంగళవారం',Wednesday:'బుధవారం',Thursday:'గురువారం',Friday:'శుక్రవారం',Saturday:'శనివారం'};
+var TE_MONTHS={January:'జనవరి',February:'ఫిబ్రవరి',March:'మార్చి',April:'ఏప్రిల్',May:'మే',June:'జూన్',July:'జూలై',August:'ఆగస్టు',September:'సెప్టెంబర్',October:'అక్టోబర్',November:'నవంబర్',December:'డిసెంబర్'};
+var TE={
+ 'Admin':'అడ్మిన్','Sign out':'సైన్ అవుట్','Welcome, teacher':'స్వాగతం, టీచర్',
+ 'Sign in once on your phone. After that, checking in takes one selfie.':'మీ ఫోన్‌లో ఒక్కసారి సైన్ ఇన్ చేయండి. తర్వాత ఒక్క సెల్ఫీతో అటెండెన్స్ వేయవచ్చు.',
+ 'Teacher ID':'టీచర్ ID','Sign in':'సైన్ ఇన్','Signing in':'సైన్ ఇన్ అవుతోంది','Your ID and PIN come from the BCHC admin.':'మీ ID, PIN ను BCHC అడ్మిన్ ఇస్తారు.',
+ 'Enter your Teacher ID and PIN.':'మీ టీచర్ ID, PIN ఇవ్వండి.',
+ 'Home':'హోమ్','Calendar':'క్యాలెండర్','Updates':'అప్‌డేట్స్','Leave':'సెలవు','Me':'నేను',
+ 'Loading your day…':'మీ రోజు లోడ్ అవుతోంది…','Loading your attendance…':'మీ అటెండెన్స్ లోడ్ అవుతోంది…','Loading…':'లోడ్ అవుతోంది…',
+ 'Class day':'క్లాస్ రోజు','No class':'క్లాస్ లేదు','Holiday':'సెలవు రోజు','Weekly holiday':'వారపు సెలవు',
+ 'In':'ఇన్','Out':'అవుట్','Worked':'పని చేసిన సమయం','On duty':'డ్యూటీలో',
+ 'Check in with selfie':'సెల్ఫీతో చెక్ ఇన్','Check out with selfie':'సెల్ఫీతో చెక్ అవుట్','Check in':'చెక్ ఇన్','Check out':'చెక్ అవుట్',
+ 'Check-in':'చెక్ ఇన్','Check-out':'చెక్ అవుట్','check-in':'చెక్ ఇన్','check-out':'చెక్ అవుట్',
+ 'On time':'సమయానికి','Late':'ఆలస్యం','At school':'స్కూల్‌లో','Waiting to upload':'అప్‌లోడ్ కోసం వేచి ఉంది',
+ 'Location check':'లొకేషన్ చెక్','Inside school':'స్కూల్ లోపల','Outside school':'స్కూల్ బయట','Not checked yet':'ఇంకా చెక్ కాలేదు',
+ 'Weekly team meeting':'వారపు టీమ్ మీటింగ్','Open meeting link':'మీటింగ్ లింక్ తెరవండి','Join meeting now':'ఇప్పుడే మీటింగ్‌లో చేరండి','LIVE':'లైవ్',
+ 'No meeting planned in the next weeks':'రాబోయే వారాల్లో మీటింగ్ లేదు','The admin will add the meeting link soon.':'అడ్మిన్ త్వరలో మీటింగ్ లింక్ పెడతారు.',
+ 'Forgot to check in or out? Ask for a fix':'చెక్ ఇన్/అవుట్ మర్చిపోయారా? సరిచేయమని అడగండి',
+ 'Cancel':'రద్దు','Take photo':'ఫోటో తీయండి','Retake':'మళ్ళీ తీయండి','Submit check in':'చెక్ ఇన్ పంపండి','Submit check out':'చెక్ అవుట్ పంపండి',
+ 'Saving':'సేవ్ అవుతోంది','Sending':'పంపుతోంది','Finding your location…':'మీ లొకేషన్ కనుగొంటోంది…','Waiting for GPS…':'GPS కోసం వేచి ఉంది…',
+ 'Only inside school area':'స్కూల్ పరిధిలో మాత్రమే','GPS signal is weak':'GPS సిగ్నల్ బలహీనంగా ఉంది',
+ 'Location permission is off':'లొకేషన్ అనుమతి ఆఫ్‌లో ఉంది','Could not get location':'లొకేషన్ దొరకలేదు','Location not supported':'లొకేషన్ సపోర్ట్ లేదు',
+ 'Allow location for this site in your browser settings, then reopen the app.':'బ్రౌజర్ సెట్టింగ్స్‌లో ఈ సైట్‌కు లొకేషన్ అనుమతి ఇవ్వండి, తర్వాత యాప్ మళ్ళీ తెరవండి.',
+ 'Turn on GPS / Location on your phone and try again.':'ఫోన్‌లో GPS / లొకేషన్ ఆన్ చేసి మళ్ళీ ప్రయత్నించండి.','Open this app in Chrome.':'ఈ యాప్‌ను Chrome లో తెరవండి.',
+ 'Camera is not allowed':'కెమెరాకు అనుమతి లేదు','Try again':'మళ్ళీ ప్రయత్నించండి',
+ 'Attendance needs a live photo. Allow camera for this site (tap the lock icon next to the address, then Camera → Allow) and tap Try again. Photos from the gallery are not accepted.':'అటెండెన్స్‌కు లైవ్ ఫోటో అవసరం. ఈ సైట్‌కు కెమెరా అనుమతి ఇవ్వండి (అడ్రస్ పక్కన తాళం గుర్తు నొక్కి, Camera → Allow), తర్వాత "మళ్ళీ ప్రయత్నించండి" నొక్కండి. గ్యాలరీ ఫోటోలు అంగీకరించరు.',
+ 'Checked in':'చెక్ ఇన్ అయింది','Checked out':'చెక్ అవుట్ అయింది','Have a good day of teaching!':'ఈ రోజు మంచి బోధన జరగాలి!',
+ 'Time is recorded by the server, not your phone.':'సమయం సర్వర్ నుంచి నమోదు అవుతుంది, మీ ఫోన్ నుంచి కాదు.','Done':'సరే','OK':'సరే',
+ 'I came':'నేను వచ్చాను','On leave':'సెలవులో','Missed':'రాలేదు','Meeting':'మీటింగ్','In:':'ఇన్:','· Out:':'· అవుట్:','Meeting link':'మీటింగ్ లింక్',
+ 'Announcements':'ప్రకటనలు','Tasks':'పనులు','New':'కొత్తది','Overdue':'గడువు దాటింది',
+ 'No tasks to do. Well done!':'చేయాల్సిన పనులు లేవు. బాగుంది!','No announcements yet. News from the admin will appear here.':'ఇంకా ప్రకటనలు లేవు. అడ్మిన్ వార్తలు ఇక్కడ కనిపిస్తాయి.',
+ 'Resets every month':'ప్రతి నెలా మళ్ళీ మొదలవుతుంది','Sick leave left':'మిగిలిన సిక్ లీవ్','Casual leave left':'మిగిలిన క్యాజువల్ లీవ్',
+ "Sundays are holidays. The weekly Saturday meeting is compulsory. Every leave needs a reason and the admin's approval.":'ఆదివారాలు సెలవు. ప్రతి శనివారం మీటింగ్ తప్పనిసరి. ప్రతి సెలవుకు కారణం, అడ్మిన్ అనుమతి అవసరం.',
+ 'Apply for leave':'సెలవు కోసం దరఖాస్తు','Date':'తేదీ','Type':'రకం','Sick leave':'సిక్ లీవ్','Casual leave':'క్యాజువల్ లీవ్','Reason':'కారణం',
+ 'Send for approval':'అనుమతి కోసం పంపండి','My leave':'నా సెలవులు','No leave taken yet.':'ఇంకా సెలవు తీసుకోలేదు.',
+ 'Waiting':'పెండింగ్','Approved':'అనుమతించారు','Rejected':'తిరస్కరించారు','Cancelled':'రద్దయింది',
+ 'Add profile photo':'ప్రొఫైల్ ఫోటో పెట్టండి','Change photo':'ఫోటో మార్చండి','Remove':'తీసివేయండి','Edit my details':'నా వివరాలు మార్చండి',
+ 'This month':'ఈ నెల','Days':'రోజులు','Hours':'గంటలు','Centre':'సెంటర్','Mobile':'మొబైల్','Email':'ఈమెయిల్','Class time':'క్లాస్ సమయం','Role':'హోదా',
+ 'Fix a missed check-in':'మిస్ అయిన చెక్ ఇన్ సరిచేయండి','Forgot to check in or out':'చెక్ ఇన్ లేదా అవుట్ మర్చిపోయారా',
+ 'Resources':'రిసోర్సెస్','Worksheets, documents and links':'వర్క్‌షీట్లు, డాక్యుమెంట్లు, లింకులు',
+ 'For the BCHC admin only · needs the admin PIN':'BCHC అడ్మిన్ కోసం మాత్రమే · అడ్మిన్ PIN అవసరం','Sign out of this phone':'ఈ ఫోన్ నుంచి సైన్ అవుట్',
+ 'Language':'భాష','Your name':'మీ పేరు','Save':'సేవ్ చేయండి',
+ 'Forgot to check in or out? Send the correct time. The admin approves it and it is added to your attendance.':'చెక్ ఇన్ లేదా అవుట్ మర్చిపోయారా? సరైన సమయం పంపండి. అడ్మిన్ ఒప్పుకున్నాక మీ అటెండెన్స్‌లో చేరుతుంది.',
+ 'What did you miss?':'ఏది మిస్ అయ్యారు?','Correct time':'సరైన సమయం','Send request':'రిక్వెస్ట్ పంపండి','My requests':'నా రిక్వెస్ట్‌లు',
+ 'No requests yet.':'ఇంకా రిక్వెస్ట్‌లు లేవు.','Cancel request':'రిక్వెస్ట్ రద్దు చేయండి','Back':'వెనక్కి','Open':'తెరవండి',
+ 'Sent. You will see the answer below.':'పంపబడింది. సమాధానం కింద కనిపిస్తుంది.',
+ 'No resources yet. Worksheets and links shared by the admin will appear here.':'ఇంకా రిసోర్సెస్ లేవు. అడ్మిన్ పంచుకునే వర్క్‌షీట్లు, లింకులు ఇక్కడ కనిపిస్తాయి.',
+ 'School location not set':'స్కూల్ లొకేషన్ సెట్ చేయలేదు','Fixed by request':'రిక్వెస్ట్ ద్వారా సరిచేశారు',
+ 'No internet or the server did not answer. Try again.':'ఇంటర్నెట్ లేదు లేదా సర్వర్ స్పందించలేదు. మళ్ళీ ప్రయత్నించండి.','Something went wrong.':'ఏదో పొరపాటు జరిగింది.',
+ 'Request sent to the admin':'రిక్వెస్ట్ అడ్మిన్‌కు పంపబడింది','Request cancelled':'రిక్వెస్ట్ రద్దయింది',
+ 'Leave request sent to the admin':'సెలవు రిక్వెస్ట్ అడ్మిన్‌కు పంపబడింది','Leave request cancelled':'సెలవు రిక్వెస్ట్ రద్దయింది',
+ 'Profile photo saved':'ప్రొఫైల్ ఫోటో సేవ్ అయింది','Photo removed':'ఫోటో తీసివేశారు','Saving photo…':'ఫోటో సేవ్ అవుతోంది…','Your details are saved':'మీ వివరాలు సేవ్ అయ్యాయి',
+ 'Upload now':'ఇప్పుడే అప్‌లోడ్ చేయండి','No internet right now.':'ప్రస్తుతం ఇంటర్నెట్ లేదు.',
+ 'You can still check in and out with a photo inside the school area. It is saved on this phone and uploads automatically when internet is back.':'స్కూల్ పరిధిలో ఫోటోతో చెక్ ఇన్, అవుట్ చేయవచ్చు. అది ఈ ఫోన్‌లో సేవ్ అయి, ఇంటర్నెట్ వచ్చాక ఆటోమేటిక్‌గా అప్‌లోడ్ అవుతుంది.',
+ 'Saved on this phone (no internet).':'ఈ ఫోన్‌లో సేవ్ అయింది (ఇంటర్నెట్ లేదు).',
+ 'It will upload automatically when internet is back. Please open the app once you have network.':'ఇంటర్నెట్ వచ్చాక ఆటోమేటిక్‌గా అప్‌లోడ్ అవుతుంది. నెట్‌వర్క్ ఉన్నప్పుడు ఒకసారి యాప్ తెరవండి.',
+ 'No internet. Your entry will be saved on this phone and uploaded automatically later.':'ఇంటర్నెట్ లేదు. మీ ఎంట్రీ ఈ ఫోన్‌లో సేవ్ అయి, తర్వాత ఆటోమేటిక్‌గా అప్‌లోడ్ అవుతుంది.',
+ 'Still no internet. It will upload automatically.':'ఇంకా ఇంటర్నెట్ లేదు. ఆటోమేటిక్‌గా అప్‌లోడ్ అవుతుంది.',
+ 'Phone storage is full. Free some space and try again.':'ఫోన్ స్టోరేజ్ నిండిపోయింది. కొంత స్థలం ఖాళీ చేసి మళ్ళీ ప్రయత్నించండి.',
+ 'Your school location is not set yet':'మీ స్కూల్ లొకేషన్ ఇంకా సెట్ చేయలేదు',
+ 'Attendance can only be marked at school. Please ask the admin to set your school location.':'అటెండెన్స్ స్కూల్‌లో మాత్రమే వేయగలరు. దయచేసి స్కూల్ లొకేషన్ సెట్ చేయమని అడ్మిన్‌ని అడగండి.',
+ 'Teacher ID or PIN is wrong. Check with the admin.':'టీచర్ ID లేదా PIN తప్పు. అడ్మిన్‌ని అడగండి.',
+ 'This teacher account is switched off.':'ఈ టీచర్ అకౌంట్ ఆఫ్ చేయబడింది.',
+ 'You have already checked in today.':'మీరు ఈ రోజు ఇప్పటికే చెక్ ఇన్ చేశారు.','You have already checked out today.':'మీరు ఈ రోజు ఇప్పటికే చెక్ అవుట్ చేశారు.',
+ 'Check in first, then check out.':'ముందు చెక్ ఇన్, తర్వాత చెక్ అవుట్ చేయండి.','Please write the reason for your leave.':'దయచేసి సెలవుకు కారణం రాయండి.',
+ 'That day is already a holiday. No leave needed.':'ఆ రోజు ఇప్పటికే సెలవు. లీవ్ అవసరం లేదు.',
+ 'The weekly meeting on that day is compulsory, so leave cannot be applied. Please talk to the admin.':'ఆ రోజు వారపు మీటింగ్ తప్పనిసరి, కాబట్టి సెలవు పెట్టలేరు. దయచేసి అడ్మిన్‌తో మాట్లాడండి.',
+ 'You already applied for leave on that day.':'ఆ రోజుకు ఇప్పటికే సెలవు అడిగారు.','Write a short reason.':'చిన్న కారణం రాయండి.',
+ 'e.g. T01':'ఉదా. T01','e.g. Fever, going to the doctor':'ఉదా. జ్వరం, డాక్టర్ దగ్గరకు వెళ్తున్నాను','e.g. Phone battery was dead':'ఉదా. ఫోన్ బ్యాటరీ అయిపోయింది',
+ 'e.g. Bus was late / ఆటో ఆలస్యం':'ఉదా. బస్ ఆలస్యం / ఆటో ఆలస్యం','Teacher':'టీచర్',
+ 'Su':'ఆ','Mo':'సో','Tu':'మం','We':'బు','Th':'గు','Fr':'శు','Sa':'శ'
+};
+function teDays(list){ return list.replace(/\b(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)\b/g,function(d){ return TE_DAYS[d]; }); }
+function teBit(x){ return TE[x]||x; }
+var TE_RULES=[
+ [/^Namaste, (.+)$/, function(m){ return 'నమస్తే, '+m[1]; }],
+ [/^You are (\d+) minutes late\. You can add a reason \(optional\)\.$/, function(m){ return 'మీరు '+m[1]+' నిమిషాలు ఆలస్యం. కారణం రాయవచ్చు (ఐచ్ఛికం).'; }],
+ [/^You are (\d+) minutes late · reason \(optional\)$/, function(m){ return 'మీరు '+m[1]+' నిమిషాలు ఆలస్యం · కారణం (ఐచ్ఛికం)'; }],
+ [/^Class (.+?) – (.+?) · works only within (\d+) m of (.+)$/, function(m){ return 'క్లాస్ '+m[1]+' – '+m[2]+' · '+m[4]+' నుంచి '+m[3]+' మీ. లోపల మాత్రమే'; }],
+ [/^(\d+) new announcements?$/, function(m){ return m[1]+' కొత్త ప్రకటన(లు)'; }],
+ [/^Pinned$/, function(){ return 'పిన్ చేసినది'; }],
+ [/^Tasks: (\d+) to do$/, function(m){ return 'పనులు: '+m[1]+' చేయాలి'; }],
+ [/^Tasks: all done$/, function(){ return 'పనులు: అన్నీ పూర్తి'; }],
+ [/^Leave left: sick (\d+) · casual (\d+)$/, function(m){ return 'మిగిలిన సెలవు: సిక్ '+m[1]+' · క్యాజువల్ '+m[2]; }],
+ [/^Every (\w+day)$/, function(m){ return 'ప్రతి '+TE_DAYS[m[1]]; }],
+ [/^(Today|Tomorrow|Happening now) · (.+)$/, function(m){ return ({Today:'ఈ రోజు',Tomorrow:'రేపు','Happening now':'ఇప్పుడు జరుగుతోంది'})[m[1]]+' · '+m[2]; }],
+ [/^You are at school · (.+)$/, function(m){ return 'మీరు స్కూల్‌లో ఉన్నారు · '+m[1]; }],
+ [/^GPS accuracy ±(\d+) m$/, function(m){ return 'GPS ఖచ్చితత్వం ±'+m[1]+' మీ.'; }],
+ [/^GPS accuracy ±(\d+) m\. Step outside or near a window and wait a few seconds\.$/, function(m){ return 'GPS ఖచ్చితత్వం ±'+m[1]+' మీ. బయటకు లేదా కిటికీ దగ్గరకు వెళ్ళి కొన్ని సెకన్లు ఆగండి.'; }],
+ [/^You are (.+) from school$/, function(m){ return 'మీరు స్కూల్ నుంచి '+m[1]+' దూరంలో ఉన్నారు'; }],
+ [/^Attendance works only within (\d+) m\. Go to the school to mark it\.$/, function(m){ return 'అటెండెన్స్ '+m[1]+' మీ. లోపల మాత్రమే. వేయడానికి స్కూల్‌కు వెళ్ళండి.'; }],
+ [/^Attendance works only within (\d+) m of (.+)\.$/, function(m){ return m[2]+' నుంచి '+m[1]+' మీ. లోపల మాత్రమే అటెండెన్స్ పనిచేస్తుంది.'; }],
+ [/^Only a live camera photo is accepted\. While you are checked in and this app is open, it checks your location every (\d+) minutes\.$/, function(m){ return 'లైవ్ కెమెరా ఫోటో మాత్రమే అంగీకరిస్తారు. చెక్ ఇన్ అయ్యి యాప్ తెరిచి ఉన్నప్పుడు, ప్రతి '+m[1]+' నిమిషాలకు మీ లొకేషన్ చెక్ చేస్తుంది.'; }],
+ [/^(Checked in|Checked out) · (.+)$/, function(m){ return TE[m[1]]+' · '+m[2]; }],
+ [/^At school · (.+)$/, function(m){ return 'స్కూల్‌లో · '+m[1]; }],
+ [/^Outside · (.+)$/, function(m){ return 'బయట · '+m[1]; }],
+ [/^Late · (\d+) min$/, function(m){ return 'ఆలస్యం · '+m[1]+' నిమి.'; }],
+ [/^Every (\d+) min while this app is open(.*)$/, function(m){ return 'యాప్ తెరిచి ఉన్నప్పుడు ప్రతి '+m[1]+' నిమిషాలకు'+m[2].replace(' · last at ',' · చివరిసారి ').replace(' · outside so far: ',' · ఇప్పటివరకు బయట: '); }],
+ [/^Class ends at (.+)\. Check out when you leave\.$/, function(m){ return 'క్లాస్ '+m[1]+' కి ముగుస్తుంది. వెళ్ళేటప్పుడు చెక్ అవుట్ చేయండి.'; }],
+ [/^Check out when you leave\.$/, function(){ return 'వెళ్ళేటప్పుడు చెక్ అవుట్ చేయండి.'; }],
+ [/^You are done for today\. Thank you, (.+)!$/, function(m){ return 'ఈ రోజుకు పూర్తయింది. ధన్యవాదాలు, '+m[1]+'!'; }],
+ [/^Ask to fix (check-in|check-out) for this day$/, function(m){ return 'ఈ రోజు '+TE[m[1]]+' సరిచేయమని అడగండి'; }],
+ [/^Class every (.+)$/, function(m){ return 'క్లాస్: '+teDays(m[1]).replace(' · Holiday every ',' · సెలవు: '); }],
+ [/^(Announcements|Tasks) \((\d+)\)$/, function(m){ return TE[m[1]]+' ('+m[2]+')'; }],
+ [/^📌 Pinned · (.+)$/, function(m){ return '📌 పిన్ చేశారు · '+m[1]; }],
+ [/^(\d+) taken$/, function(m){ return m[1]+' తీసుకున్నారు'; }],
+ [/^Teacher · (.+)$/, function(m){ return 'టీచర్ · '+m[1]; }],
+ [/^Reason: (.+)$/, function(m){ return 'కారణం: '+m[1]; }],
+ [/^Due (.+)$/, function(m){ return 'గడువు '+m[1]; }],
+ [/^(\w+day) holiday$/, function(m){ return TE_DAYS[m[1]] ? TE_DAYS[m[1]]+' సెలవు' : null; }],
+ [/^(Class day|No class) · (.+)$/, function(m){ return TE[m[1]]+' · '+m[2]; }],
+ [/^Holiday: (.+)$/, function(m){ return 'సెలవు: '+m[1]; }],
+ [/^Meeting (\d.*)$/, function(m){ return 'మీటింగ్ '+m[1]; }],
+ [/^(January|February|March|April|May|June|July|August|September|October|November|December) (\d{4})$/, function(m){ return TE_MONTHS[m[1]]+' '+m[2]; }],
+ [/^(entry|entries) saved on this phone, waiting to upload$/, function(){ return 'ఎంట్రీ(లు) ఈ ఫోన్‌లో సేవ్ అయ్యాయి, అప్‌లోడ్ కోసం వేచి ఉన్నాయి'; }],
+ [/^(\d+) saved entr(y|ies) uploaded$/, function(m){ return m[1]+' సేవ్ చేసిన ఎంట్రీ(లు) అప్‌లోడ్ అయ్యాయి'; }],
+ [/^Not accepted: (check-in|check-out) (.+?) — (.+)$/, function(m){ return 'అంగీకరించలేదు: '+TE[m[1]]+' '+m[2]+' — '+trCore(m[3]); }],
+ [/^You are (\S+ (?:km|m)) away from (.+)\. Attendance can be marked only within (\d+) m of the school\.$/, function(m){ return 'మీరు '+m[2]+' నుంచి '+m[1]+' దూరంలో ఉన్నారు. స్కూల్ నుంచి '+m[3]+' మీ. లోపల మాత్రమే అటెండెన్స్ వేయగలరు.'; }],
+ [/^Your GPS signal is too weak \(±(\d+) m\)\./, function(m){ return 'మీ GPS సిగ్నల్ చాలా బలహీనంగా ఉంది (±'+m[1]+' మీ.). బయటకు లేదా కిటికీ దగ్గరకు వెళ్ళి కొన్ని సెకన్లు ఆగి మళ్ళీ ప్రయత్నించండి.'; }],
+ [/^Your school location is not set yet, so attendance cannot be marked\./, function(){ return 'మీ స్కూల్ లొకేషన్ ఇంకా సెట్ చేయలేదు, కాబట్టి అటెండెన్స్ వేయలేరు. దయచేసి అడ్మిన్‌ని అడగండి.'; }],
+ [/^You have no (sick|casual) leave left for that month \((\d+) per month\)\.$/, function(m){ return 'ఆ నెలకు '+(m[1]==='sick'?'సిక్':'క్యాజువల్')+' లీవ్ మిగలలేదు (నెలకు '+m[2]+').'; }],
+];
+function trCore(k){
+  if(TE.hasOwnProperty(k)) return TE[k];
+  for(var i=0;i<TE_RULES.length;i++){ var m=TE_RULES[i][0].exec(k); if(m){ var r=TE_RULES[i][1](m); if(r) return r; } }
+  return null;
+}
+function trText(v){ var k=v.trim(); if(!k || !/[A-Za-z]/.test(k)) return null; var r=trCore(k); return r==null ? null : v.replace(k, r); }
+function translateTree(root){
+  if(LANG!=='te' || document.body.classList.contains('is-admin') || !root) return;
+  if(root.nodeType===3){ if(root.parentElement && root.parentElement.closest('.ann h3,.ann .note,.peek b,.peek .note,[data-notr]')) return; var r=trText(root.nodeValue); if(r!=null && r!==root.nodeValue) root.nodeValue=r; return; }
+  if(root.nodeType!==1 || /^(SCRIPT|STYLE|TEXTAREA)$/.test(root.tagName)) return;
+  var w=document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), n, list=[];
+  while((n=w.nextNode())){ var pe=n.parentElement; if(!pe || (!/^(SCRIPT|STYLE|TEXTAREA)$/.test(pe.tagName) && !pe.closest('.ann h3,.ann .note,.peek b,.peek .note,[data-notr]'))) list.push(n); }
+  list.forEach(function(t){ var r=trText(t.nodeValue); if(r!=null && r!==t.nodeValue) t.nodeValue=r; });
+  [root].concat([].slice.call(root.querySelectorAll('[placeholder],[aria-label]'))).forEach(function(e){
+    ['placeholder','aria-label'].forEach(function(a){ var v=e.getAttribute&&e.getAttribute(a); if(v){ var r=trText(v); if(r!=null) e.setAttribute(a,r); } });
+  });
+}
+function setLang(l){ try{ localStorage.setItem('bchc_lang', l); }catch(e){} location.reload(); }
+if(LANG==='te'){
+  document.documentElement.lang='te';
+  var _trObs=new MutationObserver(function(muts){
+    if(document.body.classList.contains('is-admin')) return;
+    muts.forEach(function(m){ if(m.type==='characterData') translateTree(m.target); else m.addedNodes.forEach(translateTree); });
+  });
+  document.addEventListener('DOMContentLoaded', function(){ _trObs.observe(document.body,{childList:true,subtree:true,characterData:true}); translateTree(document.body); });
+  if(document.body) { _trObs.observe(document.body,{childList:true,subtree:true,characterData:true}); }
+}
+
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
 function $(sel, root){ return (root||document).querySelector(sel); }
 function toast(text){
@@ -401,8 +560,8 @@ function parseISO(s){ var p=s.split('-'); return new Date(+p[0], +p[1]-1, +p[2])
 function addDays(s,n){ var d=parseISO(s); d.setDate(d.getDate()+n); return iso(d); }
 function fmt12(t){ if(!t) return '—'; var p=String(t).split(':'); var h=+p[0], m=p[1]; var ap=h>=12?'PM':'AM'; h=h%12||12; return h+':'+m+' '+ap; }
 function fmtShort(t){ if(!t) return ''; var p=String(t).split(':'); var h=+p[0], m=p[1]; var ap=h>=12?'pm':'am'; h=h%12||12; return h+(m==='00'?'':':'+m)+ap; }
-function niceDate(s){ if(!s) return ''; return parseISO(s).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'}); }
-function niceDay(s){ return parseISO(s).toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'}); }
+function niceDate(s){ if(!s) return ''; return parseISO(s).toLocaleDateString(LOC,{weekday:'short',day:'numeric',month:'short',year:'numeric'}); }
+function niceDay(s){ return parseISO(s).toLocaleDateString(LOC,{weekday:'long',day:'numeric',month:'long'}); }
 function mins(t){ if(!t) return null; var p=String(t).split(':'); return (+p[0])*60+(+p[1])+((+p[2]||0)/60); }
 function nowMins(){ var d=new Date(); return d.getHours()*60+d.getMinutes()+d.getSeconds()/60+0.01; }
 function parseMapLink(text){
@@ -544,12 +703,22 @@ function shiftMonth(ym, n){ var y=+ym.slice(0,4), m=+ym.slice(5,7)-1+n; var d=ne
 function monthTitle(ym){ return MONTHS[+ym.slice(5,7)-1]+' '+ym.slice(0,4); }
 
 /* ============================================================ router */
+/* The link always opens the teacher app. The admin dashboard opens only from
+   Me > Admin, the Admin button, or the separate admin link (admin.html). */
+function adminAllowed(){ try{ return sessionStorage.getItem('bchc_admin_go')==='1' || !!sessionStorage.getItem('bchc_admin'); }catch(e){ return false; } }
+function openAdmin(){ try{ sessionStorage.setItem('bchc_admin_go','1'); }catch(e){} if(location.hash==='#admin') route(); else location.hash='#admin'; }
 function route(){
   stopCamera();
-  if (location.hash === '#admin') return Admin.start();
+  if (location.hash === '#admin') {
+    if (adminAllowed()) { document.body.classList.add('is-admin'); return Admin.start(); }
+    history.replaceState(null,'',location.pathname+location.search);
+  }
+  document.body.classList.remove('is-admin');
+  try{ sessionStorage.removeItem('bchc_admin_go'); }catch(e){}
   return Teacher.start();
 }
 window.addEventListener('hashchange', route);
+(function(){ var lb=document.getElementById('langBtn'); lb.textContent = LANG==='te' ? 'English' : 'తెలుగు'; lb.onclick=function(){ setLang(LANG==='te'?'en':'te'); }; })();
 
 /* ============================================================ TEACHER */
 var Teacher = (function(){
@@ -598,6 +767,66 @@ var Teacher = (function(){
       '<div class="faint">Every '+every+' min while this app is open'+(p&&p.lastTs?' · last at '+esc(fmt12(String(p.lastTs).slice(11,16))):'')+(p&&p.outsideMin?' · outside so far: '+esc(minText(p.outsideMin)):'')+'</div></div></div>';
   }
 
+  /* ---- offline: saved data + entries waiting to upload ---- */
+  function qGet(){ return store.get('queue')||[]; }
+  function qSet(q){ try{ localStorage.setItem('bchc_queue', JSON.stringify(q)); return true; }catch(e){ return false; } }
+  function myQueue(){ return session ? qGet().filter(function(x){ return x.teacherId===session.teacherId; }) : []; }
+  function isNetErr(err){ return !err.res; }
+  function cacheInfo(){ if(info && session){ try{ localStorage.setItem('bchc_info_'+session.teacherId, JSON.stringify(info)); }catch(e){} } }
+  /* Today's view from saved data: a new day starts empty, and entries waiting to upload are shown. */
+  function withPending(i){
+    var t=todayISO();
+    if(i.serverDate!==t){ i.serverDate=t; i.today=[]; i.presence=null; }
+    i.today=i.today.filter(function(r){ return !r.pending; });
+    myQueue().forEach(function(x){ if(x.date===t && !i.today.some(function(r){return r.type===x.type;})) i.today.push({type:x.type,date:x.date,time:x.time,geofence:'INSIDE',distance:x.distance,late:x.late,lateMin:x.lateMin,pending:true}); });
+    return i;
+  }
+  var syncing=false;
+  function syncQueue(){
+    if(syncing || !session || !navigator.onLine) return Promise.resolve();
+    var q=myQueue(); if(!q.length) return Promise.resolve();
+    syncing=true; var sent=0;
+    function next(){
+      var item=myQueue()[0];
+      if(!item){ syncing=false; return sent?refreshInfo().then(afterSync,afterSync):afterSync(); }
+      return api('punch',{teacherId:session.teacherId,pin:session.pin,type:item.type,photo:item.photo,lat:item.lat,lng:item.lng,accuracy:item.accuracy,
+          lateReason:item.lateReason||'',device:item.device,offline:true,clientTime:item.clientTime})
+        .then(function(){ drop(item); sent++; return next(); })
+        .catch(function(err){
+          if(isNetErr(err)){ syncing=false; afterSync(); return; }
+          drop(item); var f=store.get('syncfail')||[]; f.push({type:item.type,date:item.date,time:item.time,error:err.message}); store.set('syncfail',f.slice(-10)); return next();
+        });
+    }
+    function drop(item){ qSet(qGet().filter(function(x){ return x.id!==item.id; })); }
+    function afterSync(){ if(sent) toast(sent+' saved entr'+(sent>1?'ies':'y')+' uploaded'); if(view==='home' && document.getElementById('clock')) homeView(); }
+    return next();
+  }
+  window.addEventListener('online', function(){ syncQueue(); if(info && info._offline) loadHome(); });
+  setInterval(function(){ if(myQueue().length) syncQueue(); }, 60000);
+  document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible' && myQueue().length) syncQueue(); });
+  function offlineBanner(){
+    var q=myQueue(), f=store.get('syncfail')||[], h='';
+    if(info && info._offline) h+='<div class="msg note offnote"><b>No internet right now.</b> You can still check in and out with a photo inside the school area. It is saved on this phone and uploads automatically when internet is back.</div>';
+    if(q.length) h+='<div class="msg note offnote row between" style="gap:8px"><span><b>'+q.length+'</b> '+(q.length>1?'entries':'entry')+' saved on this phone, waiting to upload</span><button class="btn small black" id="syncNow">Upload now</button></div>';
+    if(f.length) h+='<div class="msg err">'+f.map(function(x){ return 'Not accepted: '+(x.type==='IN'?'check-in':'check-out')+' '+esc(niceDate(x.date))+' '+esc(fmt12(x.time))+' — '+esc(x.error); }).join('<br>')+'<div><button class="btn small ghost" id="clearFail" style="margin-top:6px">OK</button></div></div>';
+    return h;
+  }
+  function bindBanner(){
+    var b=document.getElementById('syncNow'); if(b) b.onclick=function(){ if(!navigator.onLine){ toast('Still no internet. It will upload automatically.'); return; } b.disabled=true; syncQueue().then(function(){ b.disabled=false; }); };
+    var c=document.getElementById('clearFail'); if(c) c.onclick=function(){ store.del('syncfail'); homeView(); };
+  }
+  function saveOffline(type, state, why, label){
+    var d=new Date(), t=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+    var ls=type==='IN'?lateState():null;
+    var item={id:'Q'+Date.now(),teacherId:session.teacherId,type:type,photo:state.photo,lat:state.pos.coords.latitude,lng:state.pos.coords.longitude,
+      accuracy:state.pos.coords.accuracy,distance:state.dist,clientTime:d.toISOString(),date:todayISO(),time:t,lateReason:why||'',device:navigator.userAgent,
+      late:!!(ls&&ls.late),lateMin:ls&&ls.lm>0?ls.lm:null};
+    var q=qGet(); q.push(item);
+    if(!qSet(q)){ toast('Phone storage is full. Free some space and try again.'); return null; }
+    if(info){ withPending(info); cacheInfo(); }
+    return {type:type,date:item.date,time:t,geofence:'INSIDE',distance:state.dist,late:item.late,lateMin:item.lateMin,lateReason:item.lateReason,pending:true};
+  }
+
   function start(){
     topAction.hidden=false;
     session=store.get('teacher');
@@ -623,7 +852,7 @@ var Teacher = (function(){
   function loginView(msg){
     showNav(false);
     topAction.textContent='Admin';
-    topAction.onclick=function(){ location.hash='#admin'; };
+    topAction.onclick=openAdmin;
     app.innerHTML=
       '<div class="narrow stack">'+
         '<section class="hero"><div class="eyebrow">Bheem Children Happiness Centre</div><h1>Welcome, teacher</h1><p style="margin:6px 0 0">Sign in once on your phone. After that, checking in takes one selfie.</p>'+'</section>'+
@@ -649,9 +878,11 @@ var Teacher = (function(){
   function loadHome(){
     showNav(false);
     app.innerHTML='<div class="narrow card" style="text-align:center"><span class="spinner"></span><p class="muted">Loading your day…</p></div>';
-    api('login', session).then(function(res){ info=res; if(res.serverTime) off=mins(res.serverTime)-nowMins(); if(Math.abs(off)>720) off=0; startPings(); document.getElementById('orgName').textContent=res.org||'Bheem Children Happiness Centre'; showNav(true); setBadge(); go(view); })
+    api('login', session).then(function(res){ info=res; if(res.serverTime) off=mins(res.serverTime)-nowMins(); if(Math.abs(off)>720) off=0; store.set('off',off); withPending(info); cacheInfo(); startPings(); document.getElementById('orgName').textContent=res.org||'Bheem Children Happiness Centre'; showNav(true); setBadge(); go(view); syncQueue(); })
       .catch(function(err){
         if (/PIN|ID|switched off/.test(err.message)) { store.del('teacher'); return loginView(err.message); }
+        var saved=store.get('info_'+session.teacherId);
+        if (isNetErr(err) && saved) { info=withPending(saved); info._offline=true; off=+store.get('off')||0; showNav(true); setBadge(); go(view); return; }
         app.innerHTML='<div class="narrow stack"><div class="msg err">'+esc(err.message)+'</div><button class="btn yellow" id="retry">Try again</button></div>';
         $('#retry').onclick=loadHome;
       });
@@ -679,7 +910,7 @@ var Teacher = (function(){
     var dayPill = dInfo.holiday ? '<span class="pill bad">'+esc(dayLabel(dInfo))+'</span>' : dInfo.isClass ? '<span class="pill ok">'+esc(dayLabel(dInfo))+'</span>' : '<span class="pill none">'+esc(dayLabel(dInfo))+'</span>';
 
     app.innerHTML=
-      '<div class="narrow stack">'+
+      '<div class="narrow stack">'+offlineBanner()+
         '<section class="hero"><div class="who-row"><button class="avbtn" id="toProfile" aria-label="Open my profile">'+avatarHtml(t,68)+'</button>'+
           '<div style="min-width:0"><div class="eyebrow">'+esc(niceDate(info.serverDate))+'</div><h1>Namaste, '+esc(first)+'</h1>'+
           '<div class="row" style="margin-top:6px;gap:6px"><span class="chip">'+esc(t.id)+'</span>'+(t.school?'<span class="chip">'+esc(t.school)+'</span>':'')+'</div></div></div>'+'</section>'+
@@ -690,7 +921,7 @@ var Teacher = (function(){
             '<div><small>Out</small><b>'+(outR?esc(fmt12(outR.time)):'—')+'</b></div>'+
             '<div><small>'+(inR&&!outR?'On duty':'Worked')+'</small><b style="font-size:1.05rem"'+(inR&&!outR?' class="running"':'')+'>'+worked+'</b></div>'+
           '</div>'+
-          (inR ? '<div class="row">'+geoPill(inR.geofence,inR.distance)+(inR.late?'<span class="pill warn">Late'+(inR.lateMin?' · '+inR.lateMin+' min':'')+'</span>':'<span class="pill ok">On time</span>')+'</div>' : '')+
+          (inR ? '<div class="row">'+geoPill(inR.geofence,inR.distance)+(inR.late?'<span class="pill warn">Late'+(inR.lateMin?' · '+inR.lateMin+' min':'')+'</span>':'<span class="pill ok">On time</span>')+(inR.pending||(outR&&outR.pending)?'<span class="pill info">Waiting to upload</span>':'')+'</div>' : '')+
           (inR&&!outR&&t.lat!=null ? '<div id="presBox">'+presenceHtml()+'</div>' : '')+
           action+
         '</section>'+
@@ -700,6 +931,7 @@ var Teacher = (function(){
       '</div>';
     tick(); clearInterval(clockTimer); clockTimer=setInterval(tick, 1000);
     var g=$('#go'); if(g) g.onclick=function(){ punchView(g.getAttribute('data-type')); };
+    bindBanner();
     startPings();
     $('#forgot').onclick=function(){ prefill=null; go('requests'); };
     $('#toProfile').onclick=function(){ go('profile'); };
@@ -771,7 +1003,7 @@ var Teacher = (function(){
     app.querySelectorAll('[data-lc]').forEach(function(b){ b.onclick=function(){ b.disabled=true;
       api('cancelLeave',{teacherId:session.teacherId,pin:session.pin,leaveId:b.getAttribute('data-lc')}).then(function(){ toast('Leave request cancelled'); return refreshInfo().then(leaveView); }).catch(function(err){ b.disabled=false; toast(err.message); }); }; });
   }
-  function refreshInfo(){ return api('login', session).then(function(r){ info=r; setBadge(); return r; }); }
+  function refreshInfo(){ return api('login', session).then(function(r){ info=withPending(r); cacheInfo(); setBadge(); return r; }); }
 
   /* ----- Resources */
   function resourcesView(){
@@ -800,6 +1032,7 @@ var Teacher = (function(){
       '<section class="card menu">'+
         '<button data-go="requests"><span>Fix a missed check-in<span class="sub">Forgot to check in or out</span></span><span aria-hidden="true">›</span></button>'+
         '<button data-go="resources"><span>Resources<span class="sub">Worksheets, documents and links</span></span><span aria-hidden="true">›</span></button>'+
+        '<button id="pLang"><span>Language / భాష<span class="sub">'+(LANG==='te'?'తెలుగు · switch to English':'English · తెలుగుకు మార్చండి')+'</span></span><span aria-hidden="true">›</span></button>'+
         '<button id="pAdmin"><span>Admin<span class="sub">For the BCHC admin only · needs the admin PIN</span></span><span aria-hidden="true">›</span></button>'+
       '</section>'+
       '<button class="btn ghost block" id="pOut">Sign out of this phone</button></div>';
@@ -828,7 +1061,8 @@ var Teacher = (function(){
       });
     };
     $('#pOut').onclick=function(){ topAction.click(); };
-    $('#pAdmin').onclick=function(){ location.hash='#admin'; };
+    $('#pAdmin').onclick=openAdmin;
+    $('#pLang').onclick=function(){ setLang(LANG==='te'?'en':'te'); };
     app.querySelectorAll('[data-go]').forEach(function(b){ b.onclick=function(){ go(b.getAttribute('data-go')); }; });
     function stats(){
       var box=$('#pStats'); if(!box) return;
@@ -940,7 +1174,7 @@ var Teacher = (function(){
           '<button class="camflip" id="flip" type="button" aria-label="Switch between front and back camera" hidden><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3l2-3h6l2 3h3v12H4z"/><path d="M9 13a3 3 0 0 0 5.2 2"/><path d="M15 12a3 3 0 0 0-5.2-2"/><path d="M14 15.5l.2-.5.5.2M10 9.5l-.2.5-.5-.2"/></svg></button></div>'+
         '<div class="gps" id="gps"><span class="dot wait" id="gdot"></span><div><b id="gtitle">Finding your location…</b><div class="faint" id="gsub">Attendance works only within '+radius+' m of '+esc(t.school||'your school')+'.</div></div></div>'+
         (ls && ls.askReason ? lateBox(ls.lm) : '')+
-        '<div id="pmsg" aria-live="polite"></div>'+
+        '<div id="pmsg" aria-live="polite">'+(navigator.onLine?'':'<div class="msg note offnote">No internet. Your entry will be saved on this phone and uploaded automatically later.</div>')+'</div>'+
         (type==='IN' ? '<p class="faint" style="margin:0">Only a live camera photo is accepted. While you are checked in and this app is open, it checks your location every '+esc(+info.settings.PING_EVERY_MIN||5)+' minutes.</p>' : '')+
         '<button class="btn yellow huge block" id="snap" disabled>Take photo</button>'+
         '<div class="row" id="afterSnap" hidden><button class="btn ghost" id="retake" style="flex:1">Retake</button><button class="btn green" id="submit" style="flex:2" disabled>Submit '+label.toLowerCase()+'</button></div>'+
@@ -1005,10 +1239,13 @@ var Teacher = (function(){
       var why=$('#lateWhy');
       var b=$('#submit'); b.disabled=true; b.innerHTML='<span class="spinner"></span> Saving';
       $('#retake').disabled=true;
+      function offlineSave(){ var rec=saveOffline(type, state, why?why.value.trim():''); if(rec){ stopCamera(); hist=null; resultView(rec); } else { b.disabled=false; $('#retake').disabled=false; refresh(); } }
+      if(!navigator.onLine) return offlineSave();
       api('punch', {teacherId:session.teacherId, pin:session.pin, type:type, photo:state.photo, lateReason:why?why.value.trim():'',
         lat:state.pos.coords.latitude, lng:state.pos.coords.longitude, accuracy:state.pos.coords.accuracy, device:navigator.userAgent})
       .then(function(res){ stopCamera(); hist=null; resultView(res.record); })
       .catch(function(err){
+        if(isNetErr(err)) return offlineSave();
         b.disabled=false; $('#retake').disabled=false; refresh();
         $('#pmsg').innerHTML='<div class="msg err">'+esc(err.message)+'</div>';
       });
@@ -1029,10 +1266,11 @@ var Teacher = (function(){
         (r.lateReason?'<div class="muted">Reason: '+esc(r.lateReason)+'</div>':'')+
         (isIn?'<p class="faint" style="margin:0">Have a good day of teaching!</p>':'')+
         (r.note?'<div class="msg note">'+esc(r.note)+'</div>':'')+
-        '<p class="faint" style="margin:0">Time is recorded by the server, not your phone.</p>'+
+        (r.pending?'<div class="msg note offnote"><b>Saved on this phone (no internet).</b> It will upload automatically when internet is back. Please open the app once you have network.</div>'
+          :'<p class="faint" style="margin:0">Time is recorded by the server, not your phone.</p>')+
         '<button class="btn yellow block" id="done">Done</button>'+
       '</div>';
-    $('#done').onclick=function(){ view='home'; loadHome(); };
+    $('#done').onclick=function(){ view='home'; if(r.pending){ showNav(true); go('home'); } else loadHome(); };
     if(!isIn) stopPings();
   }
 
@@ -1080,7 +1318,7 @@ var Admin = (function(){
   function start(){
     nav.hidden=true; document.body.classList.remove('has-nav');
     topAction.hidden=false; topAction.textContent='Teacher app';
-    topAction.onclick=function(){ location.hash=''; };
+    topAction.onclick=function(){ try{ sessionStorage.removeItem('bchc_admin_go'); }catch(e){} location.hash=''; };
     try{ pin=sessionStorage.getItem('bchc_admin'); }catch(e){ pin=null; }
     if(!pin) return loginView();
     shell();
